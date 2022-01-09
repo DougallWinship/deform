@@ -4,6 +4,7 @@ namespace Deform\Html;
 /**
  * represents empty (or self-closing) HTML tag incapable of containing child elements.
  *
+ * non-authoritative list of potentially useful tag attributes to facilitate auto-completion:
  * @method HtmlTag value(string $value)
  * @method HtmlTag checked(bool $value)
  * @method HtmlTag selected(bool $value)
@@ -142,7 +143,7 @@ class HtmlTag implements IHtml
     }
 
     /**
-     * note really sure about this one ... it's kinda conventient, but also can result in bad function calls
+     * not really sure about this one ... it's kinda conventient, but also can result in bad function calls
      * inadvertently leaking into the html
      *
      * set tag attributes. for example:
@@ -250,9 +251,9 @@ class HtmlTag implements IHtml
      * @param string $setRule
      * @param string $setValue
      *
-     * @return string
+     * @return HtmlTag
      */
-    public function css(string $setRule, string $setValue): string
+    public function css(string $setRule, string $setValue): HtmlTag
     {
         $cssParts = isset($this->attributes["style"]) ? explode(";", $this->attributes["style"]) : [];
         $rebuildStyle = [];
@@ -290,13 +291,15 @@ class HtmlTag implements IHtml
     {
         try {
             $html = "<" . $this->tagName . self::attributesString($this->attributes) . ">";
-            foreach($this->childTags as $child_tag) {
-                if(is_array($child_tag)) {
-                    $child_tag = implode("", $child_tag);
+            if (!$this->isSelfClosing) {
+                foreach ($this->childTags as $child_tag) {
+                    if (is_array($child_tag)) {
+                        $child_tag = implode("", $child_tag);
+                    }
+                    $html .= $child_tag;
                 }
-                $html .= $child_tag;
+                $html .= "</" . $this->tagName . ">";
             }
-            $html .= "</" . $this->tagName . ">";
         }
         catch(\Exception $exc) {
             // todo - Log and error ... have to be careful about exceptions within __toString
@@ -400,7 +403,7 @@ class HtmlTag implements IHtml
     }
 
     /**
-     * very basic manipulation of the HtmlTag tree, to do anything more complex convert it to DOMDocument first
+     * very basic manipulation of the HtmlTag tree, to do anything more complex convert it to DOMDocument instead
      * @param string $selector a very basic selector only supports tag, .class & #id currently
      * @param callable $callback a callback to apply to the selected nodes
      * @return HtmlTag

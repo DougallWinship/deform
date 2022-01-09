@@ -32,7 +32,7 @@ class HtmlDocument extends \DOMDocument
      * @param IHtml $tag
      * @return $this
      */
-    public static function loadHtmlTag(IHtml $tag)
+    public static function loadHtmlTag(IHtml $tag) : HtmlDocument
     {
         $document = new self();
         $document->appendChild($tag->getDomNode($document));
@@ -121,6 +121,12 @@ class HtmlDocument extends \DOMDocument
         return $this;
     }
 
+    /**
+     * @param string $cssSelector
+     * @param callable $callback
+     * @return $this
+     * @throws \Exception
+     */
     public function selectCss(string $cssSelector, callable $callback) : self
     {
         $xpathQuery = $this->convertCssSelectorToXpathQuery($cssSelector);
@@ -132,9 +138,13 @@ class HtmlDocument extends \DOMDocument
     /**
      * @param $cssSelector
      * @return string
+     * @throws \Exception
      */
     protected function convertCssSelectorToXpathQuery($cssSelector) : string
     {
+        if (!class_exists('\bdk\CssXpath\CssXpath')) {
+            throw new \Exception("If you want to use css selectors then install https://github.com/bkdotcom/CssXpath");
+        }
         return \bdk\CssXpath\CssXpath::cssToXpath($cssSelector);
     }
 

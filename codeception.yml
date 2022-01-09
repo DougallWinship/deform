@@ -1,0 +1,20 @@
+paths:
+    tests: tests
+    output: tests/_output
+    data: tests/_data
+    support: tests/_support
+    envs: tests/_envs
+actor_suffix: Tester
+extensions:
+    enabled:
+        - Codeception\Extension\RunFailed
+        - Codeception\Extension\PhpBuiltinServer
+    config:
+        Codeception\Extension\PhpBuiltinServer:
+            hostname: localhost
+            port: 8000
+            autostart: true
+            documentRoot: tests/_data/public
+            router: tests/_data/public/index.php
+            startDelay: 1
+            phpIni: tests/php.ini

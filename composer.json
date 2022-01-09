@@ -1,0 +1,16 @@
+{
+    "autoload": {
+        "psr-4": {"": "src/"}
+    },
+    "require": {
+        "ext-dom": "*",
+        "ext-libxml": "*",
+        "bdk/css-xpath": "^1.0"
+    },
+    "require-dev": {
+        "codeception/codeception": "^4.1",
+        "codeception/module-phpbrowser": "^1.0.0",
+        "codeception/phpbuiltinserver": "*",
+        "codeception/module-asserts": "^2.0"
+    }
+}

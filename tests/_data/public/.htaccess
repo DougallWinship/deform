@@ -1,0 +1,6 @@
+# Note that this isn't honoured by the built in php webserver it's just a convenience in case you'd like to point
+# another webserver here!
+RewriteEngine on
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ /index.php?path=$1 [NC,L,QSA]

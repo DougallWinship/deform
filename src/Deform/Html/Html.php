@@ -116,7 +116,7 @@ namespace Deform\Html;
  * @method static HtmlTag figcaption(array $a=[])
  * @method static HtmlTag figure(array $a=[])
  * @method static HtmlTag iframe(array $a=[]) EMPTY TAG
- * @method static HtmlTag image(array $a=[]) EMPTY TAG
+ * @method static HtmlTag img(array $a=[]) EMPTY TAG
  * @method static HtmlTag map(array $a=[])
  * @method static HtmlTag object(array $a=[])
  * @method static HtmlTag param(array $a=[])
