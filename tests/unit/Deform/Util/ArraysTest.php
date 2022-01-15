@@ -1,8 +1,6 @@
 <?php
 namespace Deform\Util;
 
-use function PHPUnit\Framework\isFalse;
-
 class ArraysTest extends \Codeception\Test\Unit
 {
     /**
@@ -40,5 +38,65 @@ class ArraysTest extends \Codeception\Test\Unit
             0 => 'ahoy',
             'foo'=>'bar'
         ]));
+    }
+
+    public function testExtractKeysNonAssocLoose()
+    {
+        $result = Arrays::extractKeys([
+            'one' => 'ONE',
+            'two' => 'TWO',
+            'three' => 'THREE',
+            'four' => 'FOUR'
+        ], [
+            'one',
+            'four',
+            'missing'
+        ]);
+        $this->assertEquals(['one'=>'ONE','four'=>'FOUR','missing'=>null], $result);
+    }
+
+    public function testExtractKeysNonAssocStrictFail()
+    {
+        $this->expectException(\Exception::class);
+        Arrays::extractKeys([
+            'one' => 'ONE',
+            'two' => 'TWO',
+            'three' => 'THREE',
+            'four' => 'FOUR'
+        ], [
+            'one',
+            'four',
+            'missing'
+        ],true);
+    }
+
+    public function testExtractKeysAssocLoose()
+    {
+        $result = Arrays::extractKeys([
+            'one' => 'ONE',
+            'two' => 'TWO',
+            'three' => 'THREE',
+            'four' => 'FOUR'
+        ], [
+            'one'=>'One',
+            'four'=>'Four',
+            'missing'=>'Missing'
+        ]);
+        $this->assertEquals(['One'=>'ONE','Four'=>'FOUR','Missing'=>null], $result);
+    }
+
+    public function testExtractKeysAssocStrictFail()
+    {
+        $this->expectException(\Exception::class);
+        Arrays::extractKeys([
+            'one' => 'ONE',
+            'two' => 'TWO',
+            'three' => 'THREE',
+            'four' => 'FOUR'
+        ], [
+            'one'=>'One',
+            'four'=>'Four',
+            'missing'=>'Missing'
+        ], true);
     }
 }

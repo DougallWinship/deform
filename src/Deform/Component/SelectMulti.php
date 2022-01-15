@@ -12,17 +12,9 @@ class SelectMulti extends Select
         $this->select->set('multiple', 'multiple');
     }
 
-    /**
-     * @param array|string $value
-     *
-     * @return SelectMulti
-     */
     public function setSelected($value): Select
     {
-        if (!is_array($value)) {
-            $value = [$value];
-        }
-        $this->setSelectedForValues($value);
+        $this->setSelectedForValues(is_array($value) ? $value : [$value]);
         return $this;
     }
 

@@ -32,4 +32,13 @@ class StringsTest extends \Codeception\Test\Unit
         $this->assertEquals("this-is-a-test", Strings::separateCased("thisIsATest","-"));
         $this->assertEquals("this-is-a-test", Strings::separateCased("ThisIsATest","-"));
     }
+
+    public function testCamelise()
+    {
+        $this->assertEquals("Thisisatest", Strings::camelise("thisisatest"));
+        $this->assertEquals("ThisIsATest", Strings::camelise("this_is_a_test"));
+        $this->assertEquals("ThisIsATest", Strings::camelise("___this_is_a_test"));
+        $this->assertEquals("ThisIsATest", Strings::camelise("this_is_a_test____"));
+        $this->assertEquals("ThisIsATest", Strings::camelise("this___is______a_test"));
+    }
 }

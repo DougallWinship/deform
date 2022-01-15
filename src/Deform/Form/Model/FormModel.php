@@ -112,7 +112,7 @@ class FormModel
      */
     public function addHtml($html)
     {
-        if (!$html instanceof IHtml) {
+        if ($html instanceof IHtml) {
             $html = (string)$html;
         }
         if (!is_string($html)) {

@@ -9,7 +9,6 @@ class Strings
 {
     /**
      * get a class name for an object or class name *without* it's namespace
-     *
      * @param string|object $object
      * @return string
      * @throws \Exception
@@ -32,11 +31,21 @@ class Strings
     }
 
     /**
-     * Returns the given camelCasedWord as a character separated word, default is underscored_word
-     *
+     * Returns the given lower_case_and_underscored_word as a CamelCased word.
+     * @param string $lowerCaseAndUnderscoredWord Word to camelize
+     * @return string Camelised word : LikeThis.
+     */
+    public static function camelise(string $lowerCaseAndUnderscoredWord): string
+    {
+        $str = ucwords(str_replace(array('_', '-'), ' ', $lowerCaseAndUnderscoredWord));
+        return str_replace(' ','', $str);
+    }
+
+    /**
+     * Returns the given CamelCasedWord as a character separated word (default separator is underscore)
      * @param string $camelCasedWord Camel-cased word
      * @param string $separator
-     * @return string
+     * @return string Separated word : like_this.
      */
     public static function separateCased(string $camelCasedWord, string $separator = '_'): string
     {

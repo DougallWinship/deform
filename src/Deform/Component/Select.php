@@ -10,8 +10,8 @@ use Deform\Html\IHtml;
 class Select extends BaseComponent
 {
     /** @var IHtml */
-    public $select;
-    public $hasOptGroups = false;
+    public IHtml $select;
+    public bool $hasOptGroups = false;
     public function setup()
     {
         $this->select = Html::select([
@@ -48,7 +48,8 @@ class Select extends BaseComponent
     }
 
     /**
-     * @param string $value
+     * @param string|array $value
+     * @return Select
      * @throws \Exception
      */
     public function setSelected($value): Select
