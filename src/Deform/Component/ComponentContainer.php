@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Deform\Component;
 
 use Deform\Html\Html as Html;
@@ -41,12 +44,14 @@ class ComponentContainer
 
     public function __construct($owningClass)
     {
-        if (strpos($owningClass,__NAMESPACE__)!==0) {
-            throw new \Exception("ComponentContainer unexpectedly used from class in different namespace : ".$owningClass);
+        if (strpos($owningClass, __NAMESPACE__) !== 0) {
+            throw new \Exception(
+                "ComponentContainer unexpectedly used from class in different namespace : " . $owningClass
+            );
         }
-        $classWithoutNamespace = substr($owningClass,strlen(__NAMESPACE__)+1);
-        $type = \Deform\Util\Strings::separateCased($classWithoutNamespace,'-');
-        $this->containerType = 'container-type-'.$type;
+        $classWithoutNamespace = substr($owningClass, strlen(__NAMESPACE__) + 1);
+        $type = \Deform\Util\Strings::separateCased($classWithoutNamespace, '-');
+        $this->containerType = 'container-type-' . $type;
     }
 
     /**
@@ -54,7 +59,7 @@ class ComponentContainer
      * @return HtmlTag
      * @throws \Exception
      */
-    public function getHtmlTag($containerId) : IHtml
+    public function getHtmlTag($containerId): IHtml
     {
         if ($this->controlOnly) {
             if (is_array($this->controlTag)) {
@@ -66,7 +71,7 @@ class ComponentContainer
 
         $attrs = [
             'id' => $containerId,
-            'class' => 'component-container '.$this->containerType
+            'class' => 'component-container ' . $this->containerType
         ];
         if ($this->tooltip) {
             $attrs['title'] = $this->tooltip;
@@ -77,7 +82,9 @@ class ComponentContainer
             if (!is_bool($this->labelTag) && ($this->labelTag instanceof HtmlTag) && (!$this->labelTag->has('for'))) {
                 // if the label tag is present and hasn't yet got a for attribute then guess it!
                 $labelFor = $this->guessLabelFor($this->controlTag);
-                if ($labelFor) $this->labelTag->set('for',$labelFor);
+                if ($labelFor) {
+                    $this->labelTag->set('for', $labelFor);
+                }
             }
             $labelContainer = Html::div($this->labelContainerAttributes)->add($this->labelTag);
             $htmlContainer->add($labelContainer);
@@ -103,7 +110,9 @@ class ComponentContainer
 
     private function guessLabelFor($controlTag)
     {
-        if (!$controlTag) return false;
+        if (!$controlTag) {
+            return false;
+        }
         $checkTags = is_array($controlTag)
             ? $controlTag
             : [ $controlTag ];

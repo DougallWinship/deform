@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Deform\Component;
 
 use Deform\Html\Html as Html;
@@ -8,20 +11,17 @@ use Deform\Html\Html as Html;
 class Currency extends BaseComponent
 {
     public $currencyLabel;
-
-    /**
+/**
      * @throws \Exception
      */
     public function setup()
     {
-        $this->currencyLabel = Html::label(['class'=>'currency-symbol']);
-
+        $this->currencyLabel = Html::label(['class' => 'currency-symbol']);
         $currencyInput = Html::input([
-            'type'=>'text',
+            'type' => 'text',
             'name' => $this->getName(),
             'id' => $this->getId()
         ]);
-
         $this->addControl($this->currencyLabel);
         $this->addControl(' ');
         $this->addControl($currencyInput);

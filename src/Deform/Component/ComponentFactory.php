@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Deform\Component;
 
 /**
@@ -24,10 +27,9 @@ namespace Deform\Component;
  */
 class ComponentFactory
 {
-
-    const POUNDS = "&pound;";
-    const EUROS = "&euro;";
-    const AUSTRALIAN_DOLLARS = "A&dollar;";
+    public const POUNDS = "&pound;";
+    public const EUROS = "&euro;";
+    public const AUSTRALIAN_DOLLARS = "A&dollar;";
 
     /** @var \ReflectionClass */
     private static $reflectionSelf;
@@ -48,7 +50,10 @@ class ComponentFactory
         self::identifyComponents();
 
         if (!in_array($method, self::$components)) {
-            throw new \Exception("You are trying to construct a Component which hasn't been registered. Please add a suitable @method signature to the Component class for '".$method."'");
+            throw new \Exception(
+                "You are trying to construct a Component which hasn't been registered."
+                . " Please add a suitable @method signature to the Component class for '" . $method . "'"
+            );
         }
 
         $namespace = array_shift($arguments);
@@ -64,15 +69,15 @@ class ComponentFactory
      * @return object
      * @throws \Exception
      */
-    public static function build(string $component, string $namespace, string $fieldName, array $arguments=[])
+    public static function build(string $component, string $namespace, string $fieldName, array $arguments = [])
     {
-        if (($namespaceDividerPos = strrpos($component,'\\'))!==false) {
+        if (($namespaceDividerPos = strrpos($component, '\\')) !== false) {
             // if a namespace was included then check & strip it!
             $namespace = substr($component, 0, $namespaceDividerPos);
-            if ($namespace!==__NAMESPACE__) {
-                throw new \Exception("ComponentFactory::build can only accept classes in the namespace ".__NAMESPACE__);
+            if ($namespace !== __NAMESPACE__) {
+                throw new \Exception(__METHOD__ . " can only accept classes in the namespace " . __NAMESPACE__);
             }
-            $component = substr($component, $namespaceDividerPos+1);
+            $component = substr($component, $namespaceDividerPos + 1);
         }
 
         $class = __NAMESPACE__ . '\\' . $component;
@@ -111,22 +116,30 @@ class ComponentFactory
     }
 
     /**
+     * @param string $componentName
+     * @return bool
+     */
+    public static function isRegisteredComponent(string $componentName): bool
+    {
+        self::identifyComponents();
+        return in_array($componentName, self::$components);
+    }
+
+    /**
      * analyses phpdoc static method elements from this class
      * @param string $comment
      */
     private static function registerStaticMethodSignatures(string $comment)
     {
-        $trimmed = ltrim(trim(preg_replace('/\s+/', ' ', $comment)),'* ');
-        $parts = explode(" ",$trimmed);
-        if (count($parts)>=4 && $parts[0]==='@method' && $parts[1]==='static') {
-            if ($pos = strpos($parts[3],'(')) {
-                $componentName = substr($parts[3],0 ,$pos);
-            }
-            else {
+        $trimmed = ltrim(trim(preg_replace('/\s+/', ' ', $comment)), '* ');
+        $parts = explode(" ", $trimmed);
+        if (count($parts) >= 4 && $parts[0] === '@method' && $parts[1] === 'static') {
+            if ($pos = strpos($parts[3], '(')) {
+                $componentName = substr($parts[3], 0, $pos);
+            } else {
                 $componentName = $parts[3];
             }
             self::$components[] = $componentName;
         }
     }
-
 }

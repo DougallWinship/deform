@@ -1,4 +1,5 @@
 <?php
+
 namespace Deform\Form;
 
 use Deform\Component\ComponentFactory;
@@ -9,10 +10,10 @@ class Form
 
     public function __construct($formNamespace)
     {
-       $this->formNamespace = $formNamespace;
+        $this->formNamespace = $formNamespace;
     }
 
-    public function generate(array $components, array $formAttributes=[]) : \Deform\Html\HtmlTag
+    public function generate(array $components, array $formAttributes = []): \Deform\Html\HtmlTag
     {
         $formHtml = \Deform\Html\Html::form($formAttributes);
         foreach ($components as $name => $componentDefinition) {
@@ -33,26 +34,23 @@ class Form
         if (is_object($component)) {
             if ($component instanceof \Deform\Component\BaseComponent) {
                 return $component;
-            }
-            elseif ($component instanceof \Deform\Html\IHtml) {
+            } elseif ($component instanceof \Deform\Html\IHtml) {
                 return $component;
-            }
-            else {
-                throw new \Exception("Unexpected component class specified : ".get_class($component));
+            } else {
+                throw new \Exception("Unexpected component class specified : " . get_class($component));
             }
         }
         if (is_string($component)) {
             if (class_exists($component)) {
                 return ComponentFactory::build($component, $this->formNamespace, $name);
                 //return new $component($this->formNamespace, $name);
-            }
-            else {
-                throw new \Exception("The specified component class was not found : ".$component);
+            } else {
+                throw new \Exception("The specified component class was not found : " . $component);
             }
         }
     }
 
-    public static function run($namespace, $components, $formProcessor=null)
+    public static function run($namespace, $components, $formProcessor = null)
     {
         $instance = new self($namespace);
         if (isset($_POST[$namespace])) {
@@ -62,8 +60,8 @@ class Form
             }
         }
         return $instance->generate($components)
-            ->set('id','form-'.$namespace)
-            ->set('method','POST')
-            ->set('action','');
+            ->set('id', 'form-' . $namespace)
+            ->set('method', 'POST')
+            ->set('action', '');
     }
 }

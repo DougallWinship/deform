@@ -1,42 +1,37 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Deform\Html;
 
-class HtmlDocument extends \DOMDocument
+use Deform\Util\IToString;
+
+class HtmlDocument implements IToString
 {
+    private \DOMDocument $domDocument;
     private ?\DOMXPath $domXPath = null;
 
     /**
      * prevent instancing manually
      */
-    private function __construct() {
-        parent::__construct();
+    private function __construct()
+    {
+        $this->domDocument = new \DOMDocument();
     }
 
     /**
-     * @param string $htmlSnippet
+     * @param string|IHtml $html
      * @return HtmlDocument
      * @throws \Exception
      */
-    public static function loadHtmlString(string $htmlSnippet): HtmlDocument
+    public static function load($html): HtmlDocument
     {
-        $document = new self();
-        $document->loadHTML($htmlSnippet, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-        if (count($document->childNodes)!==1) {
+        $htmlDocument = new self();
+        $htmlDocument->domDocument->loadHTML((string)$html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        if (count($htmlDocument->domDocument->childNodes) !== 1) {
             throw new \Exception("Something went wrong!");
         }
-        return $document;
-    }
-
-    /**
-     * @param IHtml $tag
-     * @return $this
-     */
-    public static function loadHtmlTag(IHtml $tag) : HtmlDocument
-    {
-        $document = new self();
-        $document->appendChild($tag->getDomNode($document));
-        return $document;
+        return $htmlDocument;
     }
 
     /**
@@ -45,9 +40,9 @@ class HtmlDocument extends \DOMDocument
      * @return HtmlTag
      * @throws \Exception
      */
-    public function getHtmlRootTag(bool $preserveWhitespace=false) : HtmlTag
+    public function getHtmlRootTag(bool $preserveWhitespace = false): HtmlTag
     {
-        return self::recurseDomElements($this->documentElement, $preserveWhitespace);
+        return self::recurseDomElements($this->domDocument->documentElement, $preserveWhitespace);
     }
 
     /**
@@ -73,22 +68,20 @@ class HtmlDocument extends \DOMDocument
      * @return HtmlTag
      * @throws \Exception
      */
-    private static function recurseDomElements(\DomElement $element, bool $preserveWhitespace=false): HtmlTag
+    protected static function recurseDomElements(\DomElement $element, bool $preserveWhitespace = false): HtmlTag
     {
         $tag = self::buildHtmlTagFromElement($element);
 
         /** @var \DOMNode $node */
         foreach ($element->childNodes as $node) {
-
             switch ($node->nodeType) {
-
                 case XML_ELEMENT_NODE:
                     $childTag = self::recurseDomElements($node);
                     $tag->add($childTag);
                     break;
 
                 case XML_TEXT_NODE:
-                    if ($preserveWhitespace || strlen(trim($node->nodeValue))>0) {
+                    if ($preserveWhitespace || strlen(trim($node->nodeValue)) > 0) {
                         $tag->add($node->nodeValue);
                     }
                     break;
@@ -97,14 +90,13 @@ class HtmlDocument extends \DOMDocument
         return $tag;
     }
 
-
     /**
      * @return \DOMXpath
      */
-    private function getDOMXpath()
+    protected function getDOMXpath(): \DOMXPath
     {
-        if ($this->domXPath===null) {
-            $this->domXPath = new \DOMXpath($this);
+        if ($this->domXPath === null) {
+            $this->domXPath = new \DOMXpath($this->domDocument);
         }
         return $this->domXPath;
     }
@@ -114,7 +106,7 @@ class HtmlDocument extends \DOMDocument
      * @param callable $callback
      * @return $this
      */
-    public function selectXPath(string $xpathQuery, callable $callback) : self
+    public function selectXPath(string $xpathQuery, callable $callback): self
     {
         $domNodeList = $this->getDOMXpath()->query($xpathQuery);
         $this->applyCallback($domNodeList, $callback);
@@ -127,7 +119,7 @@ class HtmlDocument extends \DOMDocument
      * @return $this
      * @throws \Exception
      */
-    public function selectCss(string $cssSelector, callable $callback) : self
+    public function selectCss(string $cssSelector, callable $callback): self
     {
         $xpathQuery = $this->convertCssSelectorToXpathQuery($cssSelector);
         $domNodeList = $this->getDOMXpath()->query($xpathQuery);
@@ -140,7 +132,7 @@ class HtmlDocument extends \DOMDocument
      * @return string
      * @throws \Exception
      */
-    protected function convertCssSelectorToXpathQuery($cssSelector) : string
+    protected function convertCssSelectorToXpathQuery($cssSelector): string
     {
         if (!class_exists('\bdk\CssXpath\CssXpath')) {
             throw new \Exception("If you want to use css selectors then install https://github.com/bkdotcom/CssXpath");
@@ -154,8 +146,7 @@ class HtmlDocument extends \DOMDocument
      */
     protected function applyCallback(\DOMNodeList $domNodeList, callable $callback)
     {
-        foreach ($domNodeList as $domNode)
-        {
+        foreach ($domNodeList as $domNode) {
             /** @var \DOMNode $domNode */
             ($callback)($domNode);
         }
@@ -166,8 +157,7 @@ class HtmlDocument extends \DOMDocument
      */
     public function __toString()
     {
-        $html = $this->saveHtml();
+        $html = $this->domDocument->saveHTML();
         return is_string($html) ? $html : "";
     }
 }
-

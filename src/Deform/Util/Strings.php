@@ -1,4 +1,5 @@
 <?php
+
 namespace Deform\Util;
 
 /**
@@ -17,11 +18,9 @@ class Strings
     {
         if (is_object($object)) {
             $class_name = get_class($object);
-        }
-        elseif (is_string($object)) {
+        } elseif (is_string($object)) {
             $class_name = $object;
-        }
-        else {
+        } else {
             throw new \Exception("Parameter must be an object or class name");
         }
 
@@ -39,10 +38,8 @@ class Strings
      * @param string $separator
      * @return string
      */
-    public static function separateCased(string $camelCasedWord, string $separator='_'): string
+    public static function separateCased(string $camelCasedWord, string $separator = '_'): string
     {
-        return strtolower(preg_replace('/(?<=\\w)([A-Z])/', $separator.'\\1', $camelCasedWord));
+        return strtolower(preg_replace('/(?<=\\w)([A-Z])/', $separator . '\\1', $camelCasedWord));
     }
 }
-
-

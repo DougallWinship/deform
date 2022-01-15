@@ -1,5 +1,5 @@
 # Deform
-Easily define consistent forms which can be subsequently manipulated (or deformed!). 
+Easily define consistent forms in PHP, which can be subsequently manipulated (or deformed!). 
 
 ## Why?
 Forms are repetitive to code.
@@ -13,7 +13,7 @@ Forms are repetitive to code.
 
 ## Layers
 There are 3 layers:
-1. Deform\Html - generate an html tree which can be manipulated
+1. Deform\Html - generate an HTML tree which can be manipulated
 2. Deform\Component - generate various components using Deform\Html
 3. Deform\Form - generate forms using Deform\Component
 
@@ -36,7 +36,7 @@ echo $html;
 </div>
 ```
 
-The html can be manipulated like this:
+The HTML can be manipulated like this:
 ```php
 echo $html->clear()->add('Blue Text')->css('color','blue');
 ```

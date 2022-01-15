@@ -1,17 +1,17 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Deform\Component;
 
 use Deform\Html\Html as Html;
 use Deform\Html\IHtml;
 
-
 class Select extends BaseComponent
 {
     /** @var IHtml */
     public $select;
-
-    public $hasOptGroups=false;
-
+    public $hasOptGroups = false;
     public function setup()
     {
         $this->select = Html::select([
@@ -26,10 +26,8 @@ class Select extends BaseComponent
     {
         $this->select->clear();
         $isAssoc = \Deform\Util\Arrays::isAssoc($options);
-        foreach ($options as $key=>$value) {
-            $this->select->add(
-                Html::option(['value'=> $isAssoc ? $key : $value])->add($value)
-            );
+        foreach ($options as $key => $value) {
+            $this->select->add(Html::option(['value' => $isAssoc ? $key : $value])->add($value));
         }
         return $this;
     }
@@ -38,13 +36,11 @@ class Select extends BaseComponent
     {
         $this->select->clear();
         $this->hasOptGroups = true;
-        foreach ($optgroupOptions as $groupName=>$options) {
-            $optgroup = Html::optgroup(['label'=>$groupName]);
+        foreach ($optgroupOptions as $groupName => $options) {
+            $optgroup = Html::optgroup(['label' => $groupName]);
             $isAssoc = \Deform\Util\Arrays::isAssoc($options);
-            foreach ($options as $key=>$value) {
-                $optgroup->add(
-                    Html::option(['value'=> $isAssoc ? $key : $value])->add($value)
-                );
+            foreach ($options as $key => $value) {
+                $optgroup->add(Html::option(['value' => $isAssoc ? $key : $value])->add($value));
             }
             $this->select->add($optgroup);
         }
@@ -70,22 +66,19 @@ class Select extends BaseComponent
     protected function setSelectedForValues(array $valueArray)
     {
         foreach ($this->select->getChildren() as $child) {
-            if ($child->getTagType()=='optgroup') {
-                foreach($child->getChildren() as $optgroupChild) {
-                    if (in_array($optgroupChild->get('value'),$valueArray)) {
-                        $optgroupChild->set('selected','selected');
-                    }
-                    else {
-                        $child->unset('selected');
+            if ($child->getTagType() == 'optgroup') {
+                foreach ($child->getChildren() as $optgroupChild) {
+                    if (in_array($optgroupChild->get('value'), $valueArray)) {
+                            $optgroupChild->set('selected', 'selected');
+                    } else {
+                                $child->unset('selected');
                     }
                 }
-            }
-            else {
+            } else {
                 $check = $child->get('value');
-                if (in_array($check,$valueArray)) {
-                    $child->set('selected','selected');
-                }
-                else {
+                if (in_array($check, $valueArray)) {
+                    $child->set('selected', 'selected');
+                } else {
                     $child->unset('selected');
                 }
             }

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Deform\Component;
 
 class Submit extends Input
@@ -9,6 +12,6 @@ class Submit extends Input
         $this->autolabel(false);
         $this->type('submit');
         $this->value($this->fieldName);
-        $this->componentContainer->controlOnly=true;
+        $this->componentContainer->controlOnly = true;
     }
 }

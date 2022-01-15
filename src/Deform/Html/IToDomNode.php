@@ -1,4 +1,5 @@
 <?php
+
 namespace Deform\Html;
 
 interface IToDomNode

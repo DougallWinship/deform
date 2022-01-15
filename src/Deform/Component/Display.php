@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Deform\Component;
 
 class Display extends Input
@@ -6,6 +9,6 @@ class Display extends Input
     public function setup()
     {
         parent::setup();
-        $this->input->set('disabled','disabled');
+        $this->input->set('disabled', 'disabled');
     }
 }

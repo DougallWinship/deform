@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Deform\Component;
 
 use Deform\Html\Html as Html;
@@ -13,22 +16,24 @@ use Deform\Html\IHtml;
 class Checkbox extends Input
 {
     public $inputLabel;
-
     public function setup()
     {
         parent::setup();
         $this->type('checkbox');
         $this->value(1);
-        $this->inputLabel = Html::label(['for'=>$this->getId()])->add($this->fieldName);
-        $expectedDataInput = Html::input(["type" => "hidden", "name" => $this->getExpectedDataName(), "value" => $this->fieldName]);
-
+        $this->inputLabel = Html::label(['for' => $this->getId()])->add($this->fieldName);
+        $expectedDataInput = Html::input([
+            "type" => "hidden",
+            "name" => $this->getExpectedDataName(),
+            "value" => $this->fieldName
+        ]);
         $this->control([
             $this->input,
             ' ',
             $this->inputLabel,
             $expectedDataInput,
         ]);
-        $this->componentContainer->disableLabel=true;
+        $this->componentContainer->disableLabel = true;
     }
 
     public function text($text): Checkbox
@@ -39,7 +44,7 @@ class Checkbox extends Input
 
     public function beforeRender()
     {
-        $this->componentContainer->labelTag=false;
+        $this->componentContainer->labelTag = false;
 //        if ($this->inputLabel->isEmpty()) {
 //            $this->inputLabel->add($this->fieldName);
 //        }

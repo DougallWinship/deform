@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Deform\Component;
 
 class SelectMulti extends Select
@@ -6,7 +9,7 @@ class SelectMulti extends Select
     public function setup()
     {
         parent::setup();
-        $this->select->set('multiple','multiple');
+        $this->select->set('multiple', 'multiple');
     }
 
     /**
@@ -14,7 +17,7 @@ class SelectMulti extends Select
      *
      * @return SelectMulti
      */
-    public function setSelected($value) : Select
+    public function setSelected($value): Select
     {
         if (!is_array($value)) {
             $value = [$value];
@@ -23,8 +26,8 @@ class SelectMulti extends Select
         return $this;
     }
 
-    public function getName() : string
+    public function getName(): string
     {
-        return parent::getName()."[]";
+        return parent::getName() . "[]";
     }
 }

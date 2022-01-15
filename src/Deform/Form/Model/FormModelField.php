@@ -8,7 +8,7 @@ class FormModelField
     public $componentDefinition;
     public $validators;
 
-    public function __construct($name, $componentDefinition, $validators=[])
+    public function __construct($name, $componentDefinition, $validators = [])
     {
         $this->name = $name;
         $this->componentDefinition = $componentDefinition;

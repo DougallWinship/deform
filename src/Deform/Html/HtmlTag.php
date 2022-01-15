@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Deform\Html;
 
 /**
@@ -24,7 +27,6 @@ namespace Deform\Html;
  */
 class HtmlTag implements IHtml
 {
-
     /** @var string */
     private static string $dateFormat = "Y-m-d H:i:s";
 
@@ -51,8 +53,8 @@ class HtmlTag implements IHtml
      */
     public function __construct(string $tagName, array $attributes = [])
     {
-        if(!Html::isRegisteredTag($tagName)) {
-            throw new \Exception("Unregistered html tag '".$tagName."'");
+        if (!Html::isRegisteredTag($tagName)) {
+            throw new \Exception("Unregistered html tag '" . $tagName . "'");
         }
         $this->tagName = $tagName;
         $this->attributes = array_merge(self::$defaultAttributesPerTag[$tagName] ?? [], $attributes);
@@ -69,10 +71,9 @@ class HtmlTag implements IHtml
         $this->disallowSelfClosingCheck();
         if (is_array($childNodes)) {
             foreach ($childNodes as $node) {
-                $this->childTags[]= $node;
+                $this->childTags[] = $node;
             }
-        }
-        else {
+        } else {
             $this->childTags[] = $childNodes;
         }
         return $this;
@@ -118,7 +119,7 @@ class HtmlTag implements IHtml
     /**
      * @return bool
      */
-    public function isSelfClosing() : bool
+    public function isSelfClosing(): bool
     {
         return $this->isSelfClosing;
     }
@@ -127,7 +128,7 @@ class HtmlTag implements IHtml
      * @return HtmlTag[]
      * @throws \Exception
      */
-    public function getChildren() : array
+    public function getChildren(): array
     {
         $this->disallowSelfClosingCheck();
         return $this->childTags;
@@ -138,8 +139,18 @@ class HtmlTag implements IHtml
      */
     public function hasChildren()
     {
-        if ($this->isSelfClosing) return false;
+        if ($this->isSelfClosing) {
+            return false;
+        }
         return count($this->childTags);
+    }
+
+    /**
+     * @return bool
+     */
+    public function isEmpty(): bool
+    {
+        return count($this->childTags) === 0;
     }
 
     /**
@@ -171,10 +182,10 @@ class HtmlTag implements IHtml
      */
     public function set(string $name, $arguments): HtmlTag
     {
-        if(is_array($arguments)) {
+        if (is_array($arguments)) {
             $arguments_string = self::implodeAttributeValues($name, $arguments);
             $this->mergeAttributes([$name => $arguments_string]);
-        } elseif(is_string($arguments)) {
+        } elseif (is_string($arguments)) {
             $this->mergeAttributes([$name => $arguments]);
         }
         return $this;
@@ -231,7 +242,7 @@ class HtmlTag implements IHtml
      * @param $name
      * @return string|null
      */
-    public function get($name) : ?string
+    public function get($name): ?string
     {
         return $this->attributes[$name] ?? null;
     }
@@ -245,6 +256,7 @@ class HtmlTag implements IHtml
         return $this->tagName;
     }
 
+
     /**
      * set a single css rule without affecting any others in the style attribute
      *
@@ -257,9 +269,9 @@ class HtmlTag implements IHtml
     {
         $cssParts = isset($this->attributes["style"]) ? explode(";", $this->attributes["style"]) : [];
         $rebuildStyle = [];
-        foreach($cssParts as $cssPart) {
+        foreach ($cssParts as $cssPart) {
             list($rule, $value) = explode(":", $cssPart);
-            if($rule != $setRule) {
+            if ($rule != $setRule) {
                 $rebuildStyle[] = $rule . ":" . $value;
             }
         }
@@ -275,15 +287,14 @@ class HtmlTag implements IHtml
      *
      * @return HtmlTag
      */
-    public function mergeAttributes(array $attributes) : HtmlTag
+    public function mergeAttributes(array $attributes): HtmlTag
     {
         $this->attributes = array_merge_recursive($this->attributes, $attributes);
         return $this;
     }
 
-
     /**
-     * recursively generates the html string for this tag and all it's children
+     * recursively (via string coercion) generates the html string for this tag and all it's children
      *
      * @return string
      */
@@ -300,9 +311,9 @@ class HtmlTag implements IHtml
                 }
                 $html .= "</" . $this->tagName . ">";
             }
-        }
-        catch(\Exception $exc) {
-            // todo - Log and error ... have to be careful about exceptions within __toString
+        } catch (\Exception $exc) {
+            // todo: - how best to present this problem? log and error?
+            // we have to be careful about exceptions within __toString
             return "";
         }
         return $html;
@@ -321,31 +332,29 @@ class HtmlTag implements IHtml
      */
     public static function attributesString(array $attributes): string
     {
-        if(!count($attributes)) {
+        if (!count($attributes)) {
             return "";
         }
 
         $buildAttributes = [];
-        foreach($attributes as $key => $value) {
-            if(substr($key, 0, 6) == "force_") {
+        foreach ($attributes as $key => $value) {
+            if (substr($key, 0, 6) == "force_") {
                 $key = substr($key, 6);
                 $value = is_array($value) ? end($value) : $value;
-            } elseif($value === 'selected' || $value === 'checked') {
+            } elseif ($value === 'selected' || $value === 'checked') {
                 $key = $value;
-            } elseif(is_array($value)) {
+            } elseif (is_array($value)) {
                 $value = self::implodeAttributeValues($key, $value);
             }
-            $buildAttribute=strtolower($key);
-            if (is_object($value) && method_exists($value,"getSelectOptionText")) {
+            $buildAttribute = strtolower($key);
+            if (is_object($value) && method_exists($value, "getSelectOptionText")) {
                 $useValue = $value->getSelectOptionText();
-            }
-            elseif ($value instanceof \DateTime) {
+            } elseif ($value instanceof \DateTime) {
                 $useValue = $value->format(self::$dateFormat);
-            }
-            else {
+            } else {
                 $useValue = $value;
             }
-            $buildAttribute.="='" . str_replace("'", "&apos;", $useValue) . "'";
+            $buildAttribute .= "='" . str_replace("'", "&apos;", $useValue) . "'";
             $buildAttributes[$key] =  $buildAttribute;
         }
 
@@ -363,21 +372,20 @@ class HtmlTag implements IHtml
      */
     public static function implodeAttributeValues(string $key, array $values): string
     {
-        if (substr($key,0,2)=='on') {
+        if (substr($key, 0, 2) == 'on') {
             // assume it's onclick, onsubmit, onhover, etc ... it's up to the user to get these right!
             return implode(";", $values);
-        }
-        elseif ($key=='style') {
+        } elseif ($key == 'style') {
             return implode(";", $values);
-        }
-        elseif ($key=='class') {
+        } elseif ($key == 'class') {
             return implode(" ", $values);
-        }
-        else {
+        } else {
             // for any other attribute types just try to use the last one found...
             $lastElement = end($values);
             if (!is_scalar($lastElement)) {
-                throw new \Exception("Unexpected non string attribute type for key='" . $key . "' = ".print_r($lastElement));
+                throw new \Exception(
+                    "Unexpected non string attribute type for key='" . $key . "' = " . print_r($lastElement)
+                );
             }
             return strval($lastElement);
         }
@@ -421,16 +429,14 @@ class HtmlTag implements IHtml
      * @param string $selector
      * @return array
      */
-    public function findNodes(string $selector) : array
+    public function findNodes(string $selector): array
     {
         $nodes = [];
-        if ($selector===$this->tagName) {
+        if ($selector === $this->tagName) {
             $nodes[] = $this;
-        }
-        elseif (isset($this->attributes['id']) && $selector=='#'.$this->attributes['id']) {
+        } elseif (isset($this->attributes['id']) && $selector == '#' . $this->attributes['id']) {
             $nodes[] = $this;
-        }
-        elseif (isset($this->attributes['class'])) {
+        } elseif (isset($this->attributes['class'])) {
             $classes = explode(' ', $this->attributes['class']);
             foreach ($classes as $checkClass) {
                 if (isset($this->attributes['class']) && $selector == '.' . $checkClass) {
@@ -439,7 +445,7 @@ class HtmlTag implements IHtml
             }
         }
         foreach ($this->childTags as $childTag) {
-            if ($childTag instanceof ISelectableNodes){
+            if ($childTag instanceof ISelectableNodes) {
                 $childNodes = $childTag->findNodes($selector);
                 $nodes = array_merge($nodes, $childNodes);
             }
@@ -447,11 +453,12 @@ class HtmlTag implements IHtml
         return $nodes;
     }
 
+
     /**
      * @param \DOMDocument $domDocument
      * @return \DOMElement|false
      */
-    public function getDomNode(\DOMDocument $domDocument) : \DOMNode
+    public function getDomNode(\DOMDocument $domDocument): \DOMNode
     {
         $node = $domDocument->createElement($this->tagName);
         foreach ($this->attributes as $key => $value) {
@@ -460,11 +467,10 @@ class HtmlTag implements IHtml
         foreach ($this->childTags as $child) {
             if ($child instanceof IToDomNode) {
                 $node->appendChild($child->getDomNode($domDocument));
-            } else if (is_string($child)) {
+            } elseif (is_string($child)) {
                 $node->appendChild($domDocument->createTextNode($child));
             }
         }
         return $node;
     }
-
 }

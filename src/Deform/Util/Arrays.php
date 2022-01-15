@@ -1,4 +1,5 @@
 <?php
+
 namespace Deform\Util;
 
 class Arrays

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Deform\Component;
 
 use Deform\Html\Html as Html;
@@ -13,8 +16,7 @@ class Button extends BaseComponent
      * @var IHtml input of type button
      */
     public $button;
-
-    /**
+/**
      * @throws \Exception
      */
     public function setup()
@@ -33,7 +35,7 @@ class Button extends BaseComponent
      */
     public function value($value): Button
     {
-        $this->button->set('value',$value);
+        $this->button->set('value', $value);
         return $this;
     }
 

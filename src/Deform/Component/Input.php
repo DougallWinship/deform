@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 namespace Deform\Component;
 
 use Deform\Html\Html as Html;
@@ -8,7 +11,6 @@ class Input extends BaseComponent
 {
     /** @var IHtml */
     public $input;
-
     public function setup()
     {
         $this->input = Html::input([
@@ -17,13 +19,12 @@ class Input extends BaseComponent
             'name' => $this->getName(),
             'autocomplete' => 'off'
         ]);
-
         $this->control($this->input);
     }
 
     public function type($type): Input
     {
-        $this->input->set('type',$type);
+        $this->input->set('type', $type);
         return $this;
     }
 
