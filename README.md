@@ -42,10 +42,10 @@ echo $html->clear()->add('Blue Text')->css('color','blue');
 ```
 ...which will output:
 ```html
-<div style="border:10px solid red;color:blue" class="outerdiv" onclick="alert('div')">Blue Text</div>
+<div style="border:10px solid red;color:blue" class="outerdiv">Blue Text</div>
 ```
 
-Or via a (very) simpler selector:
+Or via a (very) simple selector system:
 ```php
 echo $html->deform('.blue-text',function(\Deform\Html\HtmlTag $node) {
     $node->clear()->css('color','green')->clear()->add('Green Text');

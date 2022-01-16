@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Deform\Html;
 
+use Deform\Util\Strings;
+
 /**
  * generate html in a consistent fashion using chaining.
  *
@@ -142,8 +144,8 @@ namespace Deform\Html;
  */
 class Html
 {
-    /** @var \ReflectionClass */
-    private static $reflectionSelf;
+    /** @var \ReflectionClass|null */
+    private static ?\ReflectionClass $reflectionSelf = null;
 
     /** @var array */
     private static array $selfClosingTags = [];
@@ -179,62 +181,58 @@ class Html
         return new HtmlTag($tag, $attributes);
     }
 
+    /**
+     * @throws \Exception
+     */
     private static function identifyTags()
     {
         if (self::$reflectionSelf === null) {
             self::$reflectionSelf = new \ReflectionClass(self::class);
             $comments = explode(PHP_EOL, self::$reflectionSelf->getDocComment());
-            array_walk($comments, [self::class, 'registerStaticMethodSignatures']);
+            array_walk($comments, function ($comment) {
+                $signature = Strings::extractStaticMethodSignature($comment);
+                if (is_array($signature)) {
+                    if (
+                        isset($signature['comment_parts'][0]) &&
+                        strtolower($signature['comment_parts'][0]) === 'empty'
+                    ) {
+                        self::$selfClosingTags[] = $signature['methodName'];
+                    } else {
+                        self::$standardTags[] = $signature['methodName'];
+                    }
+                }
+            });
         }
     }
 
     /**
-     * @param string $comment
+     * @param string $tag
+     * @return bool
      * @throws \Exception
      */
-    private static function registerStaticMethodSignatures(string $comment)
-    {
-        $trimmed = ltrim(trim(preg_replace('/\s+/', ' ', $comment)), '* ');
-        $parts = explode(" ", $trimmed);
-        if (count($parts) >= 4 && $parts[0] === '@method' && $parts[1] === 'static') {
-            $result = preg_match('/(\S+)\s+(\S+)\s+(\S+)\s+(.*?)\((.*?)\)(\s*)(\S*)/', $trimmed, $matches);
-            if (!$result) {
-                throw new \Exception("Failed to parse annotation : " . $trimmed);
-            }
-            list(
-                $discardAll,
-                $discardMethod,
-                $discardStatic,
-                $className,
-                $methodName,
-                $params,
-                $discardWhitespace,
-                $isEmpty
-            ) = $matches;
-            if ($className !== 'HtmlTag') {
-                throw new \Exception("Unexpected class '" . $className . "' in annotations : " . $trimmed);
-            }
-            if (strtolower(trim($isEmpty)) == 'empty') {
-                self::$selfClosingTags[] = $methodName;
-            } else {
-                self::$standardTags[] = $methodName;
-            }
-        }
-    }
-
-    public static function isSelfClosedTag($tag)
+    public static function isSelfClosedTag(string $tag): bool
     {
         self::identifyTags();
         return in_array($tag, self::$selfClosingTags);
     }
 
-    public static function isStandardTag($tag)
+    /**
+     * @param string $tag
+     * @return bool
+     * @throws \Exception
+     */
+    public static function isStandardTag(string $tag): bool
     {
         self::identifyTags();
         return in_array($tag, self::$standardTags);
     }
 
-    public static function isRegisteredTag($tag)
+    /**
+     * @param string $tag
+     * @return bool
+     * @throws \Exception
+     */
+    public static function isRegisteredTag(string $tag): bool
     {
         return self::isSelfClosedTag($tag) || self::isStandardTag($tag);
     }

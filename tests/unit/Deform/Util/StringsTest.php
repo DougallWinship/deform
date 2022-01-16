@@ -1,6 +1,8 @@
 <?php
 namespace Deform\Util;
 
+use Deform\Component\Button;
+
 class StringsTest extends \Codeception\Test\Unit
 {
     /**
@@ -20,8 +22,21 @@ class StringsTest extends \Codeception\Test\Unit
 
     public function testGetClassWithoutNamespace()
     {
-        $classWithoutNamespace = Strings::getClassWithoutNamespace(Strings::class);
-        $this->assertEquals("Strings", $classWithoutNamespace);
+        $this->assertEquals("Strings", Strings::getClassWithoutNamespace(Strings::class));
+        $this->assertEquals("Exception", Strings::getClassWithoutNamespace(\Exception::class));
+        $this->assertEquals("stdClass", Strings::getClassWithoutNamespace(new \stdClass()));
+    }
+
+    public function testGetClassWithoutNamespaceFail1()
+    {
+        $this->expectException(\Exception::class);
+        Strings::getClassWithoutNamespace("not a class name");
+    }
+
+    public function testGetClassWithoutNamespaceFail2()
+    {
+        $this->expectException(\Exception::class);
+        Strings::getClassWithoutNamespace(1);// not an object or string
     }
 
     public function testSeparateCased()
@@ -40,5 +55,39 @@ class StringsTest extends \Codeception\Test\Unit
         $this->assertEquals("ThisIsATest", Strings::camelise("___this_is_a_test"));
         $this->assertEquals("ThisIsATest", Strings::camelise("this_is_a_test____"));
         $this->assertEquals("ThisIsATest", Strings::camelise("this___is______a_test"));
+    }
+
+    public function testTrimInternal()
+    {
+        $this->assertEquals('this is a test', Strings::trimInternal('this is a test'));
+        $this->assertEquals('this is a test', Strings::trimInternal('  this is a test'));
+        $this->assertEquals('this is a test', Strings::trimInternal('this is a test  '));
+        $this->assertEquals('this is a test', Strings::trimInternal('   this is a test  '));
+        $this->assertEquals('this is a test', Strings::trimInternal('this   is   a   test'));
+        $this->assertEquals('this is a test', Strings::trimInternal('    this   is   a   test'));
+        $this->assertEquals('this is a test', Strings::trimInternal('this   is   a   test    '));
+        $this->assertEquals('this is a test', Strings::trimInternal('     this   is   a   test    '));
+    }
+
+    public function testExtractStaticMethodSignature()
+    {
+        $this->assertNull(Strings::extractStaticMethodSignature("no * at start"));
+
+        $this->assertNull(Strings::extractStaticMethodSignature(" * @method static foo bar"));
+
+        $this->assertEquals([
+            'className'=>'HtmlTag',
+            'methodName'=>'a',
+            'params'=>'array $attributes=[]',
+            'comment'=>'',
+        ],Strings::extractStaticMethodSignature(' * @method static HtmlTag a(array $attributes=[])'));
+
+        $this->assertEquals([
+            'className'=>'HtmlTag',
+            'methodName'=>'a',
+            'params'=>'array $attributes=[]',
+            'comment'=>'method comment',
+            'comment_parts' => ['method','comment']
+        ],Strings::extractStaticMethodSignature(' * @method static HtmlTag a(array $attributes=[]) method comment'));
     }
 }

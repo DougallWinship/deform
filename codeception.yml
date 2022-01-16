@@ -18,3 +18,7 @@ extensions:
             router: tests/_data/public/index.php
             startDelay: 1
             phpIni: tests/php.ini
+coverage:
+    enabled: true
+    include:
+        - src/*

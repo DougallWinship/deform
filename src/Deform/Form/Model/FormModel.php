@@ -5,10 +5,8 @@ namespace Deform\Form\Model;
 use Deform\Component\BaseComponent;
 use Deform\Component\ComponentFactory;
 use Deform\Html\Html;
-use Deform\Html\HtmlDocument;
 use Deform\Html\HtmlTag;
 use Deform\Html\IHtml;
-use http\Exception\BadMethodCallException;
 
 /**
  * @method \Deform\Component\Button addButton(string $field, array $options=[])

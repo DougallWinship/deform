@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Deform\Component;
 
+use Deform\Util\Strings;
+
 /**
  * component factory to ensure auto-completion support
  *
@@ -101,7 +103,19 @@ class ComponentFactory
     }
 
     /**
+     * @param string $componentName
+     * @return bool
+     * @throws \Exception
+     */
+    public static function isRegisteredComponent(string $componentName): bool
+    {
+        self::identifyComponents();
+        return in_array($componentName, self::$components);
+    }
+
+    /**
      * analyses the phpdoc element from this class
+     * @throws \Exception
      */
     private static function identifyComponents()
     {
@@ -111,35 +125,12 @@ class ComponentFactory
                 self::$reflectionSelf = new \ReflectionClass(self::class);
             }
             $comments = explode(PHP_EOL, self::$reflectionSelf->getDocComment());
-            array_walk($comments, [self::class,'registerStaticMethodSignatures']);
-        }
-    }
-
-    /**
-     * @param string $componentName
-     * @return bool
-     */
-    public static function isRegisteredComponent(string $componentName): bool
-    {
-        self::identifyComponents();
-        return in_array($componentName, self::$components);
-    }
-
-    /**
-     * analyses phpdoc static method elements from this class
-     * @param string $comment
-     */
-    private static function registerStaticMethodSignatures(string $comment)
-    {
-        $trimmed = ltrim(trim(preg_replace('/\s+/', ' ', $comment)), '* ');
-        $parts = explode(" ", $trimmed);
-        if (count($parts) >= 4 && $parts[0] === '@method' && $parts[1] === 'static') {
-            if ($pos = strpos($parts[3], '(')) {
-                $componentName = substr($parts[3], 0, $pos);
-            } else {
-                $componentName = $parts[3];
-            }
-            self::$components[] = $componentName;
+            array_walk($comments, function ($comment) {
+                $signature = Strings::extractStaticMethodSignature($comment);
+                if ($signature) {
+                    self::$components[] = $signature['methodName'];
+                }
+            });
         }
     }
 }

@@ -30,6 +30,12 @@ class HtmlTest extends \Codeception\Test\Unit
         $this->assertInstanceOf(HtmlTag::class, $divTag );
     }
 
+    public function testCallStaticGoodTagBadAttributes()
+    {
+        $this->expectException(\Exception::class);
+        Html::div('not an array');
+    }
+
     public function testIsSelfClosedTag()
     {
         $this->assertFalse(Html::isSelfClosedTag('div'));
@@ -50,5 +56,4 @@ class HtmlTest extends \Codeception\Test\Unit
         $this->assertTrue(Html::isRegisteredTag('img'));
         $this->assertFalse(Html::isRegisteredTag('foo'));
     }
-
 }

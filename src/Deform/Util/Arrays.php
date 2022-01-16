@@ -27,7 +27,7 @@ class Arrays
      * @return array
      * @throws \Exception
      */
-    public static function extractKeys(array $data, array $keys, bool $strict=false) : array
+    public static function extractKeys(array $data, array $keys, bool $strict = false): array
     {
         $isAssoc = self::isAssoc($keys);
 
@@ -39,8 +39,11 @@ class Arrays
 
         $results = array_intersect_key($data, $extractKeys);
         $missingKeys = array_flip(array_diff_key($extractKeys, $results));
-        if ($strict && count($missingKeys)>0) {
-            throw new \Exception("The following fields were specified which were not found in the data : ".implode(", ", $missingKeys));
+        if ($strict && count($missingKeys) > 0) {
+            throw new \Exception(
+                "The following fields were specified which were not found in the data : "
+                . implode(", ", $missingKeys)
+            );
         }
 
         if (!$isAssoc) {
@@ -51,8 +54,8 @@ class Arrays
         }
 
         $newResults = [];
-        foreach ($keys as $oldKey=>$newKey) {
-            $newResults[$newKey] = array_key_exists($oldKey,$results) ? $results[$oldKey] : null;
+        foreach ($keys as $oldKey => $newKey) {
+            $newResults[$newKey] = array_key_exists($oldKey, $results) ? $results[$oldKey] : null;
         }
         return $newResults;
     }

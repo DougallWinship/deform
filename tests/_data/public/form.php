@@ -1,7 +1,7 @@
-<?php if (isset($_POST) && count($_POST)) { ?>
+<?php if (isset($_POST) && count($_POST)>0) { ?>
     <pre data-method="post"><?= serialize($_POST); ?></pre>
-<?php } elseif (isset($_GET) && count($_GET)) { ?>
-    <pre data-method="get"><?= serialize($_POST); ?></pre>
+<?php } elseif (isset($_GET) && count($_GET)>0) { ?>
+    <pre data-method="get"><?= serialize($_GET); ?></pre>
 <?php } ?>
 
 <?php

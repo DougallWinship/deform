@@ -64,11 +64,13 @@ else {
         }
     }
     if ($contents===null) {
+        unset($_GET['path']);// no idea why php is making this a thing
         ob_start();
         include $file;
         $contents = ob_get_clean();
     }
 }
+
 renderLayout($path, $contents);
 
 function renderLayout($title, $contents) {
