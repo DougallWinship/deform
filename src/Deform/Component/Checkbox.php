@@ -8,14 +8,17 @@ use Deform\Html\Html as Html;
 use Deform\Html\IHtml;
 
 /**
- * @method IHtml label(string $text)
- * @method Checkbox inputCheckbox(array $options)
- * @method IHtml errorDiv(array $options)
- * @method IHtml component_content_div(array $options)
+ * @method Checkbox checked(string $checked)
+ * @persistAttribute inputLabelText
  */
 class Checkbox extends Input
 {
+    public string $inputLabelText;
     public $inputLabel;
+
+    /**
+     * @throws \Exception
+     */
     public function setup()
     {
         parent::setup();
@@ -27,7 +30,7 @@ class Checkbox extends Input
             "name" => $this->getExpectedDataName(),
             "value" => $this->fieldName
         ]);
-        $this->control([
+        $this->control($this->input, [
             $this->input,
             ' ',
             $this->inputLabel,
@@ -38,15 +41,8 @@ class Checkbox extends Input
 
     public function text($text): Checkbox
     {
+        $this->inputLabelText = $text;
         $this->inputLabel->reset($text);
         return $this;
-    }
-
-    public function beforeRender()
-    {
-        $this->componentContainer->labelTag = false;
-//        if ($this->inputLabel->isEmpty()) {
-//            $this->inputLabel->add($this->fieldName);
-//        }
     }
 }

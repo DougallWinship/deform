@@ -5,13 +5,17 @@ declare(strict_types=1);
 namespace Deform\Component;
 
 use Deform\Html\Html as Html;
+use Deform\Html\HtmlTag;
 
 /**
+ * @persistAttribute currencyLabelValue
  */
 class Currency extends BaseComponent
 {
-    public $currencyLabel;
-/**
+    public string $currencyLabelValue;
+    public HtmlTag $currencyLabel;
+
+    /**
      * @throws \Exception
      */
     public function setup()
@@ -22,9 +26,11 @@ class Currency extends BaseComponent
             'name' => $this->getName(),
             'id' => $this->getId()
         ]);
-        $this->addControl($this->currencyLabel);
-        $this->addControl(' ');
-        $this->addControl($currencyInput);
+        $this->control([
+            $this->currencyLabel,
+            ' ',
+            $currencyInput
+        ]);
     }
 
     /**
@@ -33,14 +39,8 @@ class Currency extends BaseComponent
      */
     public function currency(string $currency): Currency
     {
+        $this->currencyLabelValue = $currency;
         $this->currencyLabel->add($currency);
         return $this;
-    }
-
-    public function beforeRender()
-    {
-        if ($this->currencyLabel->isEmpty()) {
-            $this->currencyLabel->add('&pound;');
-        }
     }
 }

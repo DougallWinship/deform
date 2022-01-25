@@ -5,16 +5,28 @@ declare(strict_types=1);
 namespace Deform\Component;
 
 use Deform\Html\Html as Html;
-use Deform\Html\IHtml;
+use Deform\Html\HtmlTag;
 
-class Input extends BaseComponent
+/**
+ * @method Input autocomplete(bool $onOff)
+ * @method Input autofocus(bool $onOff)
+ * @method Input dirname(string $dir)
+ * @method Input disabled(bool $onOff)
+ * @method Input readonly(bool $readonly)
+ * @method Input required(bool $required)
+ * @method Input value(int|string $value)
+ */
+abstract class Input extends BaseComponent
 {
-    /** @var IHtml */
-    public $input;
+    /** @var HtmlTag */
+    public HtmlTag $input;
+
+    /**
+     * @throws \Exception
+     */
     public function setup()
     {
         $this->input = Html::input([
-            'type' => 'text',
             'id' => $this->getId(),
             'name' => $this->getName(),
             'autocomplete' => 'off'
@@ -22,15 +34,14 @@ class Input extends BaseComponent
         $this->control($this->input);
     }
 
-    public function type($type): Input
+    /**
+     * @param string $type
+     * @return $this
+     * @throws \Exception
+     */
+    public function type(string $type)
     {
         $this->input->set('type', $type);
-        return $this;
-    }
-
-    public function value($value): Input
-    {
-        $this->input->set('value', $value);
         return $this;
     }
 }

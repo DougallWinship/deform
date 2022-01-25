@@ -177,6 +177,7 @@ class HtmlTag implements IHtml
      * explicit setter to allow avoiding the magic!
      * @param string $name
      * @param string|array $arguments
+     * @param bool $onlySetIfExists
      * @return HtmlTag
      * @throws \Exception
      */
@@ -187,6 +188,34 @@ class HtmlTag implements IHtml
             $this->mergeAttributes([$name => $arguments_string]);
         } elseif (is_string($arguments)) {
             $this->mergeAttributes([$name => $arguments]);
+        }
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     * @param string|array $arguments
+     * @return $this
+     * @throws \Exception
+     */
+    public function setIfExists(string $name, $arguments): HtmlTag
+    {
+        if (array_key_exists($name, $this->attributes)) {
+            $this->set($name, $arguments);
+        }
+        return $this;
+    }
+
+
+    /**
+     * @param array $attributes
+     * @return HtmlTag
+     * @throws \Exception
+     */
+    public function setMany(array $attributes): HtmlTag
+    {
+        foreach ($attributes as $name => $arguments) {
+            $this->set($name, $arguments);
         }
         return $this;
     }
@@ -289,7 +318,7 @@ class HtmlTag implements IHtml
      */
     public function mergeAttributes(array $attributes): HtmlTag
     {
-        $this->attributes = array_merge_recursive($this->attributes, $attributes);
+        $this->attributes = array_merge($this->attributes, $attributes);
         return $this;
     }
 

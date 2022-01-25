@@ -6,16 +6,21 @@ namespace Deform\Component;
 
 use Deform\Html\Html;
 use Deform\Html\IHtml;
+use Deform\Util\IToString;
+use Deform\Util\Strings;
 
-abstract class BaseComponent implements IHtml
+abstract class BaseComponent implements IToString
 {
     public const EXPECTED_DATA_FIELD = "expected_data";
 
     /** @var bool whether to use auto labelling by default */
     public static bool $useAutoLabelling = true;
 
-    /** @var string */
-    protected string $namespace;
+    /** @var \ReflectionProperty[] */
+    private static array $registeredProperties = [];
+
+    /** @var null|string */
+    protected ?string $namespace = null;
 
     /** @var string field name for this value */
     protected string $fieldName;
@@ -38,15 +43,21 @@ abstract class BaseComponent implements IHtml
     /** @var bool */
     private $autoLabel;
 
+    /** @var bool */
+    protected $requiresMultiformEncoding = false;
+
+    /** @var \ReflectionClass */
+    private static \ReflectionClass $reflectionSelf;
+
     /**
      * protected to prevent direct instantiation
      * @see ComponentFactory use this instead
-     * @param string $namespace
+     * @param string|null $namespace
      * @param string $fieldName
      * @param array $attributes
      * @throws \Exception
      */
-    protected function __construct(string $namespace, string $fieldName, array $attributes = [])
+    protected function __construct(?string $namespace, string $fieldName, array $attributes = [])
     {
         $this->namespace = $namespace;
         $this->fieldName = $fieldName;
@@ -64,7 +75,7 @@ abstract class BaseComponent implements IHtml
      */
     public function tooltip(string $tooltip): BaseComponent
     {
-        $this->componentContainer->tooltip = $tooltip;
+        $this->componentContainer->setTooltip($tooltip);
         return $this;
     }
 
@@ -75,7 +86,17 @@ abstract class BaseComponent implements IHtml
      */
     public function label(string $label): BaseComponent
     {
-        $this->componentContainer->labelTag = Html::label(['style' => 'margin-bottom:0'])->add($label);
+        $this->componentContainer->setLabel($label);
+        return $this;
+    }
+
+    /**
+     * @param $hint string
+     * @return $this
+     */
+    public function hint(string $hint): BaseComponent
+    {
+        $this->componentContainer->setHint($hint);
         return $this;
     }
 
@@ -91,10 +112,18 @@ abstract class BaseComponent implements IHtml
 
     /**
      * @param IHtml|array $control
+     * @param array $controlTagDecorator
      * @return $this
+     * @throws \Exception
      */
-    public function control($control): BaseComponent
+    public function control($control, array $controlTagDecorator = []): BaseComponent
     {
+        if (count($controlTagDecorator) > 0) {
+            if (!in_array($control, $controlTagDecorator, true)) {
+                throw new \Exception("The control tag is not contained in the control tag wrapper!");
+            }
+            $this->componentContainer->controlTagDecorator = $controlTagDecorator;
+        }
         $this->componentContainer->controlTag = $control;
         return $this;
     }
@@ -122,15 +151,6 @@ abstract class BaseComponent implements IHtml
         return $this;
     }
 
-    /**
-     * @param $hint string
-     * @return $this
-     */
-    public function hint(string $hint): BaseComponent
-    {
-        $this->componentContainer->hintTag = $hint;
-        return $this;
-    }
 
     /**
      * @param $error string
@@ -138,23 +158,54 @@ abstract class BaseComponent implements IHtml
      */
     public function error(string $error): BaseComponent
     {
-        $this->componentContainer->errorTag = $error;
+        $this->componentContainer->setError($error);
         return $this;
     }
 
+    /**
+     * @param string $namespace
+     * @return BaseComponent
+     * @throws \Exception
+     */
+    public function setNamespace(string $namespace): BaseComponent
+    {
+        if ($this->namespace != $namespace) {
+            $this->namespace = $namespace;
+            $newId = self::generateId($namespace, $this->fieldName);
+            $newName = self::generateName($namespace, $this->fieldName);
+            $this->componentContainer->changeNamespaceAttributes($newId, $newName);
+        }
+        return $this;
+    }
+
+    /**
+     * @param \DOMDocument $document
+     * @return mixed
+     * @throws \Exception
+     */
     public function getDomNode(\DOMDocument $document)
     {
         return Html::getDOMDocument($this->getHtmlTag());
     }
 
+    /**
+     * @return IHtml
+     * @throws \Exception
+     */
     public function getHtmlTag(): IHtml
     {
         if ($this->autoLabel && !$this->componentContainer->labelTag) {
             $this->componentContainer->labelTag = Html::label([])->add($this->fieldName);
         }
-        return $this->componentContainer->getHtmlTag($this->namespace . '-' . $this->fieldName . '-container');
+        $containerId = $this->namespace !== null
+            ? $this->namespace . '-' . $this->fieldName . '-container'
+            : $this->fieldName . '-container';
+        return $this->componentContainer->generateHtmlTag($containerId, $this->attributes);
     }
 
+    /**
+     * @return string
+     */
     public function __toString(): string
     {
         try {
@@ -202,6 +253,7 @@ abstract class BaseComponent implements IHtml
     /**
      * @param string $basicSelector
      * @return array
+     * @throws \Exception
      */
     public function findNodes(string $basicSelector): array
     {
@@ -210,48 +262,162 @@ abstract class BaseComponent implements IHtml
         return $htmlTag->findNodes($basicSelector);
     }
 
+    /**
+     * @return bool
+     */
+    public function requiresMultiformEncoding()
+    {
+        return $this->requiresMultiformEncoding;
+    }
+
     // static methods
 
     /**
-     * @param $namespace string
+     * @param $namespace null|string
      * @param $field string
      * @return string
      */
-    protected static function generateName(string $namespace, string $field): string
+    protected static function generateName(?string $namespace, string $field): string
     {
-        return $namespace . "[" . $field . "]";
+        return $namespace !== null
+            ? $namespace . "[" . $field . "]"
+            : $field;
     }
 
     /**
-     * @param $namespace string
+     * @param $namespace null|string
      * @param $field string
      * @return string
      * @throws \Exception
      */
-    protected static function generateId(string $namespace, string $field): string
+    protected static function generateId(?string $namespace, string $field): string
     {
         $classWithoutNamespace = \Deform\Util\Strings::getClassWithoutNamespace(get_called_class());
-        return strtolower($classWithoutNamespace) . '-' . $namespace . '-' . $field;
+        return strtolower($classWithoutNamespace) . ($namespace !== null ? '-' . $namespace : '') . '-' . $field;
     }
 
     /**
-     * @param $namespace string
+     * @param null|string $namespace
      * @return string
      */
-    protected static function generateExpectedDataName(string $namespace): string
+    protected static function generateExpectedDataName(?string $namespace): string
     {
-        return $namespace . "[" . self::EXPECTED_DATA_FIELD . "][]";
+
+        return $namespace !== null
+            ?  $namespace . "[" . self::EXPECTED_DATA_FIELD . "][]"
+            : self::EXPECTED_DATA_FIELD . "[]";
     }
 
+    /**
+     * you can indeed do dumb things with this
+     * @param string $name
+     * @param array $arguments
+     * @return BaseComponent
+     */
+    public function __call(string $name, array $arguments)
+    {
+        if (count($arguments) !== 1) {
+            throw new \InvalidArgumentException(
+                "Method " . get_class($this) . "::" . $name . " only accepts a single argument"
+            );
+        }
+        $this->attributes[$name] = $arguments[0];
+        return $this;
+    }
+
+    /**
+     * @return array
+     * @throws \ReflectionException
+     */
     public function toArray(): array
     {
-        return [
+        return array_filter([
             'class' => get_class($this),
-            'namespace' => $this->namespace,
-            'name' => $this->name,
-            'id' => $this->id,
-            'autolabel' => $this->autoLabel,
-            'container' => $this->componentContainer !== null
-        ];
+            'name' => $this->fieldName,
+            'properties' => $this->getRegisteredPropertyValues(),
+            'container' => $this->componentContainer->toArray(),
+            'attributes' => $this->attributes,
+        ]);
+    }
+
+    public function setAttributes($attributes)
+    {
+        $this->componentContainer->setControlAttributes($attributes);
+    }
+
+    public function setContainerAttributes($attributes)
+    {
+        $this->componentContainer->setContainerAttributes($attributes);
+    }
+
+    /**
+     * @return array
+     * @throws \ReflectionException
+     */
+    private function getRegisteredPropertyValues(): array
+    {
+        $propertyValues = [];
+        $reflectionProperties = self::getRegisteredReflectionProperties();
+        foreach ($reflectionProperties as $propertyName => $reflectionProperty) {
+            $propertyValues[$propertyName] = $reflectionProperty->getValue($this);
+        }
+        return $propertyValues;
+    }
+
+    /**
+     * @param array $properties
+     * @throws \ReflectionException
+     */
+    public function setRegisteredPropertyValues(array $properties)
+    {
+        $reflectionProperties = self::getRegisteredReflectionProperties();
+        foreach ($properties as $propertyName => $setPropertyValue) {
+            if (!isset($reflectionProperties[$propertyName])) {
+                throw new \Exception("There is no registered property '" . $propertyName . "'");
+            }
+            $reflectionProperties[$propertyName]->setValue($this, $setPropertyValue);
+        }
+    }
+
+    /**
+     * @return array|\ReflectionProperty[]
+     * @throws \ReflectionException
+     */
+    private static function getRegisteredReflectionProperties(): array
+    {
+        $thisClass = get_called_class();
+        if (!isset(self::$registeredProperties[$thisClass])) {
+            $reflectionSelf = new \ReflectionClass($thisClass);
+            $properties = [];
+            $comments = $reflectionSelf->getDocComment();
+            if ($comments) {
+                $commentLines = explode(PHP_EOL, $comments);
+                array_walk($commentLines, function ($comment) use (&$properties, $reflectionSelf) {
+                    $commentParts = explode(' ', Strings::trimInternal($comment));
+                    if (count($commentParts) >= 2 && $commentParts[1] == '@persistAttribute') {
+                        $propertyName = $commentParts[2];
+                        if ($reflectionSelf->hasProperty($propertyName)) {
+                            $properties[$commentParts[2]] = $reflectionSelf->getProperty($propertyName);
+                        } else {
+                            throw new \Exception(
+                                "Failed to find property $" . $propertyName .
+                                " for class " . get_class($this) .
+                                " for annotation : " . $comment
+                            );
+                        }
+                    }
+                });
+            }
+            self::$registeredProperties[$thisClass] = $properties;
+        }
+        return self::$registeredProperties[$thisClass];
+    }
+
+    /**
+     * hydrate the component using its properties
+     */
+    public function hydrate()
+    {
+       //override to do something useful!
     }
 }

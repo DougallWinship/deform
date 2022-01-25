@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Deform\Form;
 
 use Deform\Component\ComponentFactory;

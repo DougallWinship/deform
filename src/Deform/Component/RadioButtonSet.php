@@ -7,10 +7,14 @@ namespace Deform\Component;
 use Deform\Html\Html as Html;
 use Deform\Html\HtmlTag;
 
+/**
+ * @persistAttribute radioButtonInputsByValue
+ */
 class RadioButtonSet extends BaseComponent
 {
     /** @var HtmlTag[] */
-    private $radioButtonInputsByValue = [];
+    private array $radioButtonInputsByValue = [];
+
     public function setup()
     {
     }

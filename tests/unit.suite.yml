@@ -7,4 +7,12 @@ modules:
     enabled:
         - Asserts
         - \Helper\Unit
+        - Db:
+            dsn: 'mysql:host=localhost;dbname=deform-test-db'
+            user: 'root'
+            password: 'root'
+            dump: tests/_data/dump.sql
+            populate: true
+            cleanup: true
+            populator: 'mysql --login-path=local $dbname < $dump'
     step_decorators: ~

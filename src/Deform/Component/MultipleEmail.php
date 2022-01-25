@@ -5,13 +5,12 @@ declare(strict_types=1);
 namespace Deform\Component;
 
 /**
- *
  */
-class Password extends Input
+class MultipleEmail extends Email
 {
     public function setup()
     {
         parent::setup();
-        $this->type('password');
+        $this->input->set('multiple', 'multiple');
     }
 }

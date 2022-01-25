@@ -5,22 +5,23 @@ declare(strict_types=1);
 namespace Deform\Component;
 
 use Deform\Html\Html as Html;
-use Deform\Html\IHtml;
 use Deform\Util\Arrays;
 
 /**
- * @method IHtml label(string $labelText)
- * @method IHtml error_div(array $options)
+ * @persistAttribute checkboxesValues
  */
 class CheckboxMulti extends BaseComponent
 {
-    public $checkboxes = [];
+    public array $checkboxes = [];
+    private array $checkboxValues;
+
     public function setup()
     {
     }
 
     public function checkboxes(array $checkboxes): CheckboxMulti
     {
+        $this->checkboxValues = $checkboxes;
         $this->checkboxes = [];
         $isAssoc = Arrays::isAssoc($checkboxes);
         $name = $this->getName() . "[]";
@@ -35,10 +36,9 @@ class CheckboxMulti extends BaseComponent
                 'value' => ($isAssoc ? $key : $value)
             ]);
             $this->checkboxes[] = $checkbox;
-            $wrapper
-                        ->add($checkbox)
-                        ->add(" ")
-                        ->add(Html::label(['for' => $checkboxId])->add($value));
+            $wrapper->add($checkbox)
+                    ->add(" ")
+                    ->add(Html::label(['for' => $checkboxId])->add($value));
             $this->addControl($wrapper);
         }
         // special hidden field to indicate all checkbox field for which data is to be expected
@@ -53,12 +53,5 @@ class CheckboxMulti extends BaseComponent
         // this is an example of multi control
         $this->addControl($expectedDataInput);
         return $this;
-    }
-
-    public function beforeRender()
-    {
-        if (!count($this->checkboxes)) {
-            throw new \Exception("You haven't specified any checkboxes!");
-        }
     }
 }

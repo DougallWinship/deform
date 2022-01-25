@@ -11,9 +11,4 @@ class InputButton extends Input
         parent::setup();
         $this->type('button');
     }
-
-    public function beforeRender()
-    {
-        $this->input->setIfEmpty('value', $this->fieldName);
-    }
 }

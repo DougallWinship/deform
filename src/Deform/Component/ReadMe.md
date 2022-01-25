@@ -19,14 +19,6 @@ It's useful that:
 - a form building system can use these components as building blocks to ensure consistency
 - last minute tweaks to the form can occur in a view since this is where presentation occurs
 
-## IMPORTANT!
-I'm slowly coming the conclusion that should probably be using DomDocument (or a wrapper like 
-https://github.com/scotteh/php-dom-wrapper) rather than the rather simplistic current Html classes:
-- probably want a Component/Node structure to represent the form DOM while generating by form builder as this allows
-  for simple allocating of structure (labels, containers, error messages etc) values etc
-- have this collapse into a DOMElement (or wrapped equivalent) for the view so it can be manipulated by selectors etc
-- have this finally collapse into a string for rendering
-
 ## Notes:
 
 * Components represent a form field (i.e. something that generates form data)
@@ -55,8 +47,7 @@ https://github.com/scotteh/php-dom-wrapper) rather than the rather simplistic cu
 * component rendering has an intermediate stage, see BaseComponent:convertToHtml(), which ensure the component is
   prepared as an IHtml tree
 
-
-* Components are commonly built via the ComponentFactory to allow chaining and auto-completion, for example
+* Components are built via the ComponentFactory to allow chaining and auto-completion, for example
     ```  
       <?php use  \Deform\Component\ComponentFactory as Component; ?>  
       <?= Component::select('formname','fieldname'); ?>

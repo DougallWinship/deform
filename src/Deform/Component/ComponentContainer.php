@@ -18,31 +18,50 @@ class ComponentContainer
     /** @var bool */
     public bool $controlOnly = false;
 
-    /** @var mixed */
+    /** @var bool|string */
     public $tooltip = false;
 
+    /** @var string */
     public string $containerType;
 
-    public array $labelContainerAttributes = ['class' => 'label-container'];
-    /** @var mixed */
-    public $labelTag = false;
-    public $disableLabel = false;
-
+    /** @var array|string[] */
     public array $controlContainerAttributes = ['class' => 'control-container'];
-    /** @var mixed */
+
+    /** @var bool|IHtml */
     public $controlTag = false;
+    /** @var bool|array  */
+    public $controlTagDecorator = false;
 
+    /** @var array|string[]  */
+    public array $labelContainerAttributes = ['class' => 'label-container'];
+    /** @var null|string  */
+    public ?string $label = null;
+    /** @var bool|IHtml */
+    public $labelTag = false;
+    /** @var bool  */
+    public bool $disableLabel = false;
+
+    /** @var array|string[] */
     public array $hintContainerAttributes = ['class' => 'hint-container'];
-    /** @var mixed */
+    /** @var null|string */
+    public ?string $hint = null;
+    /** @var bool|IHtml */
     public $hintTag = false;
-    public $disableHint = false;
+    /** @var bool */
+    public bool $disableHint = false;
 
+    /** @var array|string[]  */
     public array $errorContainerAttributes = ['class' => 'error-container'];
-    /** @var mixed */
+    /** @var bool|IHtml */
     public $errorTag = false;
-    public $disableError = false;
+    /** @var bool  */
+    public bool $disableError = false;
 
-    public function __construct($owningClass)
+    /**
+     * @param string $owningClass
+     * @throws \Exception
+     */
+    public function __construct(string $owningClass)
     {
         if (strpos($owningClass, __NAMESPACE__) !== 0) {
             throw new \Exception(
@@ -55,28 +74,94 @@ class ComponentContainer
     }
 
     /**
-     * @param $containerId
+     * @param string $newId
+     * @param string $newName
+     * @throws \Exception
+     */
+    public function changeNamespaceAttributes(string $newId, string $newName)
+    {
+        if ($this->controlTag) {
+            if (is_array($this->controlTag)) {
+                $scanControls = $this->controlTag;
+            } elseif ($this->controlTag instanceof HtmlTag) {
+                $scanControls = [$this->controlTag];
+            } else {
+                throw new \Exception("Unexpected control tag type '" . gettype($this->controlTag) . "'");
+            }
+            foreach ($scanControls as $control) {
+                if ($control instanceof HtmlTag) {
+                    $control->setIfExists('id', $newId);
+                    $control->setIfExists('for', $newId);
+                    $control->setIfExists('name', $newName);
+                }
+            }
+        }
+        if ($this->labelTag) {
+            $this->labelTag->set('for', $newId);
+        }
+    }
+
+    /**
+     * @param string $label
+     * @throws \Exception
+     */
+    public function setLabel(string $label)
+    {
+        $this->label = $label;
+        $this->labelTag = Html::label(['style' => 'margin-bottom:0'])->add($label);
+    }
+
+    /**
+     * @param string $tooltip
+     */
+    public function setTooltip(string $tooltip)
+    {
+        $this->tooltip = $tooltip;
+    }
+
+    /**
+     * @param string $hint
+     */
+    public function setHint(string $hint)
+    {
+        $this->hint = $hint;
+        $this->hintTag = $hint;
+    }
+
+    /**
+     * @param string $error
+     */
+    public function setError(string $error)
+    {
+        $this->errorTag = $error;
+    }
+
+    /**
+     * @param string $containerId
+     * @param array $attributes
      * @return HtmlTag
      * @throws \Exception
      */
-    public function getHtmlTag($containerId): IHtml
+    public function generateHtmlTag(string $containerId, array $attributes = []): IHtml
     {
+        if ($this->controlTag && count($attributes) > 0) {
+            $this->controlTag->setMany($attributes);
+        }
         if ($this->controlOnly) {
             if (is_array($this->controlTag)) {
-                throw new \Exception("Multiple tage for control-only type containers is not currently supported!");
-                //return Html::div(['class' => 'control-container '.$this->containerType])->add($this->controlTag);
+                throw new \Exception("Multiple tags for control-only type containers is not currently supported!");
             }
             return $this->controlTag;
         }
 
-        $attrs = [
+        $containerAttributes = [
             'id' => $containerId,
             'class' => 'component-container ' . $this->containerType
         ];
         if ($this->tooltip) {
-            $attrs['title'] = $this->tooltip;
+            $containerAttributes['title'] = $this->tooltip;
         }
-        $htmlContainer = Html::div($attrs);
+        $htmlContainer = Html::div($containerAttributes);
 
         if ($this->labelTag && !$this->disableLabel) {
             if (!is_bool($this->labelTag) && ($this->labelTag instanceof HtmlTag) && (!$this->labelTag->has('for'))) {
@@ -91,7 +176,14 @@ class ComponentContainer
         }
 
         if ($this->controlTag) {
-            $controlContainer = Html::div($this->controlContainerAttributes)->add($this->controlTag);
+            $controlContainer = Html::div($this->controlContainerAttributes);
+            if ($this->controlTagDecorator && count($this->controlTagDecorator) > 0) {
+                foreach ($this->controlTagDecorator as $decoratorPart) {
+                    $controlContainer->add($decoratorPart);
+                }
+            } else {
+                $controlContainer->add($this->controlTag);
+            }
             $htmlContainer->add($controlContainer);
         }
 
@@ -108,6 +200,10 @@ class ComponentContainer
         return $htmlContainer;
     }
 
+    /**
+     * @param bool|HtmlTag $controlTag
+     * @return false|string|null
+     */
     private function guessLabelFor($controlTag)
     {
         if (!$controlTag) {
@@ -119,10 +215,52 @@ class ComponentContainer
         foreach ($checkTags as $tag) {
             if ($tag instanceof IHtml) {
                 if ($tag->has('id')) {
-                    return $tag->get('id');
+                    return $tag->get('id') ?: false;
                 }
             }
         }
         return false;
+    }
+
+    public function setControlAttributes($attributes)
+    {
+        $this->controlTag->setMany($attributes);
+    }
+
+    public function setContainerAttributes($attributes)
+    {
+        foreach ($attributes as $key => $value) {
+            switch ($key) {
+                case 'label':
+                    $this->setLabel($value);
+                    break;
+
+                case 'hint':
+                    $this->setHint($value);
+                    break;
+
+                case 'tooltip':
+                    $this->setTooltip($value);
+                    break;
+
+                default:
+                    throw new \Exception("Unrecognised container attribute '" . $key . "'");
+            }
+        }
+    }
+
+    public function toArray()
+    {
+        $array = [];
+        if ($this->label) {
+            $array['label'] = $this->label;
+        }
+        if ($this->hint) {
+            $array['hint'] = $this->hint;
+        }
+        if ($this->tooltip) {
+            $array['tooltip'] = $this->tooltip;
+        }
+        return array_filter($array);
     }
 }

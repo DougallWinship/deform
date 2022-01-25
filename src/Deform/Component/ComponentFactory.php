@@ -9,23 +9,27 @@ use Deform\Util\Strings;
 /**
  * component factory to ensure auto-completion support
  *
- * @method static Button Button(string $n, string $f, array $attributes=[])
- * @method static Checkbox Checkbox(string $n, string $f, array $attributes=[])
- * @method static CheckboxMulti CheckboxMulti(string $n, string $f, array $attributes=[])
- * @method static Currency Currency(string $n, string $f, array $attributes=[])
- * @method static Date Date(string $n, string $f, array $attributes=[])
- * @method static DateTime DateTime(string $n, string $f, array $attributes=[])
- * @method static Display Display(string $n, string $f, array $attributes=[])
- * @method static Email Email(string $n, string $f, array $attributes=[])
- * @method static Hidden Hidden(string $n, string $f, array $attributes=[])
- * @method static Input Input(string $n, string $f, array $attributes=[])
- * @method static InputButton InputButton(string $n, string $f, array $attributes=[])
- * @method static Password Password(string $n, string $f, array $attributes=[])
- * @method static RadioButtonSet RadioButtonSet(string $n, string $f, array $attributes=[])
- * @method static Select Select(string $n, string $f, array $attributes=[])
- * @method static SelectMulti SelectMulti(string $n, string $f, array $attributes=[])
- * @method static Submit Submit(string $n, string $f, array $attributes=[])
- * @method static TextArea TextArea(string $n, string $f, array $attributes=[])
+ * @method static Button Button(string $namespace, string $field, array $attributes=[])
+ * @method static Checkbox Checkbox(string $namespace, string $field, array $attributes=[])
+ * @method static CheckboxMulti CheckboxMulti(string $namespace, string $field, array $attributes=[])
+ * @method static Currency Currency(string $namespace, string $field, array $attributes=[])
+ * @method static Date Date(string $namespace, string $field, array $attributes=[])
+ * @method static DateTime DateTime(string $namespace, string $field, array $attributes=[])
+ * @method static Display Display(string $namespace, string $field, array $attributes=[])
+ * @method static Email Email(string $namespace, string $field, array $attributes=[])
+ * @method static File File(string $namespace, string $field, array $attributes=[])
+ * @method static Image Image(string $namespace, string $field, array $attributes=[])
+ * @method static MultipleFile MultipleFile(string $namespace, string $field, array $attributes=[])
+ * @method static MultipleEmail MultipleEmail(string $namespace, string $field, array $attributes=[])
+ * @method static Hidden Hidden(string $namespace, string $field, array $attributes=[])
+ * @method static InputButton InputButton(string $namespace, string $field, array $attributes=[])
+ * @method static Password Password(string $namespace, string $field, array $attributes=[])
+ * @method static RadioButtonSet RadioButtonSet(string $namespace, string $field, array $attributes=[])
+ * @method static Select Select(string $namespace, string $field, array $attributes=[])
+ * @method static SelectMulti SelectMulti(string $namespace, string $field, array $attributes=[])
+ * @method static Submit Submit(string $namespace, string $field, array $attributes=[])
+ * @method static Text Text(string $namespace, string $field, array $attributes=[])
+ * @method static TextArea TextArea(string $namespace, string $field, array $attributes=[])
  */
 class ComponentFactory
 {
@@ -65,18 +69,18 @@ class ComponentFactory
 
     /**
      * @param string $component
-     * @param string $namespace
+     * @param string|null $formNamespace
      * @param string $fieldName
      * @param array $arguments
      * @return object
      * @throws \Exception
      */
-    public static function build(string $component, string $namespace, string $fieldName, array $arguments = [])
+    public static function build(string $component, ?string $formNamespace, string $fieldName, array $arguments = [])
     {
         if (($namespaceDividerPos = strrpos($component, '\\')) !== false) {
             // if a namespace was included then check & strip it!
-            $namespace = substr($component, 0, $namespaceDividerPos);
-            if ($namespace !== __NAMESPACE__) {
+            $checkNamespace = substr($component, 0, $namespaceDividerPos);
+            if ($checkNamespace !== __NAMESPACE__) {
                 throw new \Exception(__METHOD__ . " can only accept classes in the namespace " . __NAMESPACE__);
             }
             $component = substr($component, $namespaceDividerPos + 1);
@@ -91,15 +95,14 @@ class ComponentFactory
         $reflectionClass = new \ReflectionClass($class);
         $constructor = $reflectionClass->getConstructor();
         $constructor->setAccessible(true);
+        /** @var BaseComponent $object it's not actually this, but BaseComponent is the parent */
         $object = $reflectionClass->newInstanceWithoutConstructor();
         $constructor->invokeArgs($object, [
-            $namespace,
+            $formNamespace,
             $fieldName,
             $arguments
         ]);
         return $object;
-
-        //return new $class(...$arguments);
     }
 
     /**

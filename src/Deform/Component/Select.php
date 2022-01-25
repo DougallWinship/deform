@@ -7,11 +7,17 @@ namespace Deform\Component;
 use Deform\Html\Html as Html;
 use Deform\Html\IHtml;
 
+/**
+ * @persistAttribute hasOptGroups
+ * @persistAttribute options
+ */
 class Select extends BaseComponent
 {
     /** @var IHtml */
     public IHtml $select;
     public bool $hasOptGroups = false;
+    public array $options = [];
+
     public function setup()
     {
         $this->select = Html::select([
@@ -24,9 +30,13 @@ class Select extends BaseComponent
 
     public function options($options): Select
     {
+        if ($this->options != $options) {
+            $this->options = $options;
+            $this->hasOptGroups = false;
+        }
         $this->select->clear();
         $isAssoc = \Deform\Util\Arrays::isAssoc($options);
-        foreach ($options as $key => $value) {
+        foreach ($this->options as $key => $value) {
             $this->select->add(Html::option(['value' => $isAssoc ? $key : $value])->add($value));
         }
         return $this;
@@ -34,8 +44,13 @@ class Select extends BaseComponent
 
     public function optgroupOptions(array $optgroupOptions): Select
     {
+        if ($this->options != $optgroupOptions) {
+            $this->options = $optgroupOptions;
+            $this->hasOptGroups = true;
+        }
         $this->select->clear();
-        $this->hasOptGroups = true;
+
+
         foreach ($optgroupOptions as $groupName => $options) {
             $optgroup = Html::optgroup(['label' => $groupName]);
             $isAssoc = \Deform\Util\Arrays::isAssoc($options);
@@ -63,6 +78,7 @@ class Select extends BaseComponent
 
     /**
      * @param array $valueArray
+     * @throws \Exception
      */
     protected function setSelectedForValues(array $valueArray)
     {
@@ -86,10 +102,12 @@ class Select extends BaseComponent
         }
     }
 
-    public function beforeRender()
+    public function hydrate()
     {
-        if ($this->select->isEmpty()) {
-            throw new \Exception("You haven't set any select options!");
+        if ($this->hasOptGroups) {
+            $this->optgroupOptions($this->options);
+        } else {
+            $this->options($this->options);
         }
     }
 }

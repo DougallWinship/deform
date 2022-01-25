@@ -4,10 +4,27 @@
     <pre data-method="get"><?= serialize($_GET); ?></pre>
 <?php } ?>
 
+<h2>Form Model</h2>
 <?php
 $exampleForm = new \Deform\Form\Model\ExampleFormModel();
 $formHtml = $exampleForm->getFormHtml();
-$formHtml->css('display','inline-block')
+echo $formHtml;
+?>
+<br>
+<h3>toArray():</h3>
+<pre>
+<?php
+$formArray = $exampleForm->toArray();
+echo htmlspecialchars(print_r($formArray,true));
+?>
+</pre>
+
+<br><br>
+
+<h2>Deformed Form Model</h2>
+<?php
+$formHtml
+    ->css('display','inline-block')
     ->css('border-radius','8px')
     ->css('padding','8px')
     ->css('background-color','#ccc')
@@ -20,4 +37,18 @@ echo $formHtml;
 
 <br><br>
 
-<pre><?= htmlspecialchars(print_r($exampleForm->toArray(),true)); ?></pre>
+<h2>Rebuilt Form Model (from array)</h2>
+<?php
+$rebuildForm = \Deform\Form\Model\FormModel::buildForm($formArray);
+$formHtml = $rebuildForm->getFormHtml();
+echo $formHtml;
+?>
+
+<br><br>
+<h2>Document Deformed Form</h2>
+<?php
+$htmlDocument = \Deform\Html\HtmlDocument::load($formHtml);
+$htmlDocument->selectCss('input',function(\DOMNode $domNode) {
+    $domNode->setAttribute('style','background-color:green');
+});
+echo $htmlDocument;

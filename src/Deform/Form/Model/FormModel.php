@@ -1,12 +1,17 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Deform\Form\Model;
 
 use Deform\Component\BaseComponent;
 use Deform\Component\ComponentFactory;
+use Deform\Component\File;
+use Deform\Component\Image;
 use Deform\Html\Html;
 use Deform\Html\HtmlTag;
 use Deform\Html\IHtml;
+use Deform\Util\Arrays;
 
 /**
  * @method \Deform\Component\Button addButton(string $field, array $options=[])
@@ -17,14 +22,18 @@ use Deform\Html\IHtml;
  * @method \Deform\Component\DateTime addDateTime(string $field, array $options=[])
  * @method \Deform\Component\Display addDisplay(string $field, array $options=[])
  * @method \Deform\Component\Email addEmail(string $field, array $options=[])
+ * @method \Deform\Component\File addFile(string $field, array $options=[])
  * @method \Deform\Component\Hidden addHidden(string $field, array $options=[])
- * @method \Deform\Component\Input addInput(string $field, array $options=[])
+ * @method \Deform\Component\Image addImage(string $field, array $options=[])
  * @method \Deform\Component\InputButton addInputButton(string $field, array $options=[])
+ * @method \Deform\Component\MultipleEmail addMultipleEmail(string $field, array $options=[])
+ * @method \Deform\Component\MultipleFile addMultipleFile(string $field, array $options=[])
  * @method \Deform\Component\Password addPassword(string $field, array $options=[])
  * @method \Deform\Component\RadioButtonSet addRadioButtonSet(string $field, array $options=[])
  * @method \Deform\Component\Select addSelect(string $field, array $options=[])
  * @method \Deform\Component\SelectMulti addSelectMulti(string $field, array $options=[])
  * @method \Deform\Component\Submit addSubmit(string $field, array $options=[])
+ * @method \Deform\Component\Text addText(string $field, array $options=[])
  * @method \Deform\Component\TextArea addTextArea(string $field, array $options=[])
  */
 class FormModel
@@ -32,6 +41,9 @@ class FormModel
     public const METHOD_GET = 'get';
     public const METHOD_POST = 'post';
     public const HTML_KEY = "HTML:";
+
+    public const ENCTYPE_MULTIPART_URL_ENCODED = "application/x-www-form-urlencoded";
+    public const ENCTYPE_MULTIPART_FORM_DATA = "multipart/form-data";
 
     /** @var int */
     private int $htmlCounter = 1;
@@ -50,6 +62,9 @@ class FormModel
 
     /** @var string */
     private string $formMethod;
+
+    /** @var string */
+    private string $formEnctype = self::ENCTYPE_MULTIPART_URL_ENCODED;
 
     /**
      * @param string $namespace
@@ -125,13 +140,22 @@ class FormModel
      */
     public function getFormHtml(): HtmlTag
     {
-        $formHtml = Html::form([
+        $formAttributes = [
             'method' => $this->formMethod,
             'action' => $this->formAction
-        ]);
+        ];
+        foreach ($this->sections as $section) {
+            if (($section instanceof BaseComponent) && ($section->requiresMultiformEncoding())) {
+                $formAttributes['enctype'] = self::ENCTYPE_MULTIPART_FORM_DATA;
+            }
+        }
+        $formHtml = Html::form($formAttributes);
+
         foreach ($this->sections as $key => $section) {
             if ($section instanceof BaseComponent) {
-                $formHtml->add($section->getHtmlTag());
+                //$section->setNameForNamespace($this->namespace);
+                $sectionTag = $section->getHtmlTag();
+                $formHtml->add($sectionTag);
             } elseif (is_string($section) || $section instanceof IHtml) {
                 $formHtml->add($section);
             } else {
@@ -249,5 +273,58 @@ class FormModel
         }
         $formDefinition['sections'] = $sectionsArray;
         return $formDefinition;
+    }
+
+    public static function buildForm(array $definition)
+    {
+        try {
+            $definitionParts = Arrays::extractKeys($definition, [
+                'tag',
+                'namespace',
+                'action',
+                'method',
+                'sections'
+            ], true);
+        } catch (\Exception $exc) {
+            throw new \InvalidArgumentException(
+                "Definition must contain the keys 'tag','namespace','action','method','sections'"
+            );
+        }
+        if ($definitionParts['tag'] !== 'form') {
+            throw new \InvalidArgumentException("Definition only supports the tag 'form'");
+        }
+        $formModel = new self(
+            $definitionParts['namespace'],
+            $definitionParts['method'],
+            $definitionParts['action']
+        );
+        foreach ($definitionParts['sections'] as $section) {
+            if (isset($section['class'])) {
+                try {
+                    $class = $section['class'];
+                    $name = $section['name'];
+                    $properties = $section['properties'] ?? [];
+                    $attributes = $section['attributes'] ?? [];
+                    $container = $section['container'] ?? null;
+                    unset($section['class'], $section['name']);
+                    $component = ComponentFactory::build($class, $formModel->namespace, $name, $attributes);
+                    $component->setAttributes($attributes);
+                    $component->setRegisteredPropertyValues($properties);
+                    if ($container) {
+                        $component->setContainerAttributes($container);
+                    }
+                    $component->hydrate();
+                    $formModel->sections[$name] = $component;
+                } catch (\Exception $exc) {
+                    throw new \Exception(
+                        "Invalid component definition 'class','namespace','name' & 'id' are required :"
+                        . print_r($attributes, true)
+                    );
+                }
+            } elseif (isset($section['html'])) {
+                $formModel->addHtml($section['html']);
+            }
+        }
+        return $formModel;
     }
 }

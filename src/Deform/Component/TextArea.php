@@ -9,6 +9,7 @@ use Deform\Html\Html as Html;
 class TextArea extends BaseComponent
 {
     public $textarea;
+
     public function setup()
     {
         $this->textarea = Html::textarea([

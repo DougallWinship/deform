@@ -46,11 +46,15 @@ class Arrays
             );
         }
 
-        if (!$isAssoc) {
+        if (!$isAssoc && count($missingKeys) > 0) {
             foreach ($missingKeys as $missingKey) {
                 $results[$missingKey] = null;
             }
             return $results;
+        }
+
+        if (!$isAssoc) {
+            $keys = array_combine($keys, $keys);
         }
 
         $newResults = [];

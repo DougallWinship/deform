@@ -8,15 +8,19 @@ use Deform\Html\Html as Html;
 use Deform\Html\IHtml;
 
 /**
- * @method Button button(array $options)
+ * @method Button value(string $value)
+ * @persistAttribute buttonText
  */
 class Button extends BaseComponent
 {
+    public string $buttonText;
+
     /**
      * @var IHtml input of type button
      */
     public $button;
-/**
+
+    /**
      * @throws \Exception
      */
     public function setup()
@@ -30,25 +34,14 @@ class Button extends BaseComponent
     }
 
     /**
-     * @param $value
+     * @param $text
      * @return $this
+     * @throws \Exception
      */
-    public function value($value): Button
-    {
-        $this->button->set('value', $value);
-        return $this;
-    }
-
     public function text($text)
     {
+        $this->buttonText = $text;
         $this->button->reset($text);
         return $this;
-    }
-
-    public function beforeRender()
-    {
-        if ($this->button->isEmpty()) {
-            $this->button->add($this->fieldName);
-        }
     }
 }
