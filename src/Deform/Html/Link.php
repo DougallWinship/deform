@@ -177,7 +177,7 @@ class Link extends HtmlTag
             ? "#" . $this->urlParts["fragment"]
             : "";
         $this->href($url);
-        if ($this->isEmpty()) {
+        if (!$this->hasChildren()) {
             $this->add($url);
         }
         return parent::__toString();

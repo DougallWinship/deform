@@ -30,9 +30,6 @@ class HtmlTag implements IHtml
     /** @var string */
     private static string $dateFormat = "Y-m-d H:i:s";
 
-    /** @var array */
-    private static array $defaultAttributesPerTag = [];
-
     /** @var string name of this tag type */
     protected string $tagName;
 
@@ -57,12 +54,12 @@ class HtmlTag implements IHtml
             throw new \Exception("Unregistered html tag '" . $tagName . "'");
         }
         $this->tagName = $tagName;
-        $this->attributes = array_merge(self::$defaultAttributesPerTag[$tagName] ?? [], $attributes);
+        $this->attributes = $attributes;
         $this->isSelfClosing = Html::isSelfClosedTag($tagName);
     }
 
     /**
-     * method prevents children being added to an empty tag
+     * add a child or children
      * @param string|string[]|HtmlTag|HtmlTag[] $childNodes
      * @throws \Exception
      */
@@ -80,7 +77,7 @@ class HtmlTag implements IHtml
     }
 
     /**
-     * method prevents children being added to an empty tag
+     * prepend a child
      * @param string|HtmlTag $childNode
      * @throws \Exception
      */
@@ -92,6 +89,7 @@ class HtmlTag implements IHtml
     }
 
     /**
+     * clear any children
      * @return $this
      * @throws \Exception
      */
@@ -102,8 +100,8 @@ class HtmlTag implements IHtml
         return $this;
     }
 
-
-    /**]
+    /**
+     * replace any children with a new child
      * @param IHtml|string $htmlTag
      * @return $this
      * @throws \Exception
@@ -117,6 +115,7 @@ class HtmlTag implements IHtml
     }
 
     /**
+     * whether this is a self-closing tag or not
      * @return bool
      */
     public function isSelfClosing(): bool
@@ -125,6 +124,7 @@ class HtmlTag implements IHtml
     }
 
     /**
+     * get any children
      * @return HtmlTag[]
      * @throws \Exception
      */
@@ -135,49 +135,21 @@ class HtmlTag implements IHtml
     }
 
     /**
+     * either false if no children or how many there are
      * @return false|int
      */
     public function hasChildren()
     {
-        if ($this->isSelfClosing) {
+        if ($this->isSelfClosing || count($this->childTags)===0) {
             return false;
         }
         return count($this->childTags);
     }
 
     /**
-     * @return bool
-     */
-    public function isEmpty(): bool
-    {
-        return count($this->childTags) === 0;
-    }
-
-    /**
-     * not really sure about this one ... it's kinda conventient, but also can result in bad function calls
-     * inadvertently leaking into the html
-     *
-     * set tag attributes. for example:
-     *   $tag->value("wibble")->foo("bar")
-     * generates the attributes:
-     *   'value="wibble" foo="bar"'
-     *
-     * @param string $name
-     * @param array $arguments
-     *
-     * @return HtmlTag
-     * @throws \Exception
-     */
-    public function __call(string $name, array $arguments)
-    {
-        return $this->set($name, $arguments);
-    }
-
-    /**
-     * explicit setter to allow avoiding the magic!
+     * explicit attribute setter (avoiding the magic!)
      * @param string $name
      * @param string|array $arguments
-     * @param bool $onlySetIfExists
      * @return HtmlTag
      * @throws \Exception
      */
@@ -193,6 +165,7 @@ class HtmlTag implements IHtml
     }
 
     /**
+     * set an attribute if it already exists
      * @param string $name
      * @param string|array $arguments
      * @return $this
@@ -206,8 +179,8 @@ class HtmlTag implements IHtml
         return $this;
     }
 
-
     /**
+     * set many attributes in one go (overwriting any that already exist)
      * @param array $attributes
      * @return HtmlTag
      * @throws \Exception
@@ -221,6 +194,7 @@ class HtmlTag implements IHtml
     }
 
     /**
+     * set an attribute if it doesn't already exist
      * @param string $name
      * @param string|array $arguments
      * @return HtmlTag
@@ -235,6 +209,7 @@ class HtmlTag implements IHtml
     }
 
     /**
+     * unset an attribute
      * @param string $name
      * @return HtmlTag
      */
@@ -247,6 +222,7 @@ class HtmlTag implements IHtml
     }
 
     /**
+     * apply a callback to the tag
      * @param callable $function
      * @return HtmlTag
      */
@@ -257,6 +233,7 @@ class HtmlTag implements IHtml
     }
 
     /**
+     * whether an attribute is set
      * breaks chaining!!
      * @param $name
      * @return bool
@@ -267,6 +244,7 @@ class HtmlTag implements IHtml
     }
 
     /**
+     * returns an attribute value or null if it doesn't exist
      * breaks chaining!!
      * @param $name
      * @return string|null
@@ -277,6 +255,26 @@ class HtmlTag implements IHtml
     }
 
     /**
+     * not really sure about this one ... it's kinda convenient, but also can result in bad function calls
+     * inadvertently leaking into the html
+     *
+     * set tag attributes. for example:
+     *   $tag->value("wibble")->foo("bar")
+     * generates the attributes:
+     *   'value="wibble" foo="bar"'
+     *
+     * @param string $name
+     * @param array $arguments
+     * @return HtmlTag
+     * @throws \Exception
+     */
+    public function __call(string $name, array $arguments)
+    {
+        return $this->set($name, $arguments);
+    }
+
+    /**
+     * the html tag type
      * breaks chaining!!
      * @return string
      */
@@ -285,13 +283,10 @@ class HtmlTag implements IHtml
         return $this->tagName;
     }
 
-
     /**
      * set a single css rule without affecting any others in the style attribute
-     *
      * @param string $setRule
      * @param string $setValue
-     *
      * @return HtmlTag
      */
     public function css(string $setRule, string $setValue): HtmlTag
@@ -311,9 +306,7 @@ class HtmlTag implements IHtml
 
     /**
      * manually merge an array of attributes into the currently set ones
-     *
      * @param array $attributes
-     *
      * @return HtmlTag
      */
     public function mergeAttributes(array $attributes): HtmlTag
@@ -324,7 +317,6 @@ class HtmlTag implements IHtml
 
     /**
      * recursively (via string coercion) generates the html string for this tag and all it's children
-     *
      * @return string
      */
     public function __toString()
@@ -350,13 +342,9 @@ class HtmlTag implements IHtml
 
     /**
      * helper method for composing html attributes from an array
-     *
      * @todo check if attributes need to be escaped better!
-     *
      * @param array $attributes associative array of attribute keys and values
-     *
      * @return string
-     *
      * @throws \Exception
      */
     public static function attributesString(array $attributes): string
@@ -364,7 +352,6 @@ class HtmlTag implements IHtml
         if (!count($attributes)) {
             return "";
         }
-
         $buildAttributes = [];
         foreach ($attributes as $key => $value) {
             if (substr($key, 0, 6) == "force_") {
@@ -378,7 +365,8 @@ class HtmlTag implements IHtml
             $buildAttribute = strtolower($key);
             if (is_object($value) && method_exists($value, "getSelectOptionText")) {
                 $useValue = $value->getSelectOptionText();
-            } elseif ($value instanceof \DateTime) {
+            }
+            if ($value instanceof \DateTime) {
                 $useValue = $value->format(self::$dateFormat);
             } else {
                 $useValue = $value;
@@ -392,10 +380,8 @@ class HtmlTag implements IHtml
 
     /**
      * different behaviour is useful for different attribute types
-     *
      * @param string $key
      * @param array $values
-     *
      * @return string
      * @throws \Exception
      */
@@ -422,7 +408,6 @@ class HtmlTag implements IHtml
 
     /**
      * specify a date format for converting \DateTime objects to strings
-     *
      * @param string $dateFormat
      */
     public static function setDateFormat(string $dateFormat)
@@ -430,6 +415,10 @@ class HtmlTag implements IHtml
         self::$dateFormat = $dateFormat;
     }
 
+    /**
+     * internal check for invalid operations on self closing tags
+     * @throws \Exception
+     */
     private function disallowSelfClosingCheck()
     {
         if ($this->isSelfClosing) {
@@ -441,13 +430,17 @@ class HtmlTag implements IHtml
 
     /**
      * very basic manipulation of the HtmlTag tree, to do anything more complex convert it to DOMDocument instead
-     * @param string $selector a very basic selector only supports tag, .class & #id currently
+     * the selector is *extremely* primitive & only supports (i.e. no descendants etc.)
+     *  "tag" - a tag type
+     *  "#id" - an id
+     *  ".class" - a class
+     * @param string $basicSelector a very basic selector only supports tag, .class & #id currently
      * @param callable $callback a callback to apply to the selected nodes
      * @return HtmlTag
      */
-    public function deform(string $selector, callable $callback): HtmlTag
+    public function deform(string $basicSelector, callable $callback): HtmlTag
     {
-        $nodes = $this->findNodes($selector);
+        $nodes = $this->findNodes($basicSelector);
         foreach ($nodes as $node) {
             $callback($node);
         }
@@ -455,35 +448,36 @@ class HtmlTag implements IHtml
     }
 
     /**
-     * @param string $selector
+     * recursively searches the node and it's children for a set of nodes using the basic selector
+     * @param string $basicSelector
      * @return array
      */
-    public function findNodes(string $selector): array
+    public function findNodes(string $basicSelector): array
     {
         $nodes = [];
-        if ($selector === $this->tagName) {
+        if ($basicSelector === $this->tagName) {
             $nodes[] = $this;
-        } elseif (isset($this->attributes['id']) && $selector == '#' . $this->attributes['id']) {
+        } elseif (isset($this->attributes['id']) && $basicSelector == '#' . $this->attributes['id']) {
             $nodes[] = $this;
         } elseif (isset($this->attributes['class'])) {
             $classes = explode(' ', $this->attributes['class']);
             foreach ($classes as $checkClass) {
-                if (isset($this->attributes['class']) && $selector == '.' . $checkClass) {
+                if (isset($this->attributes['class']) && $basicSelector == '.' . $checkClass) {
                     $nodes[] = $this;
                 }
             }
         }
         foreach ($this->childTags as $childTag) {
             if ($childTag instanceof ISelectableNodes) {
-                $childNodes = $childTag->findNodes($selector);
+                $childNodes = $childTag->findNodes($basicSelector);
                 $nodes = array_merge($nodes, $childNodes);
             }
         }
         return $nodes;
     }
 
-
     /**
+     * gets a corresponding DOMElement for this node for use with the specified domDocument
      * @param \DOMDocument $domDocument
      * @return \DOMElement|false
      */

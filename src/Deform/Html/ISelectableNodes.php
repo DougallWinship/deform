@@ -4,5 +4,5 @@ namespace Deform\Html;
 
 interface ISelectableNodes
 {
-    public function findNodes(string $selector): array;
+    public function findNodes(string $basicSelector): array;
 }

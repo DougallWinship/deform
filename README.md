@@ -111,3 +111,6 @@ Under construction!
 If you want to use CSS selectors (rather than XPath) you should install https://github.com/bkdotcom/CssXpath.
 
 That's it!
+
+### Test Coverage
+Latest report [here](./tests/_output/coverage/index.html)

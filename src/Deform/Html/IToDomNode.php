@@ -5,5 +5,5 @@ namespace Deform\Html;
 interface IToDomNode
 {
     /** @var \DOMNode */
-    public function getDomNode(\DOMDocument $document);
+    public function getDomNode(\DOMDocument $domDocument);
 }

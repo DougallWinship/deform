@@ -40,6 +40,20 @@ class ArraysTest extends \Codeception\Test\Unit
         ]));
     }
 
+    public function testExtractKeysNonAssoc()
+    {
+        $result = Arrays::extractKeys([
+            'one' => 'ONE',
+            'two' => 'TWO',
+            'three' => 'THREE',
+            'four' => 'FOUR'
+        ], [
+            'one',
+            'four',
+        ]);
+        $this->assertEquals(['one'=>'ONE','four'=>'FOUR'], $result);
+    }
+
     public function testExtractKeysNonAssocLoose()
     {
         $result = Arrays::extractKeys([
@@ -99,4 +113,6 @@ class ArraysTest extends \Codeception\Test\Unit
             'missing'=>'Missing'
         ], true);
     }
+
+
 }
