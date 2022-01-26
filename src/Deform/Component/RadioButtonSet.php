@@ -17,6 +17,7 @@ class RadioButtonSet extends BaseComponent
 
     public function setup()
     {
+        // unusually don't do any setup here as it's only possible to do once the buttons have been specified
     }
 
     /**
@@ -39,19 +40,18 @@ class RadioButtonSet extends BaseComponent
             ]);
             $this->radioButtonInputsByValue[$radioValue] = $radioButtonInput;
             $radioButtonContainer->add($radioButtonInput);
+            $radioButtonContainer->add(" ");
             $radioButtonContainer->add(Html::label(['for' => $id])->add($value));
-            $this->addControl($radioButtonContainer);
+            $this->addControl($radioButtonInput, $radioButtonContainer);
         }
-        $expectedDataInput = Html::input([
-            "type" => "hidden",
-            "name" => $this->getExpectedDataName(),
-            "value" => $this->fieldName
-        ]);
-        $this->addControl($expectedDataInput);
+        $this->addExpectedField($this->fieldName);
         return $this;
     }
 
-    public function clearSelected()
+    /**
+     * @return RadioButtonSet
+     */
+    public function clearSelected(): RadioButtonSet
     {
         foreach ($this->radioButtonInputsByValue as $html) {
             $html->unset('checked');
@@ -59,6 +59,11 @@ class RadioButtonSet extends BaseComponent
         return $this;
     }
 
+    /**
+     * @param $value
+     * @return RadioButtonSet
+     * @throws \Exception
+     */
     public function setSelected($value)
     {
         if (!isset($this->radioButtonInputsByValue[$value])) {
@@ -72,5 +77,12 @@ class RadioButtonSet extends BaseComponent
             }
         }
         return $this;
+    }
+
+    public function hydrate()
+    {
+        if (count($this->radioButtonInputsByValue) > 0) {
+            $this->radioButtons($this->radioButtonInputsByValue);
+        }
     }
 }

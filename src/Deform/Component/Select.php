@@ -25,7 +25,7 @@ class Select extends BaseComponent
             'name' => $this->getName(),
             'autocomplete' => 'off'
         ]);
-        $this->control($this->select);
+        $this->addControl($this->select);
     }
 
     public function options($options): Select
@@ -49,7 +49,6 @@ class Select extends BaseComponent
             $this->hasOptGroups = true;
         }
         $this->select->clear();
-
 
         foreach ($optgroupOptions as $groupName => $options) {
             $optgroup = Html::optgroup(['label' => $groupName]);
@@ -86,9 +85,9 @@ class Select extends BaseComponent
             if ($child->getTagType() == 'optgroup') {
                 foreach ($child->getChildren() as $optgroupChild) {
                     if (in_array($optgroupChild->get('value'), $valueArray)) {
-                            $optgroupChild->set('selected', 'selected');
+                        $optgroupChild->set('selected', 'selected');
                     } else {
-                                $child->unset('selected');
+                        $child->unset('selected');
                     }
                 }
             } else {

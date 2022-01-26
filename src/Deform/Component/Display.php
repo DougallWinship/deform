@@ -10,5 +10,6 @@ class Display extends Input
     {
         parent::setup();
         $this->input->set('disabled', 'disabled');
+        $this->input->type('text');
     }
 }

@@ -7,8 +7,6 @@ namespace Deform\Component;
 use Deform\Util\Strings;
 
 /**
- * component factory to ensure auto-completion support
- *
  * @method static Button Button(string $namespace, string $field, array $attributes=[])
  * @method static Checkbox Checkbox(string $namespace, string $field, array $attributes=[])
  * @method static CheckboxMulti CheckboxMulti(string $namespace, string $field, array $attributes=[])
@@ -27,6 +25,7 @@ use Deform\Util\Strings;
  * @method static RadioButtonSet RadioButtonSet(string $namespace, string $field, array $attributes=[])
  * @method static Select Select(string $namespace, string $field, array $attributes=[])
  * @method static SelectMulti SelectMulti(string $namespace, string $field, array $attributes=[])
+ * @method static Slider Slider(string $namespace, string $field, array $attributes=[])
  * @method static Submit Submit(string $namespace, string $field, array $attributes=[])
  * @method static Text Text(string $namespace, string $field, array $attributes=[])
  * @method static TextArea TextArea(string $namespace, string $field, array $attributes=[])

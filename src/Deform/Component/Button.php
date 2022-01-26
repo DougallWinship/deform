@@ -30,7 +30,7 @@ class Button extends BaseComponent
             "id" => $this->getId(),
             "name" => $this->getName()
         ]);
-        $this->control($this->button);
+        $this->addControl($this->button);
     }
 
     /**

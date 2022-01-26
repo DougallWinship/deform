@@ -16,6 +16,6 @@ class TextArea extends BaseComponent
            'id' => $this->getId(),
            'name' => $this->getName()
         ]);
-        $this->control($this->textarea);
+        $this->addControl($this->textarea);
     }
 }

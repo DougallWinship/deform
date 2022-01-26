@@ -39,6 +39,7 @@ echo $formHtml;
 
 <h2>Rebuilt Form Model (from array)</h2>
 <?php
+$formArray['namespace'] = 'rebuilt-login-form';
 $rebuildForm = \Deform\Form\Model\FormModel::buildForm($formArray);
 $formHtml = $rebuildForm->getFormHtml();
 echo $formHtml;

@@ -27,10 +27,8 @@ class ComponentContainer
     /** @var array|string[] */
     public array $controlContainerAttributes = ['class' => 'control-container'];
 
-    /** @var bool|IHtml */
-    public $controlTag = false;
-    /** @var bool|array  */
-    public $controlTagDecorator = false;
+    /** @var null|ComponentControls */
+    public ComponentControls $control;
 
     /** @var array|string[]  */
     public array $labelContainerAttributes = ['class' => 'label-container'];
@@ -56,6 +54,11 @@ class ComponentContainer
     public $errorTag = false;
     /** @var bool  */
     public bool $disableError = false;
+    /** @var HtmlTag|null */
+    private ?HtmlTag $expectedInput = null;
+
+    /** @var array|false */
+    public $datalist = false;
 
     /**
      * @param string $owningClass
@@ -71,6 +74,7 @@ class ComponentContainer
         $classWithoutNamespace = substr($owningClass, strlen(__NAMESPACE__) + 1);
         $type = \Deform\Util\Strings::separateCased($classWithoutNamespace, '-');
         $this->containerType = 'container-type-' . $type;
+        $this->control = new ComponentControls();
     }
 
     /**
@@ -80,22 +84,7 @@ class ComponentContainer
      */
     public function changeNamespaceAttributes(string $newId, string $newName)
     {
-        if ($this->controlTag) {
-            if (is_array($this->controlTag)) {
-                $scanControls = $this->controlTag;
-            } elseif ($this->controlTag instanceof HtmlTag) {
-                $scanControls = [$this->controlTag];
-            } else {
-                throw new \Exception("Unexpected control tag type '" . gettype($this->controlTag) . "'");
-            }
-            foreach ($scanControls as $control) {
-                if ($control instanceof HtmlTag) {
-                    $control->setIfExists('id', $newId);
-                    $control->setIfExists('for', $newId);
-                    $control->setIfExists('name', $newName);
-                }
-            }
-        }
+        $this->control->changeNamespaceAttributes($newId, $newName);
         if ($this->labelTag) {
             $this->labelTag->set('for', $newId);
         }
@@ -137,6 +126,32 @@ class ComponentContainer
     }
 
     /**
+     * @param array $datalist
+     * @throws \Exception
+     */
+    public function setDatalist(array $datalist)
+    {
+        if (count($this->control->getControls()) > 1) {
+            throw new \Exception("A datalist only makes sense when there is a single control");
+        }
+        $this->datalist = $datalist;
+    }
+
+    /**
+     * @param string $fieldName
+     * @param string $getExpectedDataName
+     */
+    public function addExpectedInput(string $fieldName, string $getExpectedDataName)
+    {
+        $this->expectedInput = Html::input([
+            "type" => "hidden",
+            "name" => $getExpectedDataName,
+            "value" => $fieldName
+        ]);
+    }
+
+    /**
+     * this is where everything is put together and ensures a consistent structure
      * @param string $containerId
      * @param array $attributes
      * @return HtmlTag
@@ -144,14 +159,20 @@ class ComponentContainer
      */
     public function generateHtmlTag(string $containerId, array $attributes = []): IHtml
     {
-        if ($this->controlTag && count($attributes) > 0) {
-            $this->controlTag->setMany($attributes);
+        $controls = $this->control->getControls();
+        if (count($controls) == 0) {
+            throw new \Exception("Components must contain at least one control : " . $this->containerType);
         }
+
         if ($this->controlOnly) {
-            if (is_array($this->controlTag)) {
+            if (count($controls) > 1) {
                 throw new \Exception("Multiple tags for control-only type containers is not currently supported!");
             }
-            return $this->controlTag;
+            $htmlTag = $controls[0];
+            if (count($attributes) > 0) {
+                $htmlTag->setMany($attributes);
+            }
+            return $htmlTag;
         }
 
         $containerAttributes = [
@@ -165,26 +186,37 @@ class ComponentContainer
 
         if ($this->labelTag && !$this->disableLabel) {
             if (!is_bool($this->labelTag) && ($this->labelTag instanceof HtmlTag) && (!$this->labelTag->has('for'))) {
-                // if the label tag is present and hasn't yet got a for attribute then guess it!
-                $labelFor = $this->guessLabelFor($this->controlTag);
-                if ($labelFor) {
-                    $this->labelTag->set('for', $labelFor);
+                if (count($controls) == 1) {
+                    // if the label tag is present and hasn't yet got a for attribute then guess it!
+                    $labelFor = $this->guessLabelFor($controls[0]);
+                    if ($labelFor) {
+                        $this->labelTag->set('for', $labelFor);
+                    }
                 }
             }
             $labelContainer = Html::div($this->labelContainerAttributes)->add($this->labelTag);
             $htmlContainer->add($labelContainer);
         }
 
-        if ($this->controlTag) {
-            $controlContainer = Html::div($this->controlContainerAttributes);
-            if ($this->controlTagDecorator && count($this->controlTagDecorator) > 0) {
-                foreach ($this->controlTagDecorator as $decoratorPart) {
-                    $controlContainer->add($decoratorPart);
-                }
-            } else {
-                $controlContainer->add($this->controlTag);
+        $controls = $this->control->getControls();
+        if (count($attributes) > 0) {
+            foreach ($controls as $control) {
+                $control->setMany($attributes);
             }
-            $htmlContainer->add($controlContainer);
+        }
+        $controlContainer = Html::div($this->controlContainerAttributes);
+        foreach ($this->control->getHtmlTags() as $tag) {
+            $controlContainer->add($tag);
+        }
+        $htmlContainer->add($controlContainer);
+
+        if (is_array($this->datalist) && count($controls) === 1) {
+            $id = $controls[0]->get('name');
+            $dataList = Html::datalist()->id($id);
+            foreach ($this->datalist as $value) {
+                $dataList->add(Html::option()->value($value));
+            }
+            $controlContainer->add($dataList);
         }
 
         if ($this->hintTag && !$this->disableHint) {
@@ -195,6 +227,10 @@ class ComponentContainer
         if ($this->errorTag && !$this->disableError) {
             $errorContainer = Html::div($this->errorContainerAttributes)->add($this->errorTag);
             $htmlContainer->add($errorContainer);
+        }
+
+        if ($this->expectedInput !== null) {
+            $htmlContainer->add($this->expectedInput);
         }
 
         return $htmlContainer;
@@ -222,12 +258,22 @@ class ComponentContainer
         return false;
     }
 
-    public function setControlAttributes($attributes)
+    /**
+     * @param array $attributes
+     * @throws \Exception
+     */
+    public function setControlAttributes(array $attributes)
     {
-        $this->controlTag->setMany($attributes);
+        foreach ($this->control->getControls() as $control) {
+            $control->setMany($attributes);
+        }
     }
 
-    public function setContainerAttributes($attributes)
+    /**
+     * @param array $attributes
+     * @throws \Exception
+     */
+    public function setContainerAttributes(array $attributes)
     {
         foreach ($attributes as $key => $value) {
             switch ($key) {
@@ -249,6 +295,9 @@ class ComponentContainer
         }
     }
 
+    /**
+     * @return array
+     */
     public function toArray()
     {
         $array = [];

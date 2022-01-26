@@ -18,6 +18,8 @@ use Deform\Html\HtmlTag;
  */
 abstract class Input extends BaseComponent
 {
+    public bool $autoAddControl = true;
+
     /** @var HtmlTag */
     public HtmlTag $input;
 
@@ -31,7 +33,9 @@ abstract class Input extends BaseComponent
             'name' => $this->getName(),
             'autocomplete' => 'off'
         ]);
-        $this->control($this->input);
+        if ($this->autoAddControl) {
+            $this->addControl($this->input);
+        }
     }
 
     /**

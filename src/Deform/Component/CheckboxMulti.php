@@ -13,7 +13,7 @@ use Deform\Util\Arrays;
 class CheckboxMulti extends BaseComponent
 {
     public array $checkboxes = [];
-    private array $checkboxValues;
+    public ?array $checkboxValues = null;
 
     public function setup()
     {
@@ -39,19 +39,20 @@ class CheckboxMulti extends BaseComponent
             $wrapper->add($checkbox)
                     ->add(" ")
                     ->add(Html::label(['for' => $checkboxId])->add($value));
-            $this->addControl($wrapper);
+            $this->addControl($checkbox, $wrapper);
         }
-        // special hidden field to indicate all checkbox field for which data is to be expected
-        // this is necessary since unchecked fields will not send a -ve in the data (they are simply not there!)
-        $expectedDataInput = Html::input([
-            "type" => "hidden",
-            "name" => $this->getExpectedDataName(),
-            "value" => $this->fieldName
-        ]);
         // labels are already generated for each of the checkboxes
         $this->autoLabel(false);
-        // this is an example of multi control
-        $this->addControl($expectedDataInput);
+        // special hidden field to indicate all checkbox field for which data is to be expected
+        // this is necessary since unchecked fields will not send a -ve in the data (they are simply not there!)
+        $this->addExpectedField($this->fieldName);
         return $this;
+    }
+
+    public function hydrate()
+    {
+        if ($this->checkboxValues != null && count($this->checkboxValues) > 0) {
+            $this->checkboxes($this->checkboxValues);
+        }
     }
 }

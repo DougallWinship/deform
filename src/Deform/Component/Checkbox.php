@@ -13,7 +13,7 @@ use Deform\Html\IHtml;
  */
 class Checkbox extends Input
 {
-    public string $inputLabelText;
+    public ?string $inputLabelText = null;
     public $inputLabel;
 
     /**
@@ -21,22 +21,18 @@ class Checkbox extends Input
      */
     public function setup()
     {
+        $this->autoAddControl = false;
         parent::setup();
         $this->type('checkbox');
         $this->value(1);
         $this->inputLabel = Html::label(['for' => $this->getId()])->add($this->fieldName);
-        $expectedDataInput = Html::input([
-            "type" => "hidden",
-            "name" => $this->getExpectedDataName(),
-            "value" => $this->fieldName
-        ]);
-        $this->control($this->input, [
+        $this->addControl($this->input, [
             $this->input,
             ' ',
             $this->inputLabel,
-            $expectedDataInput,
         ]);
         $this->componentContainer->disableLabel = true;
+        $this->addExpectedField($this->fieldName);
     }
 
     public function text($text): Checkbox
@@ -44,5 +40,12 @@ class Checkbox extends Input
         $this->inputLabelText = $text;
         $this->inputLabel->reset($text);
         return $this;
+    }
+
+    public function hydrate()
+    {
+        if (is_string($this->inputLabelText)) {
+            $this->text($this->inputLabelText);
+        }
     }
 }

@@ -4,7 +4,7 @@ class ComponentsCest
 {
     public function _before(AcceptanceTester $I)
     {
-        $I->amOnPage("/components");
+        $I->amOnPage("/components/with-namespace");
         $I->seeResponseCodeIs(200);
     }
 
@@ -18,7 +18,7 @@ class ComponentsCest
     public function checkbox(AcceptanceTester $I)
     {
         $I->seeElement(['css' => 'div#form1-mycheckbox-container.component-container.container-type-checkbox>div.control-container>input[type=checkbox]']);
-        $I->seeElement(['css' => 'div#form1-mycheckbox-container.component-container.container-type-checkbox>div.control-container>input[name*=expected_data]']);
+        $I->seeElement(['css' => 'div#form1-mycheckbox-container.component-container.container-type-checkbox>input[name*=expected_data][type=hidden]']);
         $I->seeElement(['css' => 'div#form1-mycheckbox-container.component-container.container-type-checkbox>div.control-container>label']);
     }
 
@@ -54,21 +54,45 @@ class ComponentsCest
         $I->seeElement(['css'=>'div#form1-mydisplay-container.component-container.container-type-display>div.control-container>input[disabled=disabled][type=text]']);
     }
 
+    public function email(AcceptanceTester $I)
+    {
+        $I->seeElement(['css'=>'div#form1-myemail-container.component-container.container-type-email>div.label-container>label']);
+        $I->seeElement(['css'=>'div#form1-myemail-container.component-container.container-type-email>div.control-container>input[type=email]']);
+    }
+
+    public function file(AcceptanceTester $I)
+    {
+        $I->seeElement(['css'=>'div#form1-myfile-container.component-container.container-type-file>div.label-container>label']);
+        $I->seeElement(['css'=>'div#form1-myfile-container.component-container.container-type-file>div.control-container>input[type=file]']);
+    }
+
     public function hidden(AcceptanceTester $I)
     {
         $I->seeElement(['css'=>'input#hidden-form1-myhidden[type=hidden][value="hidden value"]']);
     }
 
-    public function input(AcceptanceTester $I)
+    public function image(AcceptanceTester $I)
     {
-        $I->seeElement(['css'=>'div#form1-myinput-container.component-container.container-type-input>div.label-container>label']);
-        $I->seeElement(['css'=>'div#form1-myinput-container.component-container.container-type-input>div.control-container>input[type=text]']);
+        $I->seeElement(['css'=>'div#form1-myimage-container.component-container.container-type-image>div.label-container>label']);
+        $I->seeElement(['css'=>'div#form1-myimage-container.component-container.container-type-image>div.control-container>input[type=image]']);
     }
 
     public function inputButton(AcceptanceTester $I)
     {
         $I->seeElement(['css'=>'div#form1-myinputbutton-container.component-container.container-type-input-button>div.label-container>label']);
         $I->seeElement(['css'=>'div#form1-myinputbutton-container.component-container.container-type-input-button>div.control-container>input[type=button]']);
+    }
+
+    public function multipleemail(AcceptanceTester $I)
+    {
+        $I->seeElement(['css'=>'div#form1-mymultiple-email-container.component-container.container-type-multiple-email>div.label-container>label']);
+        $I->seeElement(['css'=>'div#form1-mymultiple-email-container.component-container.container-type-multiple-email>div.control-container>input[type=email][multiple=multiple]']);
+    }
+
+    public function multiplefile(AcceptanceTester $I)
+    {
+        $I->seeElement(['css'=>'div#form1-mymultiple-file-container.component-container.container-type-multiple-file>div.label-container>label']);
+        $I->seeElement(['css'=>'div#form1-mymultiple-file-container.component-container.container-type-multiple-file>div.control-container>input[type=file][multiple=multiple]']);
     }
 
     public function password(AcceptanceTester $I)
@@ -138,11 +162,6 @@ class ComponentsCest
         $I->assertArrayHasKey('form1',$postData);
         $form1Data = $postData['form1'];
         $I->assertArrayHasKey('expected_data', $form1Data);
-        $expectedData = $form1Data['expected_data'];
-        $I->assertContains('mycheckbox', $expectedData);
-        $I->assertContains('mymulticheckbox', $expectedData);
-        $I->assertContains('myradiobuttonset', $expectedData);
-        $I->assertContains('myradiobuttonset2', $expectedData);
 
         $I->assertArrayContainsSubset([
             'mycurrency'=>'',
@@ -150,20 +169,17 @@ class ComponentsCest
             'mydatetime'=>'',
             'myemail'=>'wibble@hatstand.org',
             'myhidden'=>'hidden value',
-            'myinput'=>'',
+            'mymultiple-email'=>'',
             'mypassword'=>'',
             'myradiobuttonset2'=>'four',
             'myselect'=>'two',
             'myselect2'=>'four',
+            'myselectmulti'=>["two","three"],
+            'myselectmulti2'=>["two","five"],
+            'mytext'=>'',
             'mytextarea'=>'',
-            'mysubmitbutton'=>'My Submit Button'
+            'mysubmitbutton'=>'My Submit Button',
+            'expected_data' => ['mycheckbox','mymulticheckbox','myradiobuttonset','myradiobuttonset2']
         ],$form1Data);
-
-        $I->assertArrayHasKey('myselectmulti', $form1Data);
-        $I->assertContains('two', $form1Data['myselectmulti']);
-        $I->assertContains('three', $form1Data['myselectmulti']);
-        $I->assertArrayHasKey('myselectmulti2', $form1Data);
-        $I->assertContains('two', $form1Data['myselectmulti2']);
-        $I->assertContains('five', $form1Data['myselectmulti2']);
     }
 }

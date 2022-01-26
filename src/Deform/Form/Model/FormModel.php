@@ -300,27 +300,20 @@ class FormModel
         );
         foreach ($definitionParts['sections'] as $section) {
             if (isset($section['class'])) {
-                try {
-                    $class = $section['class'];
-                    $name = $section['name'];
-                    $properties = $section['properties'] ?? [];
-                    $attributes = $section['attributes'] ?? [];
-                    $container = $section['container'] ?? null;
-                    unset($section['class'], $section['name']);
-                    $component = ComponentFactory::build($class, $formModel->namespace, $name, $attributes);
-                    $component->setAttributes($attributes);
-                    $component->setRegisteredPropertyValues($properties);
-                    if ($container) {
-                        $component->setContainerAttributes($container);
-                    }
-                    $component->hydrate();
-                    $formModel->sections[$name] = $component;
-                } catch (\Exception $exc) {
-                    throw new \Exception(
-                        "Invalid component definition 'class','namespace','name' & 'id' are required :"
-                        . print_r($attributes, true)
-                    );
+                $class = $section['class'];
+                $name = $section['name'];
+                $properties = $section['properties'] ?? [];
+                $attributes = $section['attributes'] ?? [];
+                $container = $section['container'] ?? null;
+                unset($section['class'], $section['name']);
+                $component = ComponentFactory::build($class, $formModel->namespace, $name, $attributes);
+                $component->setAttributes($attributes);
+                $component->setRegisteredPropertyValues($properties);
+                if ($container) {
+                    $component->setContainerAttributes($container);
                 }
+                $component->hydrate();
+                $formModel->sections[$name] = $component;
             } elseif (isset($section['html'])) {
                 $formModel->addHtml($section['html']);
             }

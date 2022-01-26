@@ -12,7 +12,7 @@ use Deform\Html\HtmlTag;
  */
 class Currency extends BaseComponent
 {
-    public string $currencyLabelValue;
+    public ?string $currencyLabelValue = null;
     public HtmlTag $currencyLabel;
 
     /**
@@ -26,7 +26,7 @@ class Currency extends BaseComponent
             'name' => $this->getName(),
             'id' => $this->getId()
         ]);
-        $this->control([
+        $this->addControl($currencyInput, [
             $this->currencyLabel,
             ' ',
             $currencyInput
@@ -36,11 +36,19 @@ class Currency extends BaseComponent
     /**
      * @param string $currency
      * @return $this
+     * @throws \Exception
      */
     public function currency(string $currency): Currency
     {
         $this->currencyLabelValue = $currency;
         $this->currencyLabel->add($currency);
         return $this;
+    }
+
+    public function hydrate()
+    {
+        if ($this->currencyLabelValue != null) {
+            $this->currency($this->currencyLabelValue);
+        }
     }
 }

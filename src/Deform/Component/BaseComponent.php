@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Deform\Component;
 
 use Deform\Html\Html;
+use Deform\Html\HtmlTag;
 use Deform\Html\IHtml;
 use Deform\Util\IToString;
 use Deform\Util\Strings;
@@ -111,46 +112,21 @@ abstract class BaseComponent implements IToString
     }
 
     /**
-     * @param IHtml|array $control
-     * @param array $controlTagDecorator
+     * @param HtmlTag $control
+     * @param array|IHtml|string|null $controlTagDecorator
      * @return $this
      * @throws \Exception
      */
-    public function control($control, array $controlTagDecorator = []): BaseComponent
+    public function addControl(HtmlTag $control, $controlTagDecorator = null): BaseComponent
     {
-        if (count($controlTagDecorator) > 0) {
-            if (!in_array($control, $controlTagDecorator, true)) {
-                throw new \Exception("The control tag is not contained in the control tag wrapper!");
-            }
-            $this->componentContainer->controlTagDecorator = $controlTagDecorator;
-        }
-        $this->componentContainer->controlTag = $control;
+        $this->componentContainer->control->addControl($control, $controlTagDecorator);
         return $this;
     }
 
-    /**
-     * @param IHtml|array $control
-     * @param bool $force
-     * @return $this
-     * @throws \Exception
-     */
-    public function addControl($control, bool $force = false): BaseComponent
+    public function addExpectedField(string $fieldName)
     {
-        if ($force) {
-            if (!is_array($this->componentContainer->controlTag)) {
-                // resets as an array
-                $this->componentContainer->controlTag = [];
-            }
-        } elseif (!is_array($this->componentContainer->controlTag) && $this->componentContainer->controlTag) {
-            throw new \Exception(
-                "There is already a single control specified, "
-                . "if you want to replace it and add multiple control items use the force flag"
-            );
-        }
-        $this->componentContainer->controlTag[] = $control;
-        return $this;
+        $this->componentContainer->addExpectedInput($fieldName, $this->getExpectedDataName());
     }
-
 
     /**
      * @param $error string
@@ -340,11 +316,19 @@ abstract class BaseComponent implements IToString
         ]);
     }
 
+    /**
+     * @param $attributes
+     * @throws \Exception
+     */
     public function setAttributes($attributes)
     {
         $this->componentContainer->setControlAttributes($attributes);
     }
 
+    /**
+     * @param $attributes
+     * @throws \Exception
+     */
     public function setContainerAttributes($attributes)
     {
         $this->componentContainer->setContainerAttributes($attributes);
@@ -397,11 +381,13 @@ abstract class BaseComponent implements IToString
                     if (count($commentParts) >= 2 && $commentParts[1] == '@persistAttribute') {
                         $propertyName = $commentParts[2];
                         if ($reflectionSelf->hasProperty($propertyName)) {
-                            $properties[$commentParts[2]] = $reflectionSelf->getProperty($propertyName);
+                            $property = $reflectionSelf->getProperty($propertyName);
+                            $property->setAccessible(true);
+                            $properties[$commentParts[2]] = $property;
                         } else {
                             throw new \Exception(
                                 "Failed to find property $" . $propertyName .
-                                " for class " . get_class($this) .
+                                " for class " . get_called_class() .
                                 " for annotation : " . $comment
                             );
                         }
@@ -418,6 +404,7 @@ abstract class BaseComponent implements IToString
      */
     public function hydrate()
     {
-       //override to do something useful!
+        // override to rebuild component dependencies when the component is being rebuilt from an array
+        // for example Select has $options values but hasn't yet actually build their tags
     }
 }
