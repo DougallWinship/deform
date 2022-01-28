@@ -27,9 +27,6 @@ namespace Deform\Html;
  */
 class HtmlTag implements IHtml
 {
-    /** @var string */
-    private static string $dateFormat = "Y-m-d H:i:s";
-
     /** @var string name of this tag type */
     protected string $tagName;
 
@@ -140,7 +137,7 @@ class HtmlTag implements IHtml
      */
     public function hasChildren()
     {
-        if ($this->isSelfClosing || count($this->childTags)===0) {
+        if ($this->isSelfClosing || count($this->childTags) === 0) {
             return false;
         }
         return count($this->childTags);
@@ -158,7 +155,7 @@ class HtmlTag implements IHtml
         if (is_array($arguments)) {
             $arguments_string = self::implodeAttributeValues($name, $arguments);
             $this->mergeAttributes([$name => $arguments_string]);
-        } elseif (is_string($arguments)) {
+        } elseif (is_scalar($arguments)) {
             $this->mergeAttributes([$name => $arguments]);
         }
         return $this;
@@ -218,17 +215,6 @@ class HtmlTag implements IHtml
         if (isset($this->attributes[$name])) {
             unset($this->attributes[$name]);
         }
-        return $this;
-    }
-
-    /**
-     * apply a callback to the tag
-     * @param callable $function
-     * @return HtmlTag
-     */
-    public function callback(callable $function): HtmlTag
-    {
-        $function($this);
         return $this;
     }
 
@@ -318,31 +304,22 @@ class HtmlTag implements IHtml
     /**
      * recursively (via string coercion) generates the html string for this tag and all it's children
      * @return string
+     * @throws \Exception note that generating an exception inside __toString() does bad things!
      */
     public function __toString()
     {
-        try {
-            $html = "<" . $this->tagName . self::attributesString($this->attributes) . ">";
-            if (!$this->isSelfClosing) {
-                foreach ($this->childTags as $child_tag) {
-                    if (is_array($child_tag)) {
-                        $child_tag = implode("", $child_tag);
-                    }
-                    $html .= $child_tag;
-                }
-                $html .= "</" . $this->tagName . ">";
+        $html = "<" . $this->tagName . self::attributesString($this->attributes) . ">";
+        if (!$this->isSelfClosing) {
+            foreach ($this->childTags as $childTag) {
+                $html .= $childTag; // cast childTag to a string
             }
-        } catch (\Exception $exc) {
-            // todo: - how best to present this problem? log and error?
-            // we have to be careful about exceptions within __toString
-            return "";
+            $html .= "</" . $this->tagName . ">";
         }
         return $html;
     }
 
     /**
      * helper method for composing html attributes from an array
-     * @todo check if attributes need to be escaped better!
      * @param array $attributes associative array of attribute keys and values
      * @return string
      * @throws \Exception
@@ -354,25 +331,26 @@ class HtmlTag implements IHtml
         }
         $buildAttributes = [];
         foreach ($attributes as $key => $value) {
-            if (substr($key, 0, 6) == "force_") {
-                $key = substr($key, 6);
-                $value = is_array($value) ? end($value) : $value;
-            } elseif ($value === 'selected' || $value === 'checked') {
-                $key = $value;
-            } elseif (is_array($value)) {
-                $value = self::implodeAttributeValues($key, $value);
+            if (!is_string($key)) {
+                continue;// discard any numeric keys!
+            } elseif (!is_array($value) && !is_scalar($value)) {
+                continue;// discard any values which are not an array or scalar!
             }
-            $buildAttribute = strtolower($key);
-            if (is_object($value) && method_exists($value, "getSelectOptionText")) {
-                $useValue = $value->getSelectOptionText();
-            }
-            if ($value instanceof \DateTime) {
-                $useValue = $value->format(self::$dateFormat);
+            if (is_bool($value)) {
+                if (!$value) {
+                    // strictly speaking if 'selected' or 'checked' is present then it should be honoured in html land
+                    // however let's make an exception for the particular case where it's been set to bool false
+                    continue;
+                }
+                $buildAttributes[$key] = $key;
             } else {
-                $useValue = $value;
+                if (is_array($value)) {
+                    $value = self::implodeAttributeValues($key, $value);
+                }
+                $buildAttribute = strtolower($key);// attribute names are case-insensitive
+                $buildAttribute .= "='" . htmlspecialchars((string)$value) . "'";
+                $buildAttributes[$key] = $buildAttribute;
             }
-            $buildAttribute .= "='" . str_replace("'", "&apos;", $useValue) . "'";
-            $buildAttributes[$key] =  $buildAttribute;
         }
 
         return " " . implode(" ", $buildAttributes);
@@ -403,28 +381,6 @@ class HtmlTag implements IHtml
                 );
             }
             return strval($lastElement);
-        }
-    }
-
-    /**
-     * specify a date format for converting \DateTime objects to strings
-     * @param string $dateFormat
-     */
-    public static function setDateFormat(string $dateFormat)
-    {
-        self::$dateFormat = $dateFormat;
-    }
-
-    /**
-     * internal check for invalid operations on self closing tags
-     * @throws \Exception
-     */
-    private function disallowSelfClosingCheck()
-    {
-        if ($this->isSelfClosing) {
-            $callingMethod = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
-            $method = $callingMethod[1]['function'];
-            throw new \Exception("You can't call '" . $method . "' on a '" . $this->tagName . "' tag!");
         }
     }
 
@@ -495,5 +451,18 @@ class HtmlTag implements IHtml
             }
         }
         return $node;
+    }
+
+    /**
+     * internal check for invalid operations on self-closing tags
+     * @throws \Exception
+     */
+    private function disallowSelfClosingCheck()
+    {
+        if ($this->isSelfClosing) {
+            $callingMethod = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
+            $method = $callingMethod[1]['function'];
+            throw new \Exception("You can't call '" . $method . "' on a '" . $this->tagName . "' tag!");
+        }
     }
 }

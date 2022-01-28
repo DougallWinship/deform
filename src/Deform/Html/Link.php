@@ -45,10 +45,11 @@ class Link extends HtmlTag
      */
     public function setUrl(string $url): Link
     {
-        $this->urlParts = parse_url($url);
-        if ($this->urlParts == false) {
+        $urlParts = parse_url($url);
+        if ($urlParts === false) {
             throw new \Exception("Unable to parse url : " . $url);
         }
+        $this->urlParts = $urlParts;
         return $this;
     }
 
@@ -153,17 +154,18 @@ class Link extends HtmlTag
      */
     public function __toString()
     {
+        if (!isset($this->urlParts['host'])) {
+            throw new \Exception("You can't generate a link without specifying a host");
+        }
         $url = isset($this->urlParts["scheme"])
             ? $this->urlParts["scheme"] . "://"
-            : "http://";
+            : "https://";
         if (isset($this->urlParts["username"])) {
             $url = isset($this->urlParts["password"])
                 ? $this->urlParts["username"] . ":" . $this->urlParts["password"] . "@"
                 : $this->urlParts["username"] . "@";
         }
-        $url .= (isset($this->urlParts["host"]))
-            ? $this->urlParts["host"]
-            : $_SERVER["SERVER_NAME"];
+        $url .= $this->urlParts["host"];
         $url .= (isset($this->urlParts["port"]))
             ? ":" . $this->urlParts["port"]
             : "";

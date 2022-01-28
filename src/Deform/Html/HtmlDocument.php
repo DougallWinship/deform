@@ -27,10 +27,13 @@ class HtmlDocument implements IToString
     public static function load($html): HtmlDocument
     {
         $htmlDocument = new self();
+        set_error_handler(function (int $errno, string $errstr) {
+            restore_error_handler();
+            throw new \Exception($errstr . " (" . $errno . ")");
+        });
         $htmlDocument->domDocument->loadHTML((string)$html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
-        if (count($htmlDocument->domDocument->childNodes) !== 1) {
-            throw new \Exception("Something went wrong!");
-        }
+        restore_error_handler();
+
         return $htmlDocument;
     }
 
@@ -43,23 +46,6 @@ class HtmlDocument implements IToString
     public function getHtmlRootTag(bool $preserveWhitespace = false): HtmlTag
     {
         return self::recurseDomElements($this->domDocument->documentElement, $preserveWhitespace);
-    }
-
-    /**
-     * @param \DomElement $element
-     * @return HtmlTag
-     * @throws \Exception
-     */
-    public static function buildHtmlTagFromElement(\DomElement $element): HtmlTag
-    {
-        $attributes = [];
-        if ($element->hasAttributes()) {
-            /** @var \DOMAttr $attribute */
-            foreach ($element->attributes as $attribute) {
-                $attributes[$attribute->nodeName] = $attribute->nodeValue;
-            }
-        }
-        return new HtmlTag($element->tagName, $attributes);
     }
 
     /**
@@ -88,6 +74,23 @@ class HtmlDocument implements IToString
             }
         }
         return $tag;
+    }
+
+    /**
+     * @param \DomElement $element
+     * @return HtmlTag
+     * @throws \Exception
+     */
+    protected static function buildHtmlTagFromElement(\DomElement $element): HtmlTag
+    {
+        $attributes = [];
+        if ($element->hasAttributes()) {
+            /** @var \DOMAttr $attribute */
+            foreach ($element->attributes as $attribute) {
+                $attributes[$attribute->nodeName] = $attribute->nodeValue;
+            }
+        }
+        return new HtmlTag($element->tagName, $attributes);
     }
 
     /**
@@ -134,8 +137,11 @@ class HtmlDocument implements IToString
      */
     protected function convertCssSelectorToXpathQuery($cssSelector): string
     {
+
         if (!class_exists('\bdk\CssXpath\CssXpath')) {
+            // @codeCoverageIgnoreStart
             throw new \Exception("If you want to use css selectors then install https://github.com/bkdotcom/CssXpath");
+            // @codeCoverageIgnoreEnd
         }
         return \bdk\CssXpath\CssXpath::cssToXpath($cssSelector);
     }
@@ -158,6 +164,6 @@ class HtmlDocument implements IToString
     public function __toString()
     {
         $html = $this->domDocument->saveHTML();
-        return is_string($html) ? $html : "";
+        return is_string($html) ? rtrim($html, PHP_EOL) : "";
     }
 }

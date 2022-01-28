@@ -23,7 +23,6 @@ class Select extends BaseComponent
         $this->select = Html::select([
             'id' => $this->getId(),
             'name' => $this->getName(),
-            'autocomplete' => 'off'
         ]);
         $this->addControl($this->select);
     }

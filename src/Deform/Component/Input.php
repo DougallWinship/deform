@@ -8,7 +8,7 @@ use Deform\Html\Html as Html;
 use Deform\Html\HtmlTag;
 
 /**
- * @method Input autocomplete(bool $onOff)
+ * @method Input autocomplete(string $autocomplete)
  * @method Input autofocus(bool $onOff)
  * @method Input dirname(string $dir)
  * @method Input disabled(bool $onOff)
@@ -31,7 +31,6 @@ abstract class Input extends BaseComponent
         $this->input = Html::input([
             'id' => $this->getId(),
             'name' => $this->getName(),
-            'autocomplete' => 'off'
         ]);
         if ($this->autoAddControl) {
             $this->addControl($this->input);

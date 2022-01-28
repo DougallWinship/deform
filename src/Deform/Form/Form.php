@@ -8,9 +8,9 @@ use Deform\Component\ComponentFactory;
 
 class Form
 {
-    private $formNamespace;
+    private string $formNamespace;
 
-    public function __construct($formNamespace)
+    public function __construct(string $formNamespace)
     {
         $this->formNamespace = $formNamespace;
     }

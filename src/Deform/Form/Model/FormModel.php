@@ -6,12 +6,11 @@ namespace Deform\Form\Model;
 
 use Deform\Component\BaseComponent;
 use Deform\Component\ComponentFactory;
-use Deform\Component\File;
-use Deform\Component\Image;
 use Deform\Html\Html;
 use Deform\Html\HtmlTag;
 use Deform\Html\IHtml;
 use Deform\Util\Arrays;
+use Deform\Util\IToString;
 
 /**
  * @method \Deform\Component\Button addButton(string $field, array $options=[])
@@ -63,9 +62,6 @@ class FormModel
     /** @var string */
     private string $formMethod;
 
-    /** @var string */
-    private string $formEnctype = self::ENCTYPE_MULTIPART_URL_ENCODED;
-
     /**
      * @param string $namespace
      * @param string $formMethod
@@ -84,7 +80,7 @@ class FormModel
     /**
      * @param $name
      * @param $arguments
-     * @return |void
+     * @return BaseComponent|object
      * @throws \Exception
      */
     public function __call($name, $arguments)
@@ -120,12 +116,12 @@ class FormModel
     }
 
     /**
-     * @param string|IHtml $html
+     * @param string|IToString $html
      * @throws \Exception
      */
     public function addHtml($html)
     {
-        if ($html instanceof IHtml) {
+        if ($html instanceof IToString) {
             $html = (string)$html;
         }
         if (!is_string($html)) {
@@ -153,7 +149,6 @@ class FormModel
 
         foreach ($this->sections as $key => $section) {
             if ($section instanceof BaseComponent) {
-                //$section->setNameForNamespace($this->namespace);
                 $sectionTag = $section->getHtmlTag();
                 $formHtml->add($sectionTag);
             } elseif (is_string($section) || $section instanceof IHtml) {
@@ -166,16 +161,15 @@ class FormModel
     }
 
     /**
-     * @param null|array $data
+     * @param array $data
      * @return bool
      * @throws \Exception
      */
-    public function process(array $data = [])
+    public function process(array $data = []): bool
     {
         if (!self::isSubmitted($this->formMethod)) {
             return false;
         }
-
         if ($this->populateFormData($data)) {
             if ($this->validateFormData()) {
                 $this->processFormData();
@@ -192,7 +186,7 @@ class FormModel
      * @return bool
      * @throws \Exception
      */
-    protected function populateFormData(array $data = null)
+    protected function populateFormData(array $data = null): bool
     {
         if ($data === null) {
             $rawData = self::getFormData($this->formMethod);
@@ -209,11 +203,14 @@ class FormModel
     /**
      * @return bool
      */
-    protected function validateFormData()
+    protected function validateFormData(): bool
     {
         return true;
     }
 
+    /**
+     *
+     */
     protected function processFormData()
     {
         echo "<pre>" . print_r($this->formData, true) . "</pre>";
@@ -224,7 +221,7 @@ class FormModel
      * @return array
      * @throws \Exception
      */
-    protected static function getFormData(string $method)
+    protected static function getFormData(string $method): array
     {
         switch (strtolower($method)) {
             case self::METHOD_GET:
@@ -236,23 +233,36 @@ class FormModel
         }
     }
 
-    protected static function isSubmitted($method)
+    /**
+     * @param string $method
+     * @return bool
+     * @throws \Exception
+     */
+    protected static function isSubmitted(string $method): bool
     {
         switch (strtolower($method)) {
             case self::METHOD_GET:
-                return $_GET;
+                return count($_GET) > 0;
             case self::METHOD_POST:
-                return  $_SERVER['REQUEST_METHOD'] == 'POST';
+                return $_SERVER['REQUEST_METHOD'] == 'POST';
             default:
                 throw new \Exception("Unrecognised form method '" . $method . "'");
         }
     }
 
-    public function getFieldComponent($field)
+    /**
+     * @param string $field
+     * @return mixed
+     */
+    public function getFieldComponent(string $field)
     {
         return $this->sections[$field];
     }
 
+    /**
+     * @return array
+     * @throws \ReflectionException
+     */
     public function toArray(): array
     {
         $formDefinition = [
@@ -275,7 +285,12 @@ class FormModel
         return $formDefinition;
     }
 
-    public static function buildForm(array $definition)
+    /**
+     * @param array $definition
+     * @return FormModel
+     * @throws \Exception
+     */
+    public static function buildForm(array $definition): FormModel
     {
         try {
             $definitionParts = Arrays::extractKeys($definition, [

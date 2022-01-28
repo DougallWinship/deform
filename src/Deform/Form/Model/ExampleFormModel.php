@@ -8,11 +8,14 @@ use Deform\Component\ComponentFactory as Component;
 
 class ExampleFormModel extends FormModel
 {
+    /**
+     * @throws \Exception
+     */
     public function __construct()
     {
         parent::__construct('login-form-example');
-        $this->addEmail('email')->disabled('disabled');
-        $this->addPassword('login');
+        $this->addEmail('email')->autocomplete('off')->disabled(true);
+        $this->addPassword('password')->autocomplete("off");
         $this->addHtml("<div><div>wibble</div></div>");
         $this->addSubmit('submit');
         $this->addSelect('something')->options(['one','two','three'])->hint('whatevs');

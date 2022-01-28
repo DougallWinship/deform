@@ -6,11 +6,19 @@ namespace Helper;
 
 class Unit extends \Codeception\Module
 {
-    public function getAttributeValue($object, $property)
+    public function getAttributeValue($object, $attribute)
     {
         $reflection = new \ReflectionClass($object);
-        $property = $reflection->getProperty($property);
+        $property = $reflection->getProperty($attribute);
         $property->setAccessible(true);
         return $property->getValue($object);
+    }
+
+    public function setAttributeValue($object, $attribute, $value)
+    {
+        $reflection = new \ReflectionClass($object);
+        $property = $reflection->getProperty($attribute);
+        $property->setAccessible(true);
+        $property->setValue($object, $value);
     }
 }

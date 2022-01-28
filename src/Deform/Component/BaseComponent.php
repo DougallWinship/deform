@@ -32,23 +32,20 @@ abstract class BaseComponent implements IToString
     /** @var ComponentContainer */
     public ComponentContainer $componentContainer;
 
-    /** @var string */
-    private $id;
+    /** @var null|string */
+    private ?string $id = null;
 
-    /** @var string */
-    private $name;
+    /** @var null|string */
+    private ?string $name = null;
 
-    /** @var string */
-    private $expectedDataName;
-
-    /** @var bool */
-    private $autoLabel;
+    /** @var null|string */
+    private ?string $expectedDataName = null;
 
     /** @var bool */
-    protected $requiresMultiformEncoding = false;
+    private bool $autoLabel;
 
-    /** @var \ReflectionClass */
-    private static \ReflectionClass $reflectionSelf;
+    /** @var bool */
+    protected bool $requiresMultiformEncoding = false;
 
     /**
      * protected to prevent direct instantiation

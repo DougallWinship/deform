@@ -17,8 +17,79 @@ class LinkTest extends \Codeception\Test\Unit
     }
 
     // tests
-//    public function testSomeFeature()
-//    {
-//
-//    }
+    public function testStaticLinkGeneration()
+    {
+        $link = Link::url("https://github.com/DougallWinship/deform");
+        $this->assertInstanceOf(Link::class, $link);
+        $html = (string)$link;
+        $this->assertEquals("<a href='https://github.com/DougallWinship/deform'>https://github.com/DougallWinship/deform</a>",$html);
+    }
+
+    public function testSetUrl()
+    {
+        $link = new Link();
+        $link->setUrl("https://github.com/DougallWinship/deform?foo=bar#readme");
+        $urlParts = $this->tester->getAttributeValue($link,'urlParts');
+        $this->assertEquals([
+            'scheme' => 'https',
+            'host' => 'github.com',
+            'path' => '/DougallWinship/deform',
+            'query' => 'foo=bar',
+            'fragment' => 'readme'
+        ], $urlParts);
+    }
+
+    public function testBadSetUrl()
+    {
+        $this->expectException(\Exception::class);
+        $link = new Link();
+        $link->setUrl('///////aaaaagh//////');
+    }
+    
+    public function testFullLinkGeneration() 
+    {
+        $link = new Link();
+        $link
+            ->setHost("github.com")
+            ->setScheme("http")
+            ->setProtocol("https")
+            ->setPort("80")
+            ->setUser("dougall","password")
+            ->setPath("/DougallWinship/deform")
+            ->setQuery("foo=bar")
+            ->setFragment("readme")
+            ->text("deform");
+        $html = (string)$link;
+        $this->assertEquals("<a href='dougall:password@github.com:80/DougallWinship/deform?foo=bar#readme'>deform</a>", $html);
+    }
+
+    public function testLinkGenerationNoPath()
+    {
+        $link = new Link();
+        $link
+            ->setScheme("http")
+            ->setHost("github.com")
+            ->setPort("80")
+            ->setUser("dougall","password")
+            ->setQuery("foo=bar")
+            ->setFragment("readme")
+            ->text("deform");
+        $html = (string)$link;
+        $this->assertEquals("<a href='dougall:password@github.com:80?foo=bar#readme'>deform</a>", $html);
+    }
+
+    public function testLinkGenerationNoHostException()
+    {
+        $link = new Link();
+        $link
+            ->setScheme("http")
+            ->setProtocol("https")
+            ->setPort("80")
+            ->setUser("dougall","password")
+            ->setQuery("foo=bar")
+            ->setFragment("readme")
+            ->text("deform");
+        $this->expectException(\Exception::class);
+        $html = (string)$link;
+    }
 }
