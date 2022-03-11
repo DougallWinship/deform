@@ -7,6 +7,6 @@ class IndexCest
     {
         $I->amOnPage('/');
         $I->seeResponseCodeIs(200);
-        $I->see('Home');
+        $I->see('index.php');
     }
 }

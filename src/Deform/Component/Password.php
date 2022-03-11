@@ -9,6 +9,9 @@ namespace Deform\Component;
  */
 class Password extends Input
 {
+    /**
+     * @inheritDoc
+     */
     public function setup()
     {
         parent::setup();

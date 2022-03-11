@@ -45,7 +45,6 @@ class Form
         if (is_string($component)) {
             if (class_exists($component)) {
                 return ComponentFactory::build($component, $this->formNamespace, $name);
-                //return new $component($this->formNamespace, $name);
             } else {
                 throw new \Exception("The specified component class was not found : " . $component);
             }

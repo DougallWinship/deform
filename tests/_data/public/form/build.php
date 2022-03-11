@@ -48,8 +48,12 @@ echo $formHtml;
 <br><br>
 <h2>Document Deformed Form</h2>
 <?php
-$htmlDocument = \Deform\Html\HtmlDocument::load($formHtml);
-$htmlDocument->selectCss('input',function(\DOMNode $domNode) {
+$formArray['namespace'] = 'rebuilt-login-form-2';
+$rebuildForm2 = \Deform\Form\Model\FormModel::buildForm($formArray);
+$htmlDocument = \Deform\Html\HtmlDocument::load($rebuildForm2->getFormHtml());
+$htmlDocument->selectCss("form",function(\DOMNode $domNode) {
+    $domNode->setAttribute('id','loaded-deformed-form');
+})->selectCss('input',function(\DOMNode $domNode) {
     $domNode->setAttribute('style','background-color:green');
 });
 echo $htmlDocument;

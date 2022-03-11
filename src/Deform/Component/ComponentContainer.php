@@ -9,9 +9,7 @@ use Deform\Html\HtmlTag;
 use Deform\Html\IHtml;
 
 /**
- * defines a standard wrapper for components (see ReadMe.md for more details)
- *
- * todo: - should be able to alter container tags
+ * Defines a standard wrapper for components.
  */
 class ComponentContainer
 {
@@ -82,9 +80,9 @@ class ComponentContainer
      * @param string $newName
      * @throws \Exception
      */
-    public function changeNamespaceAttributes(string $newId, string $newName)
+    public function changeNamespacedAttributes(string $newId, string $newName)
     {
-        $this->control->changeNamespaceAttributes($newId, $newName);
+        $this->control->changeNamespacedAttributes($newId, $newName);
         if ($this->labelTag) {
             $this->labelTag->set('for', $newId);
         }

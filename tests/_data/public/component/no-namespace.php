@@ -7,7 +7,7 @@ if (isset($_POST) && count($_POST)) { ?>
 
 <h2>Components without Namespace</h2>
 <form method="post" enctype="multipart/form-data">
-    <?= Component::Button(null,'mybutton')->value('buttonvalue')->text('press me!') ?>
+    <?= Component::Button(null,'mybutton')->value('buttonvalue')->html('press me!') ?>
 
     <?= Component::Checkbox(null,'mycheckbox')->checked('checked')->text('check me!')->label('Check it out!') ?>
 
@@ -26,8 +26,6 @@ if (isset($_POST) && count($_POST)) { ?>
     <?= Component::File(null, 'myfile')->label("My File"); ?>
 
     <?= Component::Hidden( null,'myhidden')->value('hidden value'); ?>
-
-    <?= Component::Image(null,'myimage')->label("My Image"); ?>
 
     <?= Component::InputButton(null,'myinputbutton')->label('My Input Button')->value('Click Me!') ?>
 

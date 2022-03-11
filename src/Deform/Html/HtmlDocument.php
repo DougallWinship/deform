@@ -31,7 +31,8 @@ class HtmlDocument implements IToString
             restore_error_handler();
             throw new \Exception($errstr . " (" . $errno . ")");
         });
-        $htmlDocument->domDocument->loadHTML((string)$html, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
+        $htmlString = (string)$html;
+        $htmlDocument->domDocument->loadHTML($htmlString, LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
         restore_error_handler();
 
         return $htmlDocument;

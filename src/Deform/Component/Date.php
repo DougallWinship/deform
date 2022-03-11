@@ -10,6 +10,9 @@ namespace Deform\Component;
  */
 class Date extends Input
 {
+    /**
+     * @inheritDoc
+     */
     public function setup()
     {
         parent::setup();

@@ -5,7 +5,6 @@ declare(strict_types=1);
 namespace Deform\Component;
 
 use Deform\Html\Html as Html;
-use Deform\Html\IHtml;
 
 /**
  * @method Checkbox checked(string $checked)
@@ -17,7 +16,7 @@ class Checkbox extends Input
     public $inputLabel;
 
     /**
-     * @throws \Exception
+     * @inheritDoc
      */
     public function setup()
     {
@@ -35,17 +34,37 @@ class Checkbox extends Input
         $this->addExpectedField($this->fieldName);
     }
 
-    public function text($text): Checkbox
+    /**
+     * @param string $text
+     * @return $this
+     */
+    public function text(string $text): self
     {
         $this->inputLabelText = $text;
         $this->inputLabel->reset($text);
         return $this;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function hydrate()
     {
         if (is_string($this->inputLabelText)) {
             $this->text($this->inputLabelText);
         }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setValue($value): self
+    {
+        if ($value) {
+            $this->input->set('checked', 'checked');
+        } else {
+            $this->input->unset('checked');
+        }
+        return $this;
     }
 }

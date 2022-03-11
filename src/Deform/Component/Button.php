@@ -9,11 +9,18 @@ use Deform\Html\IHtml;
 
 /**
  * @method Button value(string $value)
- * @persistAttribute buttonText
+ * @persistAttribute buttonHtml
+ * @persistAttribute buttonType
  */
 class Button extends BaseComponent
 {
-    public string $buttonText;
+    const VALID_BUTTON_TYPES = ['submit','reset','button'];
+
+    /** @var string */
+    public string $buttonHtml;
+
+    /** @var string */
+    public string $buttonType = 'submit';
 
     /**
      * @var IHtml input of type button
@@ -21,7 +28,7 @@ class Button extends BaseComponent
     public $button;
 
     /**
-     * @throws \Exception
+     * @inheritDoc
      */
     public function setup()
     {
@@ -34,14 +41,38 @@ class Button extends BaseComponent
     }
 
     /**
-     * @param $text
+     * @param string $html
      * @return $this
      * @throws \Exception
      */
-    public function text($text)
+    public function html(string $html): self
     {
-        $this->buttonText = $text;
-        $this->button->reset($text);
+        $this->buttonHtml = $html;
+        $this->button->reset($html);
         return $this;
+    }
+
+    /**
+     * @param string $type
+     * @return $this
+     * @throws \Exception
+     */
+    public function type(string $type): self
+    {
+        $type = strtolower($type);
+        if (!in_array($type, self::VALID_BUTTON_TYPES)) {
+            throw new \Exception("Invalid button type '".$type."', valid are : ".implode(", ", self::VALID_BUTTON_TYPES));
+        }
+        $this->buttonType = $type;
+        $this->button->set('type', $type);
+        return $this;
+    }
+
+    public function hydrate()
+    {
+        if ($this->buttonType) {
+            $this->type($this->buttonType);
+        }
+        $this->html($this->buttonHtml);
     }
 }

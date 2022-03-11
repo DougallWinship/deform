@@ -6,6 +6,7 @@ namespace Deform\Form\Model;
 
 use Deform\Component\BaseComponent;
 use Deform\Component\ComponentFactory;
+use Deform\Component\Hidden;
 use Deform\Html\Html;
 use Deform\Html\HtmlTag;
 use Deform\Html\IHtml;
@@ -23,7 +24,6 @@ use Deform\Util\IToString;
  * @method \Deform\Component\Email addEmail(string $field, array $options=[])
  * @method \Deform\Component\File addFile(string $field, array $options=[])
  * @method \Deform\Component\Hidden addHidden(string $field, array $options=[])
- * @method \Deform\Component\Image addImage(string $field, array $options=[])
  * @method \Deform\Component\InputButton addInputButton(string $field, array $options=[])
  * @method \Deform\Component\MultipleEmail addMultipleEmail(string $field, array $options=[])
  * @method \Deform\Component\MultipleFile addMultipleFile(string $field, array $options=[])
@@ -31,6 +31,7 @@ use Deform\Util\IToString;
  * @method \Deform\Component\RadioButtonSet addRadioButtonSet(string $field, array $options=[])
  * @method \Deform\Component\Select addSelect(string $field, array $options=[])
  * @method \Deform\Component\SelectMulti addSelectMulti(string $field, array $options=[])
+ * @method \Deform\Component\Slider addSlider(string $field, array $options=[])
  * @method \Deform\Component\Submit addSubmit(string $field, array $options=[])
  * @method \Deform\Component\Text addText(string $field, array $options=[])
  * @method \Deform\Component\TextArea addTextArea(string $field, array $options=[])
@@ -44,14 +45,23 @@ class FormModel
     public const ENCTYPE_MULTIPART_URL_ENCODED = "application/x-www-form-urlencoded";
     public const ENCTYPE_MULTIPART_FORM_DATA = "multipart/form-data";
 
+    public const CSRF_STRATEGY_OFF = 'off';
+    public const CSRF_STRATEGY_SESSION = 'session';
+    public const CSRF_STRATEGY_COOKIE = 'cookie';
+
+    public const CSRF_TOKEN_FIELD = 'csrf-token';
+
     /** @var int */
     private int $htmlCounter = 1;
 
     /** @var string */
     private string $namespace;
 
-    /** @var array  */
+    /** @var array */
     private array $sections = [];
+
+    /** @var BaseComponent[] */
+    private array $fieldComponents = [];
 
     /** @var array */
     private array $formData;
@@ -62,19 +72,36 @@ class FormModel
     /** @var string */
     private string $formMethod;
 
+    /** @var string */
+    private string $autoComplete;
+
+    /** @var callable */
+    private $formProcessor;
+
+    /** @var string */
+    private string $csrfStrategy = self::CSRF_STRATEGY_SESSION;
+
     /**
      * @param string $namespace
      * @param string $formMethod
      * @param string $formAction
+     * @param string $autoComplete
+     * @throws \Exception
      */
     public function __construct(
         string $namespace,
         string $formMethod = self::METHOD_POST,
-        string $formAction = ''
-    ) {
+        string $formAction = '',
+        string $autoComplete = 'off'
+    )
+    {
+        if ($formMethod !== self::METHOD_POST && $formMethod !== self::METHOD_GET) {
+            throw new \Exception("The form method must be either 'get' or 'post'");
+        }
         $this->namespace = $namespace;
         $this->formMethod = $formMethod;
         $this->formAction = $formAction;
+        $this->autoComplete = $autoComplete;
     }
 
     /**
@@ -96,12 +123,16 @@ class FormModel
                     "There is no component named '" . $componentName . " registered in ComponentFactory"
                 );
             }
-            if (!is_string($field = $arguments[0])) {
+            $field = $arguments[0];
+            $options = $arguments[1] ?? [];
+            if (!is_string($field)) {
                 throw new \Exception("Unexpected type " . gettype($arguments[0]) . " for 'field' argument");
             }
-            $options = $arguments[1] ?? [];
             if (!is_array($options)) {
                 throw new \Exception("Unexpected type " . gettype($arguments[1]) . " for 'options' argument");
+            }
+            if (isset($this->fieldComponents[$field])) {
+                throw new \Exception("Field '" . $field . "' has already been defined");
             }
             $component = ComponentFactory::build(
                 $componentName,
@@ -109,7 +140,8 @@ class FormModel
                 $field,
                 $options
             );
-            $this->sections[$arguments[0]] = $component;
+            $this->sections[$field] = $component;
+            $this->fieldComponents[$field] = $component;
             return $component;
         }
         throw new \BadMethodCallException("Call to undefined method " . __CLASS__ . "::" . $name . "()");
@@ -131,14 +163,16 @@ class FormModel
     }
 
     /**
+     * @param bool $disableCsrf
      * @return HtmlTag
      * @throws \Exception
      */
-    public function getFormHtml(): HtmlTag
+    public function getFormHtml(bool $disableCsrf = false): HtmlTag
     {
         $formAttributes = [
             'method' => $this->formMethod,
-            'action' => $this->formAction
+            'action' => $this->formAction,
+            'autocomplete' => $this->autoComplete
         ];
         foreach ($this->sections as $section) {
             if (($section instanceof BaseComponent) && ($section->requiresMultiformEncoding())) {
@@ -157,45 +191,97 @@ class FormModel
                 throw new \Exception("Unexpected section type " . gettype($section) . " for section '" . $key . "'");
             }
         }
+        if (!$disableCsrf) {
+            $token = $this->implementCSRFStrategy();
+            if ($token !== null) {
+                $formHtml->add($token);
+            }
+        }
         return $formHtml;
     }
 
     /**
-     * @param array $data
+     * @return HtmlTag
+     * @throws \Exception
+     */
+    public function run(): HtmlTag
+    {
+        if ($this->isSubmitted()) {
+            $formData = $this->getFormData();
+            if (!$this->validateCSRFToken($formData)) {
+                $this->handleCSRFTokenFailure();
+            }
+            if ($this->populateFormData($formData)) {
+                if ($this->validateFormData()) {
+                    $result = $this->processFormData($this->formData);
+                    if (is_array($result)) {
+                        $this->setErrors($result);
+                    } elseif ($result !== true) {
+                        throw new \Exception("processFormData must return either true or an array of errors");
+                    }
+                }
+            }
+        }
+        return $this->getFormHtml();
+    }
+
+    /**
      * @return bool
      * @throws \Exception
      */
-    public function process(array $data = []): bool
+    public function isSubmitted(): bool
     {
-        if (!self::isSubmitted($this->formMethod)) {
-            return false;
-        }
-        if ($this->populateFormData($data)) {
-            if ($this->validateFormData()) {
-                $this->processFormData();
-            }
-            // if the form didn't validate it was still processed!
-            return true;
-        } else {
-            return false;
+        switch ($this->formMethod) {
+            case self::METHOD_GET:
+                return isset($_GET[$this->namespace]) && count($_GET[$this->namespace]) > 0;
+            case self::METHOD_POST:
+                return $_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST[$this->namespace]);
+            default:
+                throw new \Exception("Unrecognised form method '" . $this->formMethod . "'");
         }
     }
 
     /**
-     * @param null|array $data
+     * @return array
+     * @throws \Exception
+     */
+    public function getFormData(): array
+    {
+        switch ($this->formMethod) {
+            case self::METHOD_GET:
+                return $_GET[$this->namespace];
+            case self::METHOD_POST:
+                return $_POST[$this->namespace];
+            default:
+                throw new \Exception("Unrecognised form method '" . $this->formMethod . "'");
+        }
+    }
+
+    /**
+     * @param array $formData
      * @return bool
      * @throws \Exception
      */
-    protected function populateFormData(array $data = null): bool
+    protected function populateFormData(array $formData): bool
     {
-        if ($data === null) {
-            $rawData = self::getFormData($this->formMethod);
-            if (!isset($rawData[$this->namespace])) {
-                return false;
+        if (isset($formData[BaseComponent::EXPECTED_DATA_FIELD])) {
+            foreach ($formData[BaseComponent::EXPECTED_DATA_FIELD] as $expectedDatum) {
+                if (!isset($formData[$expectedDatum])) {
+                    $formData[$expectedDatum] = false;
+                }
             }
-            $this->formData = $rawData[$this->namespace];
-        } else {
-            $this->formData = $data;
+            unset($formData[BaseComponent::EXPECTED_DATA_FIELD]);
+        }
+        if (isset($formData[self::CSRF_TOKEN_FIELD])) {
+            unset($formData[self::CSRF_TOKEN_FIELD]);
+        }
+        $this->formData = $formData;
+        foreach ($this->formData as $field => $value) {
+            if (!isset($this->sections[$field])) {
+                throw new \Exception("No component found for '" . $field . "'");
+            }
+            $fieldComponent = $this->fieldComponents[$field];
+            $fieldComponent->setValue($value);
         }
         return true;
     }
@@ -209,44 +295,39 @@ class FormModel
     }
 
     /**
-     *
-     */
-    protected function processFormData()
-    {
-        echo "<pre>" . print_r($this->formData, true) . "</pre>";
-    }
-
-    /**
-     * @param string $method
-     * @return array
+     * @param array $errors
      * @throws \Exception
      */
-    protected static function getFormData(string $method): array
+    protected function setErrors(array $errors)
     {
-        switch (strtolower($method)) {
-            case self::METHOD_GET:
-                return $_GET;
-            case self::METHOD_POST:
-                return $_POST;
-            default:
-                throw new \Exception("Unrecognised form method '" . $method . "'");
+        foreach ($errors as $field => $error) {
+            if (!isset($this->sections[$field])) {
+                throw new \Exception("No component found for '" . $field . "'");
+            }
+            $fieldComponent = $this->fieldComponents[$field];
+            $fieldComponent->setError($error);
         }
     }
 
     /**
-     * @param string $method
-     * @return bool
+     * @param callable $formProcessor
+     */
+    public function setFormProcessor(callable $formProcessor)
+    {
+        $this->formProcessor = $formProcessor;
+    }
+
+    /**
+     * @param array $formData
+     * @return bool|array true for success or an array of errors (by field)
      * @throws \Exception
      */
-    protected static function isSubmitted(string $method): bool
+    public function processFormData(array $formData)
     {
-        switch (strtolower($method)) {
-            case self::METHOD_GET:
-                return count($_GET) > 0;
-            case self::METHOD_POST:
-                return $_SERVER['REQUEST_METHOD'] == 'POST';
-            default:
-                throw new \Exception("Unrecognised form method '" . $method . "'");
+        if (is_callable($this->formProcessor)) {
+            return ($this->formProcessor)($formData);
+        } else {
+            throw new \Exception("No form processor defined!");
         }
     }
 
@@ -270,9 +351,13 @@ class FormModel
             'namespace' => $this->namespace,
             'action' => $this->formAction,
             'method' => $this->formMethod,
+            'csrf' => $this->csrfStrategy,
         ];
         $sectionsArray = [];
         foreach ($this->sections as $name => $section) {
+            if ($name === self::CSRF_TOKEN_FIELD) {
+                continue;
+            }
             if (strpos($name, self::HTML_KEY) === 0) {
                 $sectionsArray[] = [
                     'html' => (string)$section
@@ -313,6 +398,9 @@ class FormModel
             $definitionParts['method'],
             $definitionParts['action']
         );
+        if (isset($definition['csrf'])) {
+            $formModel->setCSRFStrategy($definition['csrf']);
+        }
         foreach ($definitionParts['sections'] as $section) {
             if (isset($section['class'])) {
                 $class = $section['class'];
@@ -334,5 +422,125 @@ class FormModel
             }
         }
         return $formModel;
+    }
+
+    /**
+     * @param string $csrfStrategy
+     * @throws \Exception
+     */
+    public function setCSRFStrategy(string $csrfStrategy)
+    {
+        switch ($csrfStrategy) {
+            case self::CSRF_STRATEGY_OFF:
+            case self::CSRF_STRATEGY_COOKIE:
+            case self::CSRF_STRATEGY_SESSION:
+                $this->csrfStrategy = $csrfStrategy;
+                break;
+            default:
+                throw new \Exception("Unrecognised CSRF strategy '" . $csrfStrategy . "'");
+        }
+    }
+
+    /**
+     * @throws \Exception
+     */
+    private function implementCSRFStrategy()
+    {
+        switch ($this->csrfStrategy) {
+            case self::CSRF_STRATEGY_SESSION:
+                $sessionStatus = session_status();
+                if ($sessionStatus === PHP_SESSION_DISABLED) {
+                    throw new \Exception(
+                        "Unable to use CSRF strategy '" . self::CSRF_STRATEGY_SESSION . "' since sessions are disabled!"
+                    );
+                } else if ($sessionStatus === PHP_SESSION_NONE) {
+                    session_start();
+                }
+                $token = bin2hex(random_bytes(35));
+                $_SESSION[$this->getCSRFFormTokenName()] = $token;
+                return ComponentFactory::Hidden($this->namespace, self::CSRF_TOKEN_FIELD)->value($token);
+
+            case self::CSRF_STRATEGY_COOKIE:
+                $token = bin2hex(random_bytes(35));
+                setcookie(
+                    $this->getCSRFFormTokenName(),
+                    $token,
+                    [
+                        'expires' => 0,// end of session
+                        'path' => (strlen($this->formAction) > 0)
+                            ? $this->formAction
+                            : $_SERVER['REQUEST_URI'],
+                        'domain' => $_SERVER['SERVER_NAME'],
+                        'secure' => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off'),
+                        'httponly' => true,
+                        'samesite' => 'Strict'
+                    ]
+                );
+                return ComponentFactory::Hidden($this->namespace, self::CSRF_TOKEN_FIELD)->value($token);
+
+            case self::CSRF_STRATEGY_OFF:
+                return null;
+
+            default:
+                throw new \Exception("Unrecognised CSRF strategy '" . $this->csrfStrategy . "'");
+        }
+    }
+
+    /**
+     * @return string
+     */
+    protected function getCSRFFormTokenName(): string
+    {
+        return $this->namespace . '-' . self::CSRF_TOKEN_FIELD;
+    }
+
+    /**
+     * @param array $formData
+     * @return bool
+     * @throws \Exception
+     */
+    private function validateCSRFToken(array &$formData): bool
+    {
+        switch ($this->csrfStrategy) {
+            case self::CSRF_STRATEGY_SESSION:
+                $this->ensureSessionStarted();
+                $tokenName = $this->getCSRFFormTokenName();
+                if (!isset($formData[self::CSRF_TOKEN_FIELD]) || !isset($_SESSION[$tokenName])) {
+                    return false;
+                }
+                $sessionToken = $_SESSION[$tokenName];
+                $formToken = $formData[self::CSRF_TOKEN_FIELD];
+                unset($_SESSION[$tokenName]);
+                unset($formData[self::CSRF_TOKEN_FIELD]);
+                return hash_equals($sessionToken, $formToken);
+
+            case self::CSRF_STRATEGY_COOKIE:
+                $tokenName = $this->getCSRFFormTokenName();
+                if (!isset($formData[self::CSRF_TOKEN_FIELD]) || !isset($_COOKIE[$tokenName])) {
+                    return false;
+                }
+                $cookieToken = $_COOKIE[$tokenName];
+                $formToken = $formData[self::CSRF_TOKEN_FIELD];
+                unset($formData[self::CSRF_TOKEN_FIELD]);
+                unset($_COOKIE[$tokenName]);
+                setcookie($tokenName, '', 1);
+                return hash_equals($cookieToken, $formToken);
+
+            case self::CSRF_STRATEGY_OFF:
+                return true;
+
+            default:
+                throw new \Exception("Unrecognised CSRF strategy '" . $this->csrfStrategy . "'");
+        }
+    }
+
+    /**
+     * override to do something more useful!
+     */
+    protected function handleCSRFTokenFailure()
+    {
+        ob_end_clean();
+        http_response_code(405);
+        die("Method not allowed");
     }
 }

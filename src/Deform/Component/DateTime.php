@@ -6,6 +6,9 @@ namespace Deform\Component;
 
 class DateTime extends Input
 {
+    /**
+     * @inheritDoc
+     */
     public function setup()
     {
         parent::setup();

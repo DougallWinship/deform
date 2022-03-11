@@ -23,13 +23,13 @@ include dirname(dirname(dirname(__DIR__)))."/vendor/autoload.php";
 $contents = null;
 
 if (!$path || $path==='index') {
-    $contents = "<h1>Home</h1>";
+    $path='/';
     $dir  = new RecursiveDirectoryIterator(__DIR__, RecursiveDirectoryIterator::KEY_AS_FILENAME | RecursiveDirectoryIterator::SKIP_DOTS);
     $files = new RecursiveCallbackFilterIterator($dir,  function (\SplFileInfo $current, string $key, \RecursiveDirectoryIterator $iterator) {
         if ($iterator->hasChildren()) {
             return true;
         }
-        if ($current->isFile() && substr($current->getFilename(),-4)=='.php') {
+        if ($current->isFile() && substr($current->getFilename(),-4)=='.php' && $current->getFilename()!='index.php') {
             return true;
         }
         return false;
@@ -40,18 +40,19 @@ if (!$path || $path==='index') {
     $tree->setPrefixPart(\RecursiveTreeIterator::PREFIX_END_HAS_NEXT, '├ ');
     $tree->setPrefixPart(\RecursiveTreeIterator::PREFIX_END_LAST, '└ ');
 
-    $contents.="<pre>";
+    $contents ="<nav><pre>";
+    $contents.= "<a href='/'>index.php</a><br>";
     foreach ($tree as $filename => $withPath) {
         $pos = strpos($withPath,__DIR__) + strlen(__DIR__);
-        $path = substr($withPath, $pos, -strlen($filename));
+        $filePath = substr($withPath, $pos, -strlen($filename));
         if (substr($filename,-4)=='.php') {
-            $contents.= $tree->getPrefix()."<a href='".$path.substr($filename,0,-4)."'>".$filename. "</a>".PHP_EOL;
+            $contents.= $tree->getPrefix()."<a href='".$filePath.substr($filename,0,-4)."'>".$filename. "</a>".PHP_EOL;
         }
         else {
             $contents.= $tree->getPrefix().$filename.PHP_EOL;
         }
     }
-    $contents.="</pre>";
+    $contents.="</pre></nav>";
 
 }
 else {
@@ -76,13 +77,13 @@ renderLayout($path, $contents);
 function renderLayout($title, $contents) {
     echo <<<HTML
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <title>$title</title>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
     <link rel="stylesheet" href="/styles.css">
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <style>a{text-decoration:none}</style>
 </head>
 <body>
 $contents

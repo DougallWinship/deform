@@ -16,7 +16,6 @@ use Deform\Util\Strings;
  * @method static Display Display(string $namespace, string $field, array $attributes=[])
  * @method static Email Email(string $namespace, string $field, array $attributes=[])
  * @method static File File(string $namespace, string $field, array $attributes=[])
- * @method static Image Image(string $namespace, string $field, array $attributes=[])
  * @method static MultipleFile MultipleFile(string $namespace, string $field, array $attributes=[])
  * @method static MultipleEmail MultipleEmail(string $namespace, string $field, array $attributes=[])
  * @method static Hidden Hidden(string $namespace, string $field, array $attributes=[])

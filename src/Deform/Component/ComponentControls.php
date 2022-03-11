@@ -8,7 +8,8 @@ use Deform\Html\HtmlTag;
 use Deform\Html\IHtml;
 
 /**
- * a component can contain multiple controls (a control is the "active" part of the component such as an input)
+ * a component can contain multiple controls (a control is the "active" part of the component such as an input, select,
+ * textarea or button)
  */
 class ComponentControls
 {
@@ -22,8 +23,16 @@ class ComponentControls
     private array $tagsWithForById = [];
 
     /**
-     * specifies an additional control for this set of controls, if any decoration is included you should ensure it
+     * specifies an additional control for this set of controls.
+     *
+     * if the decoration is included you should ensure it
      * also contains somewhere inside a copy of the actual control itself.
+     *
+     * todo: - consider distinguishing multiple control tags with decoration from single ones as this is trying to do too much
+     * i.e.
+     *    multi checkbox has multiple controls each with multiple decorations (labels etc)
+     *    single checkbox has one control with multiple decorations
+     *
      * @param HtmlTag $controlTag
      * @param HtmlTag|string|IHtml|array|null $controlDecoration
      * @throws \Exception
@@ -37,15 +46,22 @@ class ComponentControls
         $this->controlTags[] = $controlTag;
         if ($controlDecoration != null) {
             if (is_array($controlDecoration)) {
+                $containsControlTag = false;
                 foreach ($controlDecoration as $decoration) {
                     if ($decoration instanceof HtmlTag) {
+                        if ($decoration===$controlTag) {
+                            $containsControlTag = true;
+                        }
                         if ($decoration->has('for')) {
-                            if (!isset($tagsWithForById[$id])) {
-                                $tagsWithForById = [];
+                            if (!isset($this->tagsWithForById[$id])) {
+                                $this->tagsWithForById[$id] = [];
                             }
-                            $tagsWithForById[$id][] = $decoration;
+                            $this->tagsWithForById[$id][] = $decoration;
                         }
                     }
+                }
+                if (!$containsControlTag) {
+                    throw new \Exception("When adding decoration as an array, one of the elements must be the control tag itself");
                 }
                 $this->allTags = array_merge($this->allTags, $controlDecoration);
             } else {
@@ -61,16 +77,48 @@ class ComponentControls
      * @param string $newName
      * @throws \Exception
      */
-    public function changeNamespaceAttributes(string $newId, string $newName)
+    public function changeNamespacedAttributes(string $newId, string $newName)
     {
+        $multipleControlTags = count($this->controlTags)>1;
         foreach ($this->controlTags as $control) {
             $oldId = $control->get('id');
-            $control->setIfExists('id', $newId);
+            if ($multipleControlTags) {
+                $value = $control->get('value');
+                if (!$value) {
+                    throw new \Exception("When there are multiple control tags they must specify a value");
+                }
+                $setNewId = BaseComponent::getMultiControlId($newId, $value);
+            }
+            else {
+                $setNewId = $newId;
+            }
+            $control->setIfExists('id', $setNewId);
             $control->setIfExists('name', $newName);
             if (isset($this->tagsWithForById[$oldId])) {
                 foreach ($this->tagsWithForById[$oldId] as $htmlTag) {
-                    $htmlTag->setIfExists('for', $newId);
+                    $htmlTag->setIfExists('for', $setNewId);
                 }
+            }
+        }
+    }
+
+    /**
+     * @param mixed $value
+     * @throws \Exception
+     */
+    public function setValue($value)
+    {
+        if (is_array($value)) {
+            if (count($value)!=count($this->controlTags)) {
+                throw new \Exception("The number of values provided does not match the number of controls");
+            }
+            foreach ($this->controlTags as $controlTag) {
+                $controlTag->value(array_pop($value));
+            }
+        }
+        else {
+            foreach ($this->controlTags as $controlTag) {
+                $controlTag->value($value);
             }
         }
     }
@@ -78,7 +126,7 @@ class ComponentControls
     /**
      * @return HtmlTag[]
      */
-    public function getControls()
+    public function getControls(): array
     {
         return $this->controlTags;
     }
@@ -86,7 +134,7 @@ class ComponentControls
     /**
      * @return array
      */
-    public function getHtmlTags()
+    public function getHtmlTags(): array
     {
         return $this->allTags;
     }

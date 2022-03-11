@@ -6,6 +6,9 @@ namespace Deform\Component;
 
 class Hidden extends Input
 {
+    /**
+     * @inheritDoc
+     */
     public function setup()
     {
         parent::setup();

@@ -7,7 +7,7 @@ if (isset($_POST) && count($_POST)) { ?>
 
 <h2>Components with Namespace 'form1'</h2>
 <form method="post" enctype="multipart/form-data">
-    <?= Component::Button('form1','mybutton')->value('buttonvalue')->text('press me!') ?>
+    <?= Component::Button('form1','mybutton')->value('buttonvalue')->html('press me!')->autofocus(true) ?>
 
     <?= Component::Checkbox('form1','mycheckbox')->text('check me!')->label('Check it out!') ?>
 
@@ -26,8 +26,6 @@ if (isset($_POST) && count($_POST)) { ?>
     <?= Component::File('form1', 'myfile')->label("My File") ?>
 
     <?= Component::Hidden( 'form1','myhidden')->value('hidden value') ?>
-
-    <?= Component::Image('form1','myimage')->label("My Image"); ?>
 
     <?= Component::InputButton('form1','myinputbutton')->label('My Input Button')->value('Click Me!') ?>
 
@@ -49,7 +47,7 @@ if (isset($_POST) && count($_POST)) { ?>
 
     <?= Component::SelectMulti( 'form1','myselectmulti2')->optgroupOptions(['group 1'=>['one'=>'One','two'=>'Two','three'=>'Three'],'group 2'=>['four'=>'Four','five'=>'Five']])->label('My Select Multi (optgroups)')->setSelected(['two','five']) ?>
 
-    <?= Component::Slider('form','myslider')->label('My Slider'); ?>
+    <?= Component::Slider('form1','myslider')->label('My Slider'); ?>
 
     <?= Component::Submit( 'form1','mysubmitbutton')->value('My Submit Button') ?>
 

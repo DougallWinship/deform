@@ -65,9 +65,14 @@ abstract class BaseComponent implements IToString
         $this->setup();
     }
 
+    /**
+     * perform initial component setup
+     * @throws \Exception
+     */
     abstract public function setup();
 
     /**
+     * set a tooltip for the component
      * @param string $tooltip
      * @return $this
      */
@@ -78,6 +83,7 @@ abstract class BaseComponent implements IToString
     }
 
     /**
+     * set the component's label
      * @param string $label
      * @return $this
      * @throws \Exception
@@ -89,6 +95,7 @@ abstract class BaseComponent implements IToString
     }
 
     /**
+     * set a hint for the component
      * @param $hint string
      * @return $this
      */
@@ -99,6 +106,7 @@ abstract class BaseComponent implements IToString
     }
 
     /**
+     * whether to try and guess the components label automatically
      * @param bool $autoLabel
      * @return $this
      */
@@ -109,8 +117,9 @@ abstract class BaseComponent implements IToString
     }
 
     /**
+     * add a control and optionally a decorator (an optional wrapper for the control)
      * @param HtmlTag $control
-     * @param array|IHtml|string|null $controlTagDecorator
+     * @param array|HtmlTag|null $controlTagDecorator
      * @return $this
      * @throws \Exception
      */
@@ -120,22 +129,40 @@ abstract class BaseComponent implements IToString
         return $this;
     }
 
+    /**
+     * add an expected field (used for controls which do not submit data if they are unset such as checkboxes)
+     * @param string $fieldName
+     */
     public function addExpectedField(string $fieldName)
     {
         $this->componentContainer->addExpectedInput($fieldName, $this->getExpectedDataName());
     }
 
     /**
+     * set an error on this component
      * @param $error string
      * @return $this
      */
-    public function error(string $error): BaseComponent
+    public function setError(string $error): BaseComponent
     {
         $this->componentContainer->setError($error);
         return $this;
     }
 
     /**
+     * sets the components value
+     * @param mixed $value
+     * @return $this
+     * @throws \Exception
+     */
+    public function setValue($value): self
+    {
+        $this->componentContainer->control->setValue($value);
+        return $this;
+    }
+
+    /**
+     * sets the component's form namespace
      * @param string $namespace
      * @return BaseComponent
      * @throws \Exception
@@ -146,26 +173,17 @@ abstract class BaseComponent implements IToString
             $this->namespace = $namespace;
             $newId = self::generateId($namespace, $this->fieldName);
             $newName = self::generateName($namespace, $this->fieldName);
-            $this->componentContainer->changeNamespaceAttributes($newId, $newName);
+            $this->componentContainer->changeNamespacedAttributes($newId, $newName);
         }
         return $this;
     }
 
     /**
-     * @param \DOMDocument $document
-     * @return mixed
+     * generate a tag containing the entire component
+     * @return HtmlTag
      * @throws \Exception
      */
-    public function getDomNode(\DOMDocument $document)
-    {
-        return Html::getDOMDocument($this->getHtmlTag());
-    }
-
-    /**
-     * @return IHtml
-     * @throws \Exception
-     */
-    public function getHtmlTag(): IHtml
+    public function getHtmlTag(): HtmlTag
     {
         if ($this->autoLabel && !$this->componentContainer->labelTag) {
             $this->componentContainer->labelTag = Html::label([])->add($this->fieldName);
@@ -177,6 +195,7 @@ abstract class BaseComponent implements IToString
     }
 
     /**
+     * convert this component to a string
      * @return string
      */
     public function __toString(): string
@@ -282,7 +301,7 @@ abstract class BaseComponent implements IToString
     }
 
     /**
-     * you can indeed do dumb things with this
+     * set component attributes magically (you can indeed do some extremely dumb things with this)
      * @param string $name
      * @param array $arguments
      * @return BaseComponent
@@ -397,11 +416,21 @@ abstract class BaseComponent implements IToString
     }
 
     /**
-     * hydrate the component using its properties
+     * @param string $id
+     * @param string $value
+     * @return string
+     */
+    public static function getMultiControlId(string $id, string $value): string
+    {
+        return $id . '-' . str_replace(" ","-", $value);
+    }
+
+    /**
+     * hydrate the component using its properties (those annotated as @persistAttribute) when it's being rebuilt
+     * from an array definition
      */
     public function hydrate()
     {
-        // override to rebuild component dependencies when the component is being rebuilt from an array
-        // for example Select has $options values but hasn't yet actually build their tags
+        // override if necessary
     }
 }

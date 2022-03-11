@@ -8,6 +8,9 @@ namespace Deform\Component;
  */
 class MultipleEmail extends Email
 {
+    /**
+     * @inheritDoc
+     */
     public function setup()
     {
         parent::setup();

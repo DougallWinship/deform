@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Deform\Component;
 
 use Deform\Html\Html as Html;
+use Deform\Html\HtmlTag;
 use Deform\Html\IHtml;
 
 /**
@@ -13,11 +14,18 @@ use Deform\Html\IHtml;
  */
 class Select extends BaseComponent
 {
-    /** @var IHtml */
+    /** @var HtmlTag */
     public IHtml $select;
+
     public bool $hasOptGroups = false;
     public array $options = [];
 
+    /** @var HtmlTag[]*/
+    public array $optionsHtml = [];
+
+    /**
+     * @inheritDoc
+     */
     public function setup()
     {
         $this->select = Html::select([
@@ -27,7 +35,12 @@ class Select extends BaseComponent
         $this->addControl($this->select);
     }
 
-    public function options($options): Select
+    /**
+     * @param array $options
+     * @return $this
+     * @throws \Exception
+     */
+    public function options(array $options): self
     {
         if ($this->options != $options) {
             $this->options = $options;
@@ -36,12 +49,19 @@ class Select extends BaseComponent
         $this->select->clear();
         $isAssoc = \Deform\Util\Arrays::isAssoc($options);
         foreach ($this->options as $key => $value) {
-            $this->select->add(Html::option(['value' => $isAssoc ? $key : $value])->add($value));
+            $option = Html::option(['value' => $isAssoc ? $key : $value])->add($value);
+            $this->select->add($option);
+            $this->optionsHtml[] = $option;
         }
         return $this;
     }
 
-    public function optgroupOptions(array $optgroupOptions): Select
+    /**
+     * @param array $optgroupOptions
+     * @return $this
+     * @throws \Exception
+     */
+    public function optgroupOptions(array $optgroupOptions): self
     {
         if ($this->options != $optgroupOptions) {
             $this->options = $optgroupOptions;
@@ -53,7 +73,9 @@ class Select extends BaseComponent
             $optgroup = Html::optgroup(['label' => $groupName]);
             $isAssoc = \Deform\Util\Arrays::isAssoc($options);
             foreach ($options as $key => $value) {
-                $optgroup->add(Html::option(['value' => $isAssoc ? $key : $value])->add($value));
+                $option = Html::option(['value' => $isAssoc ? $key : $value])->add($value);
+                $optgroup->add($option);
+                $this->optionsHtml[] = $option;
             }
             $this->select->add($optgroup);
         }
@@ -62,10 +84,10 @@ class Select extends BaseComponent
 
     /**
      * @param string|array $value
-     * @return Select
+     * @return $this
      * @throws \Exception
      */
-    public function setSelected($value): Select
+    public function setSelected($value): self
     {
         if (is_array($value)) {
             throw new \Exception("Only one option can be selected for a non-multi select");
@@ -100,6 +122,25 @@ class Select extends BaseComponent
         }
     }
 
+    /**
+     * @inheritDoc
+     */
+    public function setValue($value): self
+    {
+        foreach ($this->optionsHtml as $optionHtml) {
+            $optionValue = $optionHtml->get('value');
+            if ($value === $optionValue) {
+                $optionHtml->set('selected', 'selected');
+            } else {
+                $optionHtml->unset('selected');
+            }
+        }
+        return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
     public function hydrate()
     {
         if ($this->hasOptGroups) {

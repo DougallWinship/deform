@@ -4,7 +4,7 @@ class HtmlCest
 {
     public function _before(AcceptanceTester $I)
     {
-        $I->amOnPage("/html");
+        $I->amOnPage("/html/build");
         $I->seeResponseCodeIs(200);
     }
 

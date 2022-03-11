@@ -9,6 +9,9 @@ namespace Deform\Component;
  */
 class File extends Input
 {
+    /**
+     * @inheritDoc
+     */
     public function setup()
     {
         parent::setup();

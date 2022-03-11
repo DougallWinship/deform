@@ -11,6 +11,9 @@ namespace Deform\Component;
  */
 class Slider extends Input
 {
+    /**
+     * @inheritDoc
+     */
     public function setup()
     {
         parent::setup();

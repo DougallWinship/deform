@@ -9,6 +9,9 @@ namespace Deform\Component;
  */
 class MultipleFile extends File
 {
+    /**
+     * @inheritDoc
+     */
     public function setup()
     {
         parent::setup();

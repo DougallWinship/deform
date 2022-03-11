@@ -12,4 +12,6 @@ class Acceptance extends \Codeception\Module
             $this->assertSame($value, $array[$key]);
         }
     }
+
+
 }

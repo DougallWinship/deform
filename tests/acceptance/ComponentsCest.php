@@ -4,7 +4,7 @@ class ComponentsCest
 {
     public function _before(AcceptanceTester $I)
     {
-        $I->amOnPage("/components/with-namespace");
+        $I->amOnPage("/component/with-namespace");
         $I->seeResponseCodeIs(200);
     }
 
@@ -33,7 +33,7 @@ class ComponentsCest
     {
         $I->seeElement(['css'=>'div#form1-mycurrency-container.component-container.container-type-currency>div.label-container>label']);
         $I->seeElement(['css'=>'div#form1-mycurrency-container.component-container.container-type-currency>div.control-container>label.currency-symbol']);
-        $I->seeElement(['css'=>'div#form1-mycurrency-container.component-container.container-type-currency>div.control-container>input[type=text]']);
+        $I->seeElement(['css'=>'div#form1-mycurrency-container.component-container.container-type-currency>div.control-container>input[type=number]']);
     }
 
     public function date(AcceptanceTester $I)
@@ -69,12 +69,6 @@ class ComponentsCest
     public function hidden(AcceptanceTester $I)
     {
         $I->seeElement(['css'=>'input#hidden-form1-myhidden[type=hidden][value="hidden value"]']);
-    }
-
-    public function image(AcceptanceTester $I)
-    {
-        $I->seeElement(['css'=>'div#form1-myimage-container.component-container.container-type-image>div.label-container>label']);
-        $I->seeElement(['css'=>'div#form1-myimage-container.component-container.container-type-image>div.control-container>input[type=image]']);
     }
 
     public function inputButton(AcceptanceTester $I)
@@ -139,6 +133,12 @@ class ComponentsCest
         $I->seeElement(['css'=>'div#form1-myselectmulti2-container.component-container.container-type-select-multi>div.label-container>label']);
         $I->seeElement(['css'=>'div#form1-myselectmulti2-container.component-container.container-type-select-multi>div.control-container>select[multiple=multiple]>optgroup[label="group 1"]>option[value=two][selected=selected]']);
         $I->seeElement(['css'=>'div#form1-myselectmulti2-container.component-container.container-type-select-multi>div.control-container>select[multiple=multiple]>optgroup[label="group 2"]>option[value=five][selected=selected]']);
+    }
+
+    public function slider(AcceptanceTester $I)
+    {
+        $I->seeElement(['css'=>'div#form1-myslider-container.component-container.container-type-slider>div.label-container>label']);
+        $I->seeElement(['css'=>'div#form1-myslider-container.component-container.container-type-slider>div.control-container>input[type=range]']);
     }
 
     public function submitButton(AcceptanceTester $I)

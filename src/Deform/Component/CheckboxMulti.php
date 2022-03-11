@@ -8,18 +8,21 @@ use Deform\Html\Html as Html;
 use Deform\Util\Arrays;
 
 /**
- * @persistAttribute checkboxesValues
+ * @persistAttribute checkboxValues
  */
 class CheckboxMulti extends BaseComponent
 {
     public array $checkboxes = [];
     public ?array $checkboxValues = null;
 
+    /**
+     * @inheritDoc
+     */
     public function setup()
     {
     }
 
-    public function checkboxes(array $checkboxes): CheckboxMulti
+    public function checkboxes(array $checkboxes): self
     {
         $this->checkboxValues = $checkboxes;
         $this->checkboxes = [];
@@ -28,7 +31,7 @@ class CheckboxMulti extends BaseComponent
         $id = $this->getId();
         foreach ($checkboxes as $key => $value) {
             $wrapper = Html::div(['class' => 'checkbox-wrapper']);
-            $checkboxId = $id . '-' . $key;
+            $checkboxId = self::getMultiControlId($id, (string)$key);
             $checkbox = Html::input([
                 'type' => 'checkbox',
                 'id' => $checkboxId,
@@ -49,10 +52,29 @@ class CheckboxMulti extends BaseComponent
         return $this;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function hydrate()
     {
         if ($this->checkboxValues != null && count($this->checkboxValues) > 0) {
             $this->checkboxes($this->checkboxValues);
         }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setValue($value): self
+    {
+        foreach ($this->checkboxes as $checkbox) {
+            $checkboxValue = $checkbox->get('value');
+            if (is_array($value) && in_array($checkboxValue, $value)) {
+                $checkbox->set('checked', 'checked');
+            } else {
+                $checkbox->unset('checked');
+            }
+        }
+        return $this;
     }
 }

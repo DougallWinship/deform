@@ -22,9 +22,11 @@ class Currency extends BaseComponent
     {
         $this->currencyLabel = Html::label(['class' => 'currency-symbol']);
         $currencyInput = Html::input([
-            'type' => 'text',
+            'type' => 'number',
             'name' => $this->getName(),
-            'id' => $this->getId()
+            'id' => $this->getId(),
+            'step' => 'any',
+            'min' => '0'
         ]);
         $this->addControl($currencyInput, [
             $this->currencyLabel,
@@ -38,13 +40,16 @@ class Currency extends BaseComponent
      * @return $this
      * @throws \Exception
      */
-    public function currency(string $currency): Currency
+    public function currency(string $currency): self
     {
         $this->currencyLabelValue = $currency;
         $this->currencyLabel->add($currency);
         return $this;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function hydrate()
     {
         if ($this->currencyLabelValue != null) {

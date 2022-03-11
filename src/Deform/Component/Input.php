@@ -24,7 +24,7 @@ abstract class Input extends BaseComponent
     public HtmlTag $input;
 
     /**
-     * @throws \Exception
+     * @inheritDoc
      */
     public function setup()
     {
@@ -42,7 +42,7 @@ abstract class Input extends BaseComponent
      * @return $this
      * @throws \Exception
      */
-    public function type(string $type)
+    public function type(string $type): self
     {
         $this->input->set('type', $type);
         return $this;

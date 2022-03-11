@@ -20,6 +20,9 @@ class Text extends Input
     private array $datalist = [];
     private ?string $datalistId = null;
 
+    /**
+     * @inheritDoc
+     */
     public function setup()
     {
         parent::setup();
@@ -45,10 +48,13 @@ class Text extends Input
             $datalistHtml->add(Html::option()->value($value));
         }
         $this->input->set('list', $this->datalistId);
-        $this->componentContainer->control->addControl($datalistHtml);
+        $this->addControl($datalistHtml);
         return $this;
     }
 
+    /**
+     * @inheritDoc
+     */
     public function hydrate()
     {
         if (is_array($this->datalist) && count($this->datalist) > 0) {
