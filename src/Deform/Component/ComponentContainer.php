@@ -64,11 +64,6 @@ class ComponentContainer
      */
     public function __construct(string $owningClass)
     {
-        if (strpos($owningClass, __NAMESPACE__) !== 0) {
-            throw new \Exception(
-                "ComponentContainer unexpectedly used from class in different namespace : " . $owningClass
-            );
-        }
         $classWithoutNamespace = substr($owningClass, strlen(__NAMESPACE__) + 1);
         $type = \Deform\Util\Strings::separateCased($classWithoutNamespace, '-');
         $this->containerType = 'container-type-' . $type;

@@ -37,7 +37,7 @@ if (isset($_POST) && count($_POST)) { ?>
 
     <?= Component::RadioButtonSet( null,'myradiobuttonset')->radioButtons(['one'=>'One','two'=>'Two','three'=>'Three'])->label("My Radio Button Set"); ?>
 
-    <?= Component::RadioButtonSet(null, 'myradiobuttonset2')->radioButtons(['three','four','five'])->setSelected('four')->label("My Radio Button Set 2"); ?>
+    <?= Component::RadioButtonSet(null, 'myradiobuttonset2')->radioButtons(['three','four','five'])->setValue('four')->label("My Radio Button Set 2"); ?>
 
     <?= Component::Select( null,'myselect')->options(['one'=>'One','two'=>'Two','three'=>'Three'])->label('My Select')->setSelected('two'); ?>
 

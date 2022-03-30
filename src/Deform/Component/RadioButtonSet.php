@@ -36,9 +36,16 @@ class RadioButtonSet extends BaseComponent
         $isAssoc = \Deform\Util\Arrays::isAssoc($radioButtons);
         $this->radioButtons = $radioButtons;
         foreach ($radioButtons as $key => $value) {
-            $radioButtonContainer = Html::div(['class' => 'radio-button-container']);
-            $radioValue = $isAssoc ? $key : $value;
-            $id = self::getMultiControlId($this->getId(), $value);
+            $radioButtonContainer = Html::div(['class' => 'radiobutton-wrapper']);
+            if ($isAssoc) {
+                $radioLabel = $value;
+                $radioValue = $key;
+            }
+            else {
+                $radioLabel = $value;
+                $radioValue = $value;
+            }
+            $id = self::getMultiControlId($this->getId(), $radioValue);
             $radioButtonInput = Html::input([
                 'type' => 'radio',
                 'value' => $radioValue,
@@ -48,7 +55,7 @@ class RadioButtonSet extends BaseComponent
             $this->radioButtonInputsByValue[$radioValue] = $radioButtonInput;
             $radioButtonContainer->add($radioButtonInput);
             $radioButtonContainer->add(" ");
-            $radioButtonContainer->add(Html::label(['for' => $id])->add($value));
+            $radioButtonContainer->add(Html::label(['for' => $id])->add($radioLabel));
             $this->addControl($radioButtonInput, $radioButtonContainer);
         }
         $this->addExpectedField($this->fieldName);
@@ -62,26 +69,6 @@ class RadioButtonSet extends BaseComponent
     {
         foreach ($this->radioButtonInputsByValue as $html) {
             $html->unset('checked');
-        }
-        return $this;
-    }
-
-    /**
-     * @param $value
-     * @return self
-     * @throws \Exception
-     */
-    public function setSelected($value): self
-    {
-        if (!isset($this->radioButtonInputsByValue[$value])) {
-            throw new \Exception("There is no radio button in the group with the value '" . $value . "'");
-        }
-        foreach ($this->radioButtonInputsByValue as $checkValue => $html) {
-            if ($checkValue === $value) {
-                $html->set('checked', 'checked');
-            } else {
-                $html->unset('checked');
-            }
         }
         return $this;
     }

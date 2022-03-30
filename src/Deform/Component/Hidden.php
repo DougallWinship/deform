@@ -13,6 +13,7 @@ class Hidden extends Input
     {
         parent::setup();
         $this->componentContainer->controlOnly = true;
+        $this->autolabel(false);
         $this->type('hidden');
     }
 }

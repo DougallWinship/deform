@@ -20,9 +20,6 @@ class Select extends BaseComponent
     public bool $hasOptGroups = false;
     public array $options = [];
 
-    /** @var HtmlTag[]*/
-    public array $optionsHtml = [];
-
     /**
      * @inheritDoc
      */
@@ -83,56 +80,28 @@ class Select extends BaseComponent
     }
 
     /**
-     * @param string|array $value
-     * @return $this
-     * @throws \Exception
-     */
-    public function setSelected($value): self
-    {
-        if (is_array($value)) {
-            throw new \Exception("Only one option can be selected for a non-multi select");
-        }
-        $this->setSelectedForValues([$value]);
-        return $this;
-    }
-
-    /**
-     * @param array $valueArray
-     * @throws \Exception
-     */
-    protected function setSelectedForValues(array $valueArray)
-    {
-        foreach ($this->select->getChildren() as $child) {
-            if ($child->getTagType() == 'optgroup') {
-                foreach ($child->getChildren() as $optgroupChild) {
-                    if (in_array($optgroupChild->get('value'), $valueArray)) {
-                        $optgroupChild->set('selected', 'selected');
-                    } else {
-                        $child->unset('selected');
-                    }
-                }
-            } else {
-                $check = $child->get('value');
-                if (in_array($check, $valueArray)) {
-                    $child->set('selected', 'selected');
-                } else {
-                    $child->unset('selected');
-                }
-            }
-        }
-    }
-
-    /**
      * @inheritDoc
      */
     public function setValue($value): self
     {
-        foreach ($this->optionsHtml as $optionHtml) {
-            $optionValue = $optionHtml->get('value');
-            if ($value === $optionValue) {
-                $optionHtml->set('selected', 'selected');
-            } else {
-                $optionHtml->unset('selected');
+        if (is_array($value)) {
+            throw new \Exception("Select component can only set a single value");
+        }
+        $checkOptionTags = [];
+        if ($this->hasOptGroups) {
+            foreach ($this->select->getChildren() as $selectOptionGroup) {
+                $checkOptionTags = array_merge($checkOptionTags, $selectOptionGroup->getChildren());
+            }
+        }
+        else {
+            $checkOptionTags = $this->select->getChildren();
+        }
+        foreach ($checkOptionTags as $checkOptionTag) {
+            if ($checkOptionTag->get('value')===$value) {
+                $checkOptionTag->set('selected', 'selected');
+            }
+            else {
+                $checkOptionTag->unset('selected');
             }
         }
         return $this;
@@ -148,5 +117,16 @@ class Select extends BaseComponent
         } else {
             $this->options($this->options);
         }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getHtmlTag(): HtmlTag
+    {
+        if (count($this->options)==0) {
+            throw new \Exception("A select component must contain at least one option");
+        }
+        return parent::getHtmlTag();
     }
 }

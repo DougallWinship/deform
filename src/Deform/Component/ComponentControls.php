@@ -73,6 +73,16 @@ class ComponentControls
     }
 
     /**
+     *
+     */
+    public function reset()
+    {
+        $this->allTags = [];
+        $this->controlTags = [];
+        $this->tagsWithForById = [];
+    }
+
+    /**
      * @param string $newId
      * @param string $newName
      * @throws \Exception
@@ -113,7 +123,7 @@ class ComponentControls
                 throw new \Exception("The number of values provided does not match the number of controls");
             }
             foreach ($this->controlTags as $controlTag) {
-                $controlTag->value(array_pop($value));
+                $controlTag->value(array_shift($value));
             }
         }
         else {

@@ -4,6 +4,10 @@ declare(strict_types=1);
 
 namespace Deform\Component;
 
+/**
+ * @persistAttribute hasOptGroups
+ * @persistAttribute options
+ */
 class SelectMulti extends Select
 {
     /**
@@ -13,17 +17,6 @@ class SelectMulti extends Select
     {
         parent::setup();
         $this->select->set('multiple', 'multiple');
-    }
-
-    /**
-     * @param array|string $value
-     * @return $this
-     * @throws \Exception
-     */
-    public function setSelected($value): self
-    {
-        $this->setSelectedForValues(is_array($value) ? $value : [$value]);
-        return $this;
     }
 
     /**
@@ -39,12 +32,26 @@ class SelectMulti extends Select
      */
     public function setValue($value): self
     {
-        foreach ($this->optionsHtml as $optionHtml) {
-            $optionValue = $optionHtml->get('value');
-            if (in_array($optionValue, $value)) {
-                $optionHtml->set('selected', 'selected');
-            } else {
-                $optionHtml->unset('selected');
+        if (is_string($value)) {
+            return parent::setValue($value);
+        }
+        elseif (is_array($value)) {
+            if ($this->hasOptGroups) {
+                $checkOptionTags = [];
+                foreach ($this->select->getChildren() as $selectOptionGroup) {
+                    $checkOptionTags = array_merge($checkOptionTags, $selectOptionGroup->getChildren());
+                }
+            }
+            else {
+                $checkOptionTags = $this->select->getChildren();
+            }
+            foreach ($checkOptionTags as $optionTag) {
+                if (in_array($optionTag->get('value'), $value)) {
+                    $optionTag->set('selected', 'selected');
+                }
+                else {
+                    $optionTag->unset('selected');
+                }
             }
         }
         return $this;

@@ -1,9 +1,7 @@
 <?php
-namespace Deform\Html;
+namespace Deform\Component;
 
-use Deform\Component\BaseComponent;
-use Deform\Component\ComponentControls;
-use Deform\Component\ComponentFactory;
+use Deform\Html\Html;
 
 class ComponentControlsTest extends \Codeception\Test\Unit
 {
@@ -14,7 +12,6 @@ class ComponentControlsTest extends \Codeception\Test\Unit
 
     protected function _before()
     {
-
     }
 
     protected function _after()
@@ -281,5 +278,88 @@ class ComponentControlsTest extends \Codeception\Test\Unit
         $this->assertArrayHasKey(1, $controls);
         $this->assertEquals($controlTag, $controls[0]);
         $this->assertEquals($controlTag2, $controls[1]);
+    }
+
+    public function testSetValueWrongNumberOfControls()
+    {
+        $sharedName = "fieldname[]";
+        $componentControls = new ComponentControls();
+        $id = 'foo';
+        $controlTagValue = "value1";
+        $controlTag = Html::input(['id'=>$id,'name'=>$sharedName,'value'=>$controlTagValue]);
+        $labelWithFor = Html::label(['for'=>$id]);
+        $decorations = [
+            Html::br(),
+            $labelWithFor,
+            $controlTag
+        ];
+        $componentControls->addControl($controlTag, $decorations);
+
+        $id2 = 'foo2';
+        $controlTagValue2 = "value2";
+        $controlTag2 = Html::input(['id'=>$id2,'name'=>$sharedName,'value'=>$controlTagValue2]);
+        $labelWithFor2 = Html::label(['for'=>$id2]);
+        $labelWithFor2b = Html::label(['for'=>$id2]);
+        $decorations2 = [
+            $labelWithFor2,
+            Html::br(),
+            $controlTag2,
+            $labelWithFor2b,
+        ];
+        $componentControls->addControl($controlTag2, $decorations2);
+
+        $this->expectException(\Exception::class);
+        $componentControls->setValue([1,2,3]);
+    }
+
+    public function testSetValueSingle()
+    {
+        $componentControls = new ComponentControls();
+        $id = 'foo';
+        $controlTagValue = "value1";
+        $controlTag = Html::input(['id'=>$id,'name'=>$id,'value'=>$controlTagValue]);
+        $labelWithFor = Html::label(['for'=>$id]);
+        $decorations = [
+            Html::br(),
+            $labelWithFor,
+            $controlTag
+        ];
+        $componentControls->addControl($controlTag, $decorations);
+        $componentControls->setValue('bar');
+
+        $this->assertEquals('bar', $controlTag->get('value'));
+    }
+
+    public function testSetValueMultiple()
+    {
+        $sharedName = "fieldname[]";
+        $componentControls = new ComponentControls();
+        $id = 'foo';
+        $controlTagValue = "value1";
+        $controlTag = Html::input(['id'=>$id,'name'=>$sharedName,'value'=>$controlTagValue]);
+        $labelWithFor = Html::label(['for'=>$id]);
+        $decorations = [
+            Html::br(),
+            $labelWithFor,
+            $controlTag
+        ];
+        $componentControls->addControl($controlTag, $decorations);
+
+        $id2 = 'foo2';
+        $controlTagValue2 = "value2";
+        $controlTag2 = Html::input(['id'=>$id2,'name'=>$sharedName,'value'=>$controlTagValue2]);
+        $labelWithFor2 = Html::label(['for'=>$id2]);
+        $labelWithFor2b = Html::label(['for'=>$id2]);
+        $decorations2 = [
+            $labelWithFor2,
+            Html::br(),
+            $controlTag2,
+            $labelWithFor2b,
+        ];
+        $componentControls->addControl($controlTag2, $decorations2);
+
+        $componentControls->setValue(['aaa','bbb']);
+        $this->assertEquals('aaa', $controlTag->get('value'));
+        $this->assertEquals('bbb', $controlTag2->get('value'));
     }
 }

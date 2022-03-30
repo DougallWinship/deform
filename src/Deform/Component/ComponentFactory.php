@@ -39,7 +39,7 @@ class ComponentFactory
     private static $reflectionSelf;
 
     /** @var object[] */
-    private static $components;
+    public static $components;
 
     /**
      * @param string $method
@@ -49,8 +49,6 @@ class ComponentFactory
      */
     public static function __callStatic(string $method, array $arguments)
     {
-        self::$reflectionSelf = new \ReflectionClass(self::class);
-
         self::identifyComponents();
 
         if (!in_array($method, self::$components)) {
@@ -62,7 +60,8 @@ class ComponentFactory
 
         $namespace = array_shift($arguments);
         $fieldName = array_shift($arguments);
-        return self::build($method, $namespace, $fieldName, $arguments);
+        $attributes = array_shift($arguments);
+        return self::build($method, $namespace, $fieldName, $attributes ?? []);
     }
 
     /**
@@ -87,6 +86,9 @@ class ComponentFactory
         $class = __NAMESPACE__ . '\\' . $component;
         if (!class_exists($class)) {
             throw new \Exception("Failed to find class for component '" . $component . "' : " . $class);
+        }
+        if (!is_subclass_of($class, BaseComponent::class)) {
+            throw new \Exception("You can only build components (which must subclass BaseComponent)");
         }
 
         // use the protected constructor!

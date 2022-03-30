@@ -23,7 +23,7 @@ class Checkbox extends Input
         $this->autoAddControl = false;
         parent::setup();
         $this->type('checkbox');
-        $this->value(1);
+        $this->input->value('1'); // default ... it's easy to change but doesn't yet have hydration support
         $this->inputLabel = Html::label(['for' => $this->getId()])->add($this->fieldName);
         $this->addControl($this->input, [
             $this->input,

@@ -15,23 +15,26 @@ class Currency extends BaseComponent
     public ?string $currencyLabelValue = null;
     public HtmlTag $currencyLabel;
 
+    /** @var HtmlTag */
+    public HtmlTag $currencyInput;
+
     /**
      * @throws \Exception
      */
     public function setup()
     {
         $this->currencyLabel = Html::label(['class' => 'currency-symbol']);
-        $currencyInput = Html::input([
+        $this->currencyInput = Html::input([
             'type' => 'number',
             'name' => $this->getName(),
             'id' => $this->getId(),
             'step' => 'any',
             'min' => '0'
         ]);
-        $this->addControl($currencyInput, [
+        $this->addControl($this->currencyInput, [
             $this->currencyLabel,
             ' ',
-            $currencyInput
+            $this->currencyInput
         ]);
     }
 

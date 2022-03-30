@@ -26,9 +26,11 @@ class CheckboxMulti extends BaseComponent
     {
         $this->checkboxValues = $checkboxes;
         $this->checkboxes = [];
+        $this->componentContainer->control->reset();
         $isAssoc = Arrays::isAssoc($checkboxes);
         $name = $this->getName() . "[]";
         $id = $this->getId();
+
         foreach ($checkboxes as $key => $value) {
             $wrapper = Html::div(['class' => 'checkbox-wrapper']);
             $checkboxId = self::getMultiControlId($id, (string)$key);
