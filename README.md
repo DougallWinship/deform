@@ -6,7 +6,7 @@ Form coding is highly repetitive.
 
 ## Features
 * consistent generation of components (as regards the HTML structure)
-* strong IDE auto-completion support
+* strong IDE auto-completion support & chaining wherever appropriate
 * generate forms in a controller action which can then be tailored in a view
 * export a form to an array & build a form from an array definition (so you can persist them)
 * todo: - auto-generate forms from a model or a database table
@@ -24,7 +24,7 @@ There are 3 principal layers:
 
 Here are some very simple examples of each layer: 
 
-> **_NOTE:_** If you set up /tests/_data/public/ (as a doc root) on a local webserver you can view what the 
+> **_NOTE:_** If you set up /tests/_data/public/ as a doc root on a local webserver you can view what the 
 > codeception acceptance tests see!    
 
 ### Deform\Html
@@ -46,7 +46,7 @@ echo $html;
 
 The HTML can be manipulated like this:
 ```php
-echo $html->clear()->add('Blue Text')->css('color','blue');
+echo $html->css('color','blue')->clear()->add('Blue Text');
 ```
 ...which will output:
 ```html
@@ -56,7 +56,7 @@ echo $html->clear()->add('Blue Text')->css('color','blue');
 Or via a (very) simple selector system:
 ```php
 echo $html->deform('.blue-text',function(\Deform\Html\HtmlTag $node) {
-    $node->clear()->css('color','green')->clear()->add('Green Text');
+    $node->css('color','green')->reset('Green Text'); /* reset() is the same as clear() and then add() */
 });
 ```
 

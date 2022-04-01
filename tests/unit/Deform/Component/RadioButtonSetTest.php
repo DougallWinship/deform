@@ -92,7 +92,7 @@ class RadioButtonSetTest extends \Codeception\Test\Unit
             ];
             $this->tester->assertIsHtmlTag($controlTags[$idx], 'input', $inputAttributes);
             $controlTagWrapper = $allTags[$idx];
-            $this->tester->assertIsHtmlTag($controlTagWrapper,'div',['class'=>'radiobutton-wrapper']);
+            $this->tester->assertIsHtmlTag($controlTagWrapper,'div',['class'=>'radiobuttonset-container']);
             $controlTagChildren = $controlTagWrapper->getChildren();
             $this->assertCount(3, $controlTagChildren);
             list($input, $space, $label) = $controlTagChildren;

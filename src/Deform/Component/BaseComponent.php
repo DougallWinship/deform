@@ -204,8 +204,7 @@ abstract class BaseComponent implements IToString
     public function __toString(): string
     {
         try {
-            $tag = $this->getHtmlTag();
-            return (string)$tag;
+            return (string) $this->getHtmlTag();
         } catch (\Exception $exc) {
             // https://wiki.php.net/rfc/tostring_exceptions
             $this->toStringException = $exc;
@@ -214,9 +213,9 @@ abstract class BaseComponent implements IToString
     }
 
     /**
-     * @return ?\Exception
+     * @return null|\Exception
      */
-    public function getLastToStringException()
+    public function getLastToStringException(): ?\Exception
     {
         return $this->toStringException;
     }
@@ -274,44 +273,6 @@ abstract class BaseComponent implements IToString
     public function requiresMultiformEncoding()
     {
         return $this->requiresMultiformEncoding;
-    }
-
-    // static methods
-
-    /**
-     * @param $namespace null|string
-     * @param $field string
-     * @return string
-     */
-    protected static function generateName(?string $namespace, string $field): string
-    {
-        return $namespace !== null
-            ? $namespace . "[" . $field . "]"
-            : $field;
-    }
-
-    /**
-     * @param $namespace null|string
-     * @param $field string
-     * @return string
-     * @throws \Exception
-     */
-    protected static function generateId(?string $namespace, string $field): string
-    {
-        $classWithoutNamespace = \Deform\Util\Strings::getClassWithoutNamespace(get_called_class());
-        return strtolower($classWithoutNamespace) . ($namespace !== null ? '-' . $namespace : '') . '-' . $field;
-    }
-
-    /**
-     * @param null|string $namespace
-     * @return string
-     */
-    protected static function generateExpectedDataName(?string $namespace): string
-    {
-
-        return $namespace !== null
-            ? $namespace . "[" . self::EXPECTED_DATA_FIELD . "][]"
-            : self::EXPECTED_DATA_FIELD . "[]";
     }
 
     /**
@@ -394,6 +355,50 @@ abstract class BaseComponent implements IToString
     }
 
     /**
+     * hydrate the component using its properties (those annotated as @persistAttribute) when it's being rebuilt
+     * from an array definition
+     */
+    abstract public function hydrate();
+
+    // static methods
+
+    /**
+     * @param $namespace null|string
+     * @param $field string
+     * @return string
+     */
+    protected static function generateName(?string $namespace, string $field): string
+    {
+        return $namespace !== null
+            ? $namespace . "[" . $field . "]"
+            : $field;
+    }
+
+    /**
+     * @param $namespace null|string
+     * @param $field string
+     * @return string
+     * @throws \Exception
+     */
+    protected static function generateId(?string $namespace, string $field): string
+    {
+        $classWithoutNamespace = \Deform\Util\Strings::getClassWithoutNamespace(get_called_class());
+        return strtolower($classWithoutNamespace) . ($namespace !== null ? '-' . $namespace : '') . '-' . $field;
+    }
+
+    /**
+     * @param null|string $namespace
+     * @return string
+     */
+    protected static function generateExpectedDataName(?string $namespace): string
+    {
+
+        return $namespace !== null
+            ? $namespace . "[" . self::EXPECTED_DATA_FIELD . "][]"
+            : self::EXPECTED_DATA_FIELD . "[]";
+    }
+
+    /**
      * @return array|\ReflectionProperty[]
      * @throws \ReflectionException
      */
@@ -438,10 +443,4 @@ abstract class BaseComponent implements IToString
     {
         return $id . '-' . str_replace(" ", "-", $value);
     }
-
-    /**
-     * hydrate the component using its properties (those annotated as @persistAttribute) when it's being rebuilt
-     * from an array definition
-     */
-    abstract public function hydrate();
 }

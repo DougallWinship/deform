@@ -86,7 +86,7 @@ class HtmlTag implements IHtml
     }
 
     /**
-     * clear any children
+     * clears any children
      * @return $this
      * @throws \Exception
      */
