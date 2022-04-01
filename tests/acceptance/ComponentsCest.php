@@ -98,21 +98,21 @@ class ComponentsCest
     public function radioButtonSet(AcceptanceTester $I)
     {
         $I->seeElement(['css'=>'div#form1-myradiobuttonset-container.component-container.container-type-radio-button-set>div.label-container>label']);
-        $I->seeElement(['css'=>'div#form1-myradiobuttonset-container.component-container.container-type-radio-button-set>div.control-container>div.radio-button-container>input[type=radio]']);
-        $I->seeElement(['css'=>'div#form1-myradiobuttonset-container.component-container.container-type-radio-button-set>div.control-container>div.radio-button-container>label']);
+        $I->seeElement(['css'=>'div#form1-myradiobuttonset-container.component-container.container-type-radio-button-set>div.control-container>div.radiobuttonset-container>input[type=radio]']);
+        $I->seeElement(['css'=>'div#form1-myradiobuttonset-container.component-container.container-type-radio-button-set>div.control-container>div.radiobuttonset-container>label']);
     }
 
     public function radioButtonSet2(AcceptanceTester $I)
     {
         $I->seeElement(['css'=>'div#form1-myradiobuttonset2-container.component-container.container-type-radio-button-set>div.label-container>label']);
-        $I->seeElement(['css'=>'div#form1-myradiobuttonset2-container.component-container.container-type-radio-button-set>div.control-container>div.radio-button-container>input#radiobuttonset-form1-myradiobuttonset2-four[type=radio][checked=checked]']);
-        $I->seeElement(['css'=>'div#form1-myradiobuttonset2-container.component-container.container-type-radio-button-set>div.control-container>div.radio-button-container>label']);
+        $I->seeElement(['css'=>'div#form1-myradiobuttonset2-container.component-container.container-type-radio-button-set>div.control-container>div.radiobuttonset-container>input#radiobuttonset-form1-myradiobuttonset2-four[type=radio][checked=checked]']);
+        $I->seeElement(['css'=>'div#form1-myradiobuttonset2-container.component-container.container-type-radio-button-set>div.control-container>div.radiobuttonset-container>label']);
     }
 
     public function select(AcceptanceTester $I)
     {
         $I->seeElement(['css'=>'div#form1-myselect-container.component-container.container-type-select>div.label-container>label']);
-        $I->seeElement(['css'=>'div#form1-myselect-container.component-container.container-type-select>div.control-container>select>option[value=two][selected=selected]']);
+        $I->seeElement(['css'=>'div#form1-myselect-container.component-container.container-type-select>div.control-container>select#select-form1-myselect>option']);
     }
 
     public function selectOptgroups(AcceptanceTester $I)

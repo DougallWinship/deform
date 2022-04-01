@@ -36,7 +36,7 @@ class RadioButtonSet extends BaseComponent
         $isAssoc = \Deform\Util\Arrays::isAssoc($radioButtons);
         $this->radioButtons = $radioButtons;
         foreach ($radioButtons as $key => $value) {
-            $radioButtonContainer = Html::div(['class' => 'radiobutton-wrapper']);
+            $radioButtonContainer = Html::div(['class' => 'radiobuttonset-container']);
             $radioLabel = $value;
             $radioValue = $isAssoc ? $key : $value;
             $id = self::getMultiControlId($this->getId(), $radioValue);

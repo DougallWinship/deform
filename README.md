@@ -1,23 +1,31 @@
 # Deform
-Easily define consistent forms in PHP, which can be subsequently manipulated (or deformed!). 
+Easily define consistent forms in PHP, which can be subsequently manipulated before rendering. 
 
 ## Why?
-Forms are repetitive to code.
+Form coding is highly repetitive.
 
 ## Features
+* consistent generation of components (as regards the HTML structure)
+* strong IDE auto-completion support
 * generate forms in a controller action which can then be tailored in a view
-* consistent generation of components
-* IDE auto-completion support
+* export a form to an array & build a form from an array definition (so you can persist them)
 * todo: - auto-generate forms from a model or a database table
 * todo: - sensible default form handling
+* todo: - validation
+* todo: - rendering adapters
 
 ## Layers
-There are 3 layers:
+There are 3 principal layers:
 1. Deform\Html - generate an HTML tree which can be manipulated
 2. Deform\Component - generate various components using Deform\Html
 3. Deform\Form - generate forms using Deform\Component
 
 ## Examples
+
+Here are some very simple examples of each layer: 
+
+> **_NOTE:_** If you set up /tests/_data/public/ (as a doc root) on a local webserver you can view what the 
+> codeception acceptance tests see!    
 
 ### Deform\Html
 
@@ -55,13 +63,15 @@ echo $html->deform('.blue-text',function(\Deform\Html\HtmlTag $node) {
 If you want to do more complex manipulation you should load the tag into an HtmlDocument (a basic DomDocument wrapper):
 ```php
 $document = \Deform\Html\HtmlDocument::loadHtmlTag($html)
-    ->selectCss(".blue-text", function(\DOMElement $domElement) {
+    ->selectXPath('.//*[contains(concat(" ",normalize-space(@class)," ")," blue-text ")]', function(\DOMElement $domElement) {
         $domElement->nodeValue='Changing the text again';
         $domElement->setAttribute('style','red')    
     })
 ```
 
-You can also generate an HtmlTag from an arbitrary HTML string rather than by chaining if you want:
+> **_NOTE:_** Ugh! XPath selectors can be ugly! You can alternatively use selectCss(...) if you install https://github.com/bkdotcom/CssXpath via composer.
+
+You can also generate an HtmlTag from an arbitrary HTML string rather than by chaining if you want to for some reason:
 ```php
 $htmlString = <<<HTML
 <div style='border:10px solid red' class='outerdiv'>
@@ -70,6 +80,8 @@ $htmlString = <<<HTML
 HTML;
 $htmlTag = \Deform\Html\HtmlDocument::loadHtmlString($htmlString)->getHtmlRootTag();
 ```
+
+> **_NOTE:_** There is no checking of the generated HTML for correctness.
 
 ### Deform\Component
 Components are built using Deform\Html. Where appropriate they are provided with a wrapper and a label by default.
@@ -104,6 +116,8 @@ echo Component::RadioButtonSet('form1', 'myradiobuttonset')
 </div>
 ```
 
+> **_NOTE:_** You can see all the available components by looking at the annotations of the [ComponentFactory](src/Deform/Component/ComponentFactory).
+
 ### Deform\Form
 Under construction!
 
@@ -111,6 +125,3 @@ Under construction!
 If you want to use CSS selectors (rather than XPath) you should install https://github.com/bkdotcom/CssXpath.
 
 That's it!
-
-### Test Coverage
-Latest report [here](./tests/_output/coverage/index.html)

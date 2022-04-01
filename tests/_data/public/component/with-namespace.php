@@ -39,13 +39,13 @@ if (isset($_POST) && count($_POST)) { ?>
 
     <?= Component::RadioButtonSet('form1', 'myradiobuttonset2')->radioButtons(['three','four','five'])->setValue('four')->label("My Radio Button Set 2"); ?>
 
-    <?= Component::Select( 'form1','myselect')->options(['one'=>'One','two'=>'Two','three'=>'Three'])->label('My Select')->setSelected('two'); ?>
+    <?= Component::Select( 'form1','myselect')->options(['one'=>'One','two'=>'Two','three'=>'Three'])->label('My Select')->setValue('two'); ?>
 
-    <?= Component::Select( 'form1','myselect2')->optgroupOptions(['group 1'=>['one'=>'One','two'=>'Two','three'=>'Three'],'group 2'=>['four'=>'Four','five'=>'Five']])->label('My Select (optgroups)')->setSelected('four') ?>
+    <?= Component::Select( 'form1','myselect2')->optgroupOptions(['group 1'=>['one'=>'One','two'=>'Two','three'=>'Three'],'group 2'=>['four'=>'Four','five'=>'Five']])->label('My Select (optgroups)')->setValue('four') ?>
 
-    <?= Component::SelectMulti('form1', 'myselectmulti')->options(['one'=>'One','two'=>'Two','three'=>'Three'])->label('My Select Multui')->setSelected(['two','three'])?>
+    <?= Component::SelectMulti('form1', 'myselectmulti')->options(['one'=>'One','two'=>'Two','three'=>'Three'])->label('My Select Multui')->setValue(['two','three'])?>
 
-    <?= Component::SelectMulti( 'form1','myselectmulti2')->optgroupOptions(['group 1'=>['one'=>'One','two'=>'Two','three'=>'Three'],'group 2'=>['four'=>'Four','five'=>'Five']])->label('My Select Multi (optgroups)')->setSelected(['two','five']) ?>
+    <?= Component::SelectMulti( 'form1','myselectmulti2')->optgroupOptions(['group 1'=>['one'=>'One','two'=>'Two','three'=>'Three'],'group 2'=>['four'=>'Four','five'=>'Five']])->label('My Select Multi (optgroups)')->setValue(['two','five']) ?>
 
     <?= Component::Slider('form1','myslider')->label('My Slider'); ?>
 

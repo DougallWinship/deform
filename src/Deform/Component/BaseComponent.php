@@ -204,7 +204,8 @@ abstract class BaseComponent implements IToString
     public function __toString(): string
     {
         try {
-            return (string)$this->getHtmlTag();
+            $tag = $this->getHtmlTag();
+            return (string)$tag;
         } catch (\Exception $exc) {
             // https://wiki.php.net/rfc/tostring_exceptions
             $this->toStringException = $exc;
