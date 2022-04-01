@@ -116,7 +116,7 @@ echo Component::RadioButtonSet('form1', 'myradiobuttonset')
 </div>
 ```
 
-> **_NOTE:_** You can see all the available components by looking at the annotations of the [ComponentFactory](src/Deform/Component/ComponentFactory).
+> **_NOTE:_** You can see all the available components by looking at the annotations of the [ComponentFactory](src/Deform/Component/ComponentFactory.php).
 
 ### Deform\Form
 Under construction!
