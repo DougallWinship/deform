@@ -14,7 +14,7 @@ use Deform\Html\IHtml;
  */
 class Button extends BaseComponent
 {
-    private const VALID_BUTTON_TYPES = ['submit', 'reset', 'button'];
+    public const VALID_BUTTON_TYPES = ['submit', 'reset', 'button'];
 
     /** @var string */
     public string $buttonHtml;
