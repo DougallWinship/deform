@@ -18,4 +18,8 @@ class Date extends Input
         parent::setup();
         $this->type('date');
     }
+
+    public function hydrate()
+    {
+    }
 }

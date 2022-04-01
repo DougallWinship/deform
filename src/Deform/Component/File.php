@@ -5,10 +5,12 @@ declare(strict_types=1);
 namespace Deform\Component;
 
 /**
- * @method self accept(string $acceptType)
+ * @persistAttribute $accept
  */
 class File extends Input
 {
+    public ?string $acceptType = null;
+
     /**
      * @inheritDoc
      */
@@ -17,5 +19,19 @@ class File extends Input
         parent::setup();
         $this->type('file');
         $this->requiresMultiformEncoding = true;
+    }
+
+    public function accept(string $acceptType)
+    {
+        $this->acceptType = $acceptType;
+        $this->input->set('accept', $this->acceptType);
+        return $this;
+    }
+
+    public function hydrate()
+    {
+        if ($this->acceptType != null) {
+            $this->accept($this->acceptType);
+        }
     }
 }

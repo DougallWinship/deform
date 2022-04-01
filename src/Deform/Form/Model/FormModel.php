@@ -93,8 +93,7 @@ class FormModel
         string $formMethod = self::METHOD_POST,
         string $formAction = '',
         string $autoComplete = 'off'
-    )
-    {
+    ) {
         if ($formMethod !== self::METHOD_POST && $formMethod !== self::METHOD_GET) {
             throw new \Exception("The form method must be either 'get' or 'post'");
         }
@@ -453,7 +452,7 @@ class FormModel
                     throw new \Exception(
                         "Unable to use CSRF strategy '" . self::CSRF_STRATEGY_SESSION . "' since sessions are disabled!"
                     );
-                } else if ($sessionStatus === PHP_SESSION_NONE) {
+                } elseif ($sessionStatus === PHP_SESSION_NONE) {
                     session_start();
                 }
                 $token = bin2hex(random_bytes(35));

@@ -15,4 +15,8 @@ class Display extends Input
         $this->input->set('disabled', 'disabled');
         $this->input->type('text');
     }
+
+    public function hydrate()
+    {
+    }
 }

@@ -19,4 +19,8 @@ class Slider extends Input
         parent::setup();
         $this->input->type('range');
     }
+
+    public function hydrate()
+    {
+    }
 }

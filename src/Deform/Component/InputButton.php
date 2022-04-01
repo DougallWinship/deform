@@ -14,4 +14,8 @@ class InputButton extends Input
         parent::setup();
         $this->type('button');
     }
+
+    public function hydrate()
+    {
+    }
 }

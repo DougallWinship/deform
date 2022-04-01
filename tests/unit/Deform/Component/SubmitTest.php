@@ -39,4 +39,11 @@ class SubmitTest extends \Codeception\Test\Unit
             'type' => 'submit',
         ]);
     }
+
+    public function testHydrate() {
+        $namespace = 'ns';
+        $name = 'dp';
+        $submit = ComponentFactory::Submit($namespace ,$name, ['foo'=>'bar']);
+        $this->assertNull($submit->hydrate());
+    }
 }

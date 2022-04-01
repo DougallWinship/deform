@@ -16,4 +16,8 @@ class Hidden extends Input
         $this->autolabel(false);
         $this->type('hidden');
     }
+
+    public function hydrate()
+    {
+    }
 }

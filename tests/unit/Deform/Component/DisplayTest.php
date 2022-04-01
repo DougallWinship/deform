@@ -38,4 +38,13 @@ class DisplayTest extends \Codeception\Test\Unit
             'disabled' => 'disabled'
         ]);
     }
+
+
+    public function testHydrate()
+    {
+        $namespace = 'ns';
+        $name = 'dp';
+        $display = ComponentFactory::Display($namespace ,$name, ['foo'=>'bar']);
+        $this->assertNull($display->hydrate());
+    }
 }

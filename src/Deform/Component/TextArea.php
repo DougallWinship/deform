@@ -32,4 +32,8 @@ class TextArea extends BaseComponent
         $this->textarea->reset($value);
         return $this;
     }
+
+    public function hydrate()
+    {
+    }
 }

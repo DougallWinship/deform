@@ -14,7 +14,7 @@ use Deform\Html\IHtml;
  */
 class Button extends BaseComponent
 {
-    const VALID_BUTTON_TYPES = ['submit','reset','button'];
+    private const VALID_BUTTON_TYPES = ['submit', 'reset', 'button'];
 
     /** @var string */
     public string $buttonHtml;
@@ -61,7 +61,10 @@ class Button extends BaseComponent
     {
         $type = strtolower($type);
         if (!in_array($type, self::VALID_BUTTON_TYPES)) {
-            throw new \Exception("Invalid button type '".$type."', valid are : ".implode(", ", self::VALID_BUTTON_TYPES));
+            throw new \Exception(
+                "Invalid button type '" . $type . "', " .
+                "valid are : " . implode(", ", self::VALID_BUTTON_TYPES)
+            );
         }
         $this->buttonType = $type;
         $this->button->set('type', $type);

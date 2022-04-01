@@ -80,6 +80,17 @@ class SelectTest extends \Codeception\Test\Unit
 
         $newSelectOptions = ['a'=>'b','c'=>'d','e'=>'f','g'=>'h'];
         $select->options($newSelectOptions);
+
+        $container = $this->tester->getAttributeValue($select, 'componentContainer');
+        $this->assertInstanceOf(\Deform\Component\ComponentContainer::class, $container);
+        $control = $this->tester->getAttributeValue($container, 'control');
+        $this->assertInstanceOf(\Deform\Component\ComponentControls::class, $control);
+
+        $inputControls = $this->tester->getAttributeValue($control,'controlTags');
+        $this->assertCount(1, $inputControls);
+        $selectTag = $inputControls[0];
+
+        $this->checkOptions($selectTag->getChildren(), $newSelectOptions);
     }
 
     public function testOptgroupOptions()
@@ -106,39 +117,7 @@ class SelectTest extends \Codeception\Test\Unit
         $selectTag = $inputControls[0];
         $selectGroups = $selectTag->getChildren();
 
-        $this->assertCount(2, $selectGroups);
-        $newGroups = array_keys($newSelectOptions);
-        $optgroup1Tag = $selectGroups[0];
-        $this->tester->assertIsHtmlTag($optgroup1Tag,'optgroup', ['label'=>$newGroups[0]]);
-        $newGroup1Values = $newSelectOptions[$newGroups[0]];
-        $newGroup1Keys = array_keys($newGroup1Values);
-        $optgroup1OptionTags = $optgroup1Tag->getChildren();
-        $this->assertSameSize($newGroup1Values, $optgroup1OptionTags);
-        for ($idx=0; $idx<count($newGroup1Keys); $idx++) {
-            $optionValue = $newGroup1Keys[$idx];
-            $optionText = $newGroup1Values[$optionValue];
-            $option = $optgroup1OptionTags[$idx];
-            $this->tester->assertIsHtmlTag($option,'option',['value' => $optionValue]);
-            $values = $option->getChildren();
-            $this->assertCount(1, $values);
-            $this->assertEquals($optionText, $values[0]);
-        }
-
-        $optgroup2Tag = $selectGroups[1];
-        $this->tester->assertIsHtmlTag($optgroup2Tag,'optgroup', ['label'=>$newGroups[1]]);
-        $newGroup2Values = $newSelectOptions[$newGroups[1]];
-        $newGroup2Keys = array_keys($newSelectOptions[$newGroups[1]]);
-        $optgroup2OptionTags = $optgroup2Tag->getChildren();
-        $this->assertSameSize($newGroup2Values, $optgroup2OptionTags);
-        for ($idx=0; $idx<count($newGroup2Keys); $idx++) {
-            $optionValue = $newGroup2Keys[$idx];
-            $optionText = $newGroup2Values[$optionValue];
-            $option = $optgroup2OptionTags[$idx];
-            $this->tester->assertIsHtmlTag($option,'option',['value' => $optionValue]);
-            $values = $option->getChildren();
-            $this->assertCount(1, $values);
-            $this->assertEquals($optionText, $values[0]);
-        }
+        $this->checkOptgroups($selectGroups, $newSelectOptions);
     }
 
     public function  testSetValue()
@@ -183,7 +162,17 @@ class SelectTest extends \Codeception\Test\Unit
         $this->tester->setAttributeValue($select,'hasOptGroups', false);
         $this->tester->setAttributeValue($select,'options', $selectOptions);
         $select->hydrate();
-        //todo:- check it properly!
+
+        $container = $this->tester->getAttributeValue($select, 'componentContainer');
+        $this->assertInstanceOf(\Deform\Component\ComponentContainer::class, $container);
+        $control = $this->tester->getAttributeValue($container, 'control');
+        $this->assertInstanceOf(\Deform\Component\ComponentControls::class, $control);
+
+        $inputControls = $this->tester->getAttributeValue($control,'controlTags');
+        $this->assertCount(1, $inputControls);
+        $selectTag = $inputControls[0];
+
+        $this->checkOptions($selectTag->getChildren(), $selectOptions);
     }
 
     public function testHydrateOptgroups() {
@@ -197,7 +186,62 @@ class SelectTest extends \Codeception\Test\Unit
         $this->tester->setAttributeValue($select,'hasOptGroups', true);
         $this->tester->setAttributeValue($select,'options', $selectOptions);
         $select->hydrate();
-        //todo:- check it properly!
+
+        $container = $this->tester->getAttributeValue($select, 'componentContainer');
+        $this->assertInstanceOf(\Deform\Component\ComponentContainer::class, $container);
+        $control = $this->tester->getAttributeValue($container, 'control');
+        $this->assertInstanceOf(\Deform\Component\ComponentControls::class, $control);
+        $inputControls = $this->tester->getAttributeValue($control,'controlTags');
+        $this->assertCount(1, $inputControls);
+        $selectTag = $inputControls[0];
+        $selectGroups = $selectTag->getChildren();
+
+        $this->checkOptgroups($selectGroups, $selectOptions);
+    }
+
+    /**
+     * @param array $optionsTags
+     * @param array $optionsData
+     */
+    private function checkOptions(array $optionsTags, array $optionsData)
+    {
+        $optionsDataKeys = array_keys($optionsData);
+        $this->assertSameSize($optionsTags, $optionsDataKeys);
+        for($idx=0; $idx<count($optionsData); $idx++) {
+            $optionTag = $optionsTags[$idx];
+            $optionValue = $optionsDataKeys[$idx];
+            $optionText = $optionsData[$optionValue];
+            $this->tester->assertIsHtmlTag($optionTag,'option', ['value' => $optionValue]);
+            $values = $optionTag->getChildren();
+            $this->assertCount(1, $values);
+            $this->assertEquals($optionText, $values[0]);
+        }
+    }
+
+    /**
+     * @param array $selectOptgroupTags
+     * @param array $optgroupData
+     */
+    private function checkOptgroups(array $selectOptgroupTags, array $optgroupData)
+    {
+        $optgroupDataKeys = array_keys($optgroupData);
+        for($groupIdx=0; $groupIdx<count($optgroupDataKeys); $groupIdx++) {
+            $optgroupSectionName = $optgroupDataKeys[$groupIdx];
+            $optgroupSectionData =  $optgroupData[$optgroupSectionName];
+            $optgroupSectionDataKeys = array_keys($optgroupSectionData);
+            $optgroupTag = $selectOptgroupTags[$groupIdx];
+            $optgroupTagOptions = $optgroupTag->getChildren();
+            $this->assertSameSize($optgroupTagOptions, $optgroupSectionDataKeys);
+            for ($idx=0; $idx<count($optgroupSectionDataKeys); $idx++) {
+                $optionValue = $optgroupSectionDataKeys[$idx];
+                $optionText = $optgroupSectionData[$optionValue];
+                $optgroupTagOption = $optgroupTagOptions[$idx];
+                $this->tester->assertIsHtmlTag($optgroupTagOption,'option', ['value' => $optionValue]);
+                $values = $optgroupTagOption->getChildren();
+                $this->assertCount(1, $values);
+                $this->assertEquals($optionText, $values[0]);
+            }
+        }
     }
 
 }

@@ -37,14 +37,8 @@ class RadioButtonSet extends BaseComponent
         $this->radioButtons = $radioButtons;
         foreach ($radioButtons as $key => $value) {
             $radioButtonContainer = Html::div(['class' => 'radiobutton-wrapper']);
-            if ($isAssoc) {
-                $radioLabel = $value;
-                $radioValue = $key;
-            }
-            else {
-                $radioLabel = $value;
-                $radioValue = $value;
-            }
+            $radioLabel = $value;
+            $radioValue = $isAssoc ? $key : $value;
             $id = self::getMultiControlId($this->getId(), $radioValue);
             $radioButtonInput = Html::input([
                 'type' => 'radio',

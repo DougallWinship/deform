@@ -17,4 +17,8 @@ class Submit extends Input
         $this->value($this->fieldName);
         $this->componentContainer->controlOnly = true;
     }
+
+    public function hydrate()
+    {
+    }
 }

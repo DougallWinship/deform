@@ -118,17 +118,17 @@ class ComponentContainer
         $this->errorTag = $error;
     }
 
-    /**
-     * @param array $datalist
-     * @throws \Exception
-     */
-    public function setDatalist(array $datalist)
-    {
-        if (count($this->control->getControls()) > 1) {
-            throw new \Exception("A datalist only makes sense when there is a single control");
-        }
-        $this->datalist = $datalist;
-    }
+//    /**
+//     * @param array $datalist
+//     * @throws \Exception
+//     */
+//    public function setDatalist(array $datalist)
+//    {
+//        if (count($this->control->getControls()) > 1) {
+//            throw new \Exception("A datalist only makes sense when there is a single control");
+//        }
+//        $this->datalist = $datalist;
+//    }
 
     /**
      * @param string $fieldName

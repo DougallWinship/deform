@@ -14,4 +14,8 @@ class DateTime extends Input
         parent::setup();
         $this->type('datetime-local');
     }
+
+    public function hydrate()
+    {
+    }
 }

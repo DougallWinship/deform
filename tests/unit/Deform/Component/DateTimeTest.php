@@ -37,4 +37,12 @@ class DateTimeTest extends \Codeception\Test\Unit
             'type' => 'datetime-local',
         ]);
     }
+
+    public function testHydrate()
+    {
+        $namespace = 'ns';
+        $name = 'dt';
+        $datetime = ComponentFactory::DateTime($namespace ,$name, ['foo'=>'bar']);
+        $this->assertNull($datetime->hydrate());
+    }
 }

@@ -14,4 +14,8 @@ class Email extends Input
         parent::setup();
         $this->type('email');
     }
+
+    public function hydrate()
+    {
+    }
 }

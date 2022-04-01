@@ -37,4 +37,12 @@ class SliderTest extends \Codeception\Test\Unit
             'type' => 'range',
         ]);
     }
+
+    public function testHydrate()
+    {
+        $namespace = 'ns';
+        $name = 'dp';
+        $display = ComponentFactory::Slider($namespace ,$name, ['foo'=>'bar']);
+        $this->assertNull($display->hydrate());
+    }
 }

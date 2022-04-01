@@ -17,4 +17,8 @@ class Password extends Input
         parent::setup();
         $this->type('password');
     }
+
+    public function hydrate()
+    {
+    }
 }

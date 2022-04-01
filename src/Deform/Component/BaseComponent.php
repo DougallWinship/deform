@@ -26,7 +26,7 @@ abstract class BaseComponent implements IToString
     /** @var string field name for this value */
     protected string $fieldName;
 
-    /** @var array  */
+    /** @var array */
     protected array $attributes;
 
     /** @var ComponentContainer */
@@ -47,13 +47,16 @@ abstract class BaseComponent implements IToString
     /** @var bool */
     protected bool $requiresMultiformEncoding = false;
 
+    /** @var ?\Exception */
+    private ?\Exception $toStringException = null;
+
     /**
      * protected to prevent direct instantiation
-     * @see ComponentFactory use this instead
      * @param string|null $namespace
      * @param string $fieldName
      * @param array $attributes
      * @throws \Exception
+     * @see ComponentFactory use this instead
      */
     protected function __construct(?string $namespace, string $fieldName, array $attributes = [])
     {
@@ -203,8 +206,18 @@ abstract class BaseComponent implements IToString
         try {
             return (string)$this->getHtmlTag();
         } catch (\Exception $exc) {
-            die("<pre>" . htmlspecialchars(print_r($exc, true)) . "</pre>");
+            // https://wiki.php.net/rfc/tostring_exceptions
+            $this->toStringException = $exc;
+            return "";
         }
+    }
+
+    /**
+     * @return ?\Exception
+     */
+    public function getLastToStringException()
+    {
+        return $this->toStringException;
     }
 
 
@@ -296,7 +309,7 @@ abstract class BaseComponent implements IToString
     {
 
         return $namespace !== null
-            ?  $namespace . "[" . self::EXPECTED_DATA_FIELD . "][]"
+            ? $namespace . "[" . self::EXPECTED_DATA_FIELD . "][]"
             : self::EXPECTED_DATA_FIELD . "[]";
     }
 
@@ -422,15 +435,12 @@ abstract class BaseComponent implements IToString
      */
     public static function getMultiControlId(string $id, string $value): string
     {
-        return $id . '-' . str_replace(" ","-", $value);
+        return $id . '-' . str_replace(" ", "-", $value);
     }
 
     /**
      * hydrate the component using its properties (those annotated as @persistAttribute) when it's being rebuilt
      * from an array definition
      */
-    public function hydrate()
-    {
-        // override if necessary
-    }
+    abstract public function hydrate();
 }

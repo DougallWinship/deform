@@ -37,4 +37,12 @@ class InputButtonTest extends \Codeception\Test\Unit
             'type' => 'button',
         ]);
     }
+
+    public function testHydrate()
+    {
+        $namespace = 'ns';
+        $name = 'dp';
+        $inputButton = ComponentFactory::InputButton($namespace, $name, ['foo' => 'bar']);
+        $this->assertNull($inputButton->hydrate());
+    }
 }

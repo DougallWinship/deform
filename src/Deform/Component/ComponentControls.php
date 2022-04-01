@@ -28,7 +28,7 @@ class ComponentControls
      * if the decoration is included you should ensure it
      * also contains somewhere inside a copy of the actual control itself.
      *
-     * todo: - consider distinguishing multiple control tags with decoration from single ones as this is trying to do too much
+     * todo: - consider distinguishing multiple control tags with decoration from single ones
      * i.e.
      *    multi checkbox has multiple controls each with multiple decorations (labels etc)
      *    single checkbox has one control with multiple decorations
@@ -49,7 +49,7 @@ class ComponentControls
                 $containsControlTag = false;
                 foreach ($controlDecoration as $decoration) {
                     if ($decoration instanceof HtmlTag) {
-                        if ($decoration===$controlTag) {
+                        if ($decoration === $controlTag) {
                             $containsControlTag = true;
                         }
                         if ($decoration->has('for')) {
@@ -61,7 +61,9 @@ class ComponentControls
                     }
                 }
                 if (!$containsControlTag) {
-                    throw new \Exception("When adding decoration as an array, one of the elements must be the control tag itself");
+                    throw new \Exception(
+                        "When adding decoration as an array, one of the elements must be the control tag itself"
+                    );
                 }
                 $this->allTags = array_merge($this->allTags, $controlDecoration);
             } else {
@@ -89,7 +91,7 @@ class ComponentControls
      */
     public function changeNamespacedAttributes(string $newId, string $newName)
     {
-        $multipleControlTags = count($this->controlTags)>1;
+        $multipleControlTags = count($this->controlTags) > 1;
         foreach ($this->controlTags as $control) {
             $oldId = $control->get('id');
             if ($multipleControlTags) {
@@ -98,8 +100,7 @@ class ComponentControls
                     throw new \Exception("When there are multiple control tags they must specify a value");
                 }
                 $setNewId = BaseComponent::getMultiControlId($newId, $value);
-            }
-            else {
+            } else {
                 $setNewId = $newId;
             }
             $control->setIfExists('id', $setNewId);
@@ -119,14 +120,13 @@ class ComponentControls
     public function setValue($value)
     {
         if (is_array($value)) {
-            if (count($value)!=count($this->controlTags)) {
+            if (count($value) != count($this->controlTags)) {
                 throw new \Exception("The number of values provided does not match the number of controls");
             }
             foreach ($this->controlTags as $controlTag) {
                 $controlTag->value(array_shift($value));
             }
-        }
-        else {
+        } else {
             foreach ($this->controlTags as $controlTag) {
                 $controlTag->value($value);
             }

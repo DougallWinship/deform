@@ -38,4 +38,12 @@ class DateTest extends \Codeception\Test\Unit
             'type' => 'date',
         ]);
     }
+
+    public function testHydrate()
+    {
+        $namespace = 'ns';
+        $name = 'dt';
+        $date = ComponentFactory::Date($namespace ,$name, ['foo'=>'bar']);
+        $this->assertNull($date->hydrate());
+    }
 }

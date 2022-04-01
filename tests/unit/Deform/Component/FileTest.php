@@ -37,4 +37,30 @@ class FileTest extends \Codeception\Test\Unit
             'type' => 'file',
         ]);
     }
+
+    public function testSetAccept()
+    {
+        $namespace = 'ns';
+        $name = 'dp';
+        $accept = 'file/*';
+        $file = ComponentFactory::File($namespace ,$name, ['foo'=>'bar'])
+            ->accept($accept);
+
+        $attributes = $this->tester->getAttributeValue($file->input, 'attributes');
+        $this->assertArrayHasKey('accept', $attributes);
+        $this->assertEquals($accept, $attributes['accept']);
+    }
+
+    public function testHydrate()
+    {
+        $namespace = 'ns';
+        $name = 'dp';
+        $accept = 'file/*';
+        $file = ComponentFactory::File($namespace ,$name, ['foo'=>'bar']);
+        $this->tester->setAttributeValue($file, 'acceptType', $accept);
+        $file->hydrate();
+        $attributes = $this->tester->getAttributeValue($file->input, 'attributes');
+        $this->assertArrayHasKey('accept', $attributes);
+        $this->assertEquals($accept, $attributes['accept']);
+    }
 }

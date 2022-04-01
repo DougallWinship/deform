@@ -37,4 +37,13 @@ class EmailTest extends \Codeception\Test\Unit
             'type' => 'email',
         ]);
     }
+
+
+    public function testHydrate()
+    {
+        $namespace = 'ns';
+        $name = 'dp';
+        $email = ComponentFactory::Email($namespace, $name, ['foo' => 'bar']);
+        $this->assertNull($email->hydrate());
+    }
 }

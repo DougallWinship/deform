@@ -92,15 +92,13 @@ class Select extends BaseComponent
             foreach ($this->select->getChildren() as $selectOptionGroup) {
                 $checkOptionTags = array_merge($checkOptionTags, $selectOptionGroup->getChildren());
             }
-        }
-        else {
+        } else {
             $checkOptionTags = $this->select->getChildren();
         }
         foreach ($checkOptionTags as $checkOptionTag) {
-            if ($checkOptionTag->get('value')===$value) {
+            if ($checkOptionTag->get('value') === $value) {
                 $checkOptionTag->set('selected', 'selected');
-            }
-            else {
+            } else {
                 $checkOptionTag->unset('selected');
             }
         }
@@ -124,7 +122,7 @@ class Select extends BaseComponent
      */
     public function getHtmlTag(): HtmlTag
     {
-        if (count($this->options)==0) {
+        if (count($this->options) == 0) {
             throw new \Exception("A select component must contain at least one option");
         }
         return parent::getHtmlTag();
