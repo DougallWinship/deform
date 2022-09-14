@@ -16,6 +16,7 @@ use Deform\Util\Strings;
  * @method static Display Display(string $namespace, string $field, array $attributes=[])
  * @method static Email Email(string $namespace, string $field, array $attributes=[])
  * @method static File File(string $namespace, string $field, array $attributes=[])
+ * @method static Image Image(string $namespace, string $field, array $attributes=[])
  * @method static MultipleFile MultipleFile(string $namespace, string $field, array $attributes=[])
  * @method static MultipleEmail MultipleEmail(string $namespace, string $field, array $attributes=[])
  * @method static Hidden Hidden(string $namespace, string $field, array $attributes=[])
@@ -35,11 +36,11 @@ class ComponentFactory
     public const EUROS = "&euro;";
     public const AUSTRALIAN_DOLLARS = "A&dollar;";
 
-    /** @var \ReflectionClass */
-    private static $reflectionSelf;
+    /** @var \ReflectionClass|null */
+    private static ?\ReflectionClass $reflectionSelf = null;
 
-    /** @var object[] */
-    public static $components;
+    /** @var object[]|null */
+    public static ?array $components = null;
 
     /**
      * @param string $method
@@ -61,7 +62,7 @@ class ComponentFactory
         $namespace = array_shift($arguments);
         $fieldName = array_shift($arguments);
         $attributes = array_shift($arguments);
-        return self::build($method, $namespace, $fieldName, $attributes ?? []);
+        return call_user_func([get_called_class(),'build'], $method, $namespace, $fieldName, $attributes ?? []);
     }
 
     /**
@@ -95,7 +96,7 @@ class ComponentFactory
         $reflectionClass = new \ReflectionClass($class);
         $constructor = $reflectionClass->getConstructor();
         $constructor->setAccessible(true);
-        /** @var BaseComponent $object it's not actually this, but BaseComponent is the parent */
+        /** @var BaseComponent $object it's not actually this, but BaseComponent *is* the parent */
         $object = $reflectionClass->newInstanceWithoutConstructor();
         $constructor->invokeArgs($object, [
             $formNamespace,

@@ -27,6 +27,8 @@ if (isset($_POST) && count($_POST)) { ?>
 
     <?= Component::Hidden( null,'myhidden')->value('hidden value'); ?>
 
+    <?= Component::Image(null, 'myimage')->label("My Image") ?>
+
     <?= Component::InputButton(null,'myinputbutton')->label('My Input Button')->value('Click Me!') ?>
 
     <?= Component::MultipleEmail(null,'mymultiple-email')->label('My Multiple Email'); ?>

@@ -125,3 +125,26 @@ Under construction!
 If you want to use CSS selectors (rather than XPath) you should install https://github.com/bkdotcom/CssXpath.
 
 That's it!
+
+## Tests
+
+Run the codecept tests like this:
+```
+./codecept run
+```
+
+And with coverage html report generated (into \tests\output\coverage)
+```
+./codecept run --coverage-html
+```
+
+## Code style - PSR-12
+The code is *meant* to conform to the PSR-12 standard. 
+
+This is the tool that is used to check : https://github.com/squizlabs/PHP_CodeSniffer
+
+Once installed and available globally (presumably via PATH settings), something like this can be used from the root dir.
+```
+phpcs --standard=PSR12 ./src/Deform/
+```
+

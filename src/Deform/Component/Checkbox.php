@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Deform\Component;
 
 use Deform\Html\Html as Html;
+use Deform\Html\HtmlTag;
 
 /**
  * @method Checkbox checked(string $checked)
@@ -13,6 +14,8 @@ use Deform\Html\Html as Html;
 class Checkbox extends Input
 {
     public ?string $inputLabelText = null;
+
+    /** @var HtmlTag $inputLabel */
     public $inputLabel;
 
     /**
@@ -37,12 +40,24 @@ class Checkbox extends Input
     /**
      * @param string $text
      * @return $this
+     * @throws \Exception
      */
     public function text(string $text): self
     {
         $this->inputLabelText = $text;
         $this->inputLabel->reset($text);
         return $this;
+    }
+
+    /**
+     * for convenience since it's a special case
+     * @param string $text
+     * @return $this
+     * @throws \Exception
+     */
+    public function label(string $text): self
+    {
+        return $this->text($text);
     }
 
     /**

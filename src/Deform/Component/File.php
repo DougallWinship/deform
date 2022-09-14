@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Deform\Component;
 
 /**
- * @persistAttribute $accept
+ * @persistAttribute acceptType
  */
 class File extends Input
 {

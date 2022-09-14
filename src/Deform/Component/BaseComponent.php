@@ -160,6 +160,9 @@ abstract class BaseComponent implements IToString
      */
     public function setValue($value): self
     {
+        if ($value === null) {
+            $value = '';
+        }
         $this->componentContainer->control->setValue($value);
         return $this;
     }
