@@ -39,6 +39,7 @@ class Currency extends BaseComponent
     }
 
     /**
+     * @templateMethod
      * @param string $currency
      * @return $this
      * @throws \Exception

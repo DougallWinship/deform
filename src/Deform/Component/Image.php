@@ -32,8 +32,8 @@ class Image extends File
         $this->input->set(
             'onchange',
             'if (0 in this.files)'
-            . ' { document.getElementById("' . $previewId . '").src = window.URL.createObjectURL(this.files[0]); }'
-            . ' document.getElementById("' . $hiddenId . '").value="";'
+            . ' { this.nextSibling.src = window.URL.createObjectURL(this.files[0]); }'
+            . ' this.nextSibling.nextSibling.value="";'
         );
         $this->input->css('display', 'none');
         $htmlTag = parent::getHtmlTag();
@@ -44,9 +44,10 @@ class Image extends File
         $closeButton = Html::button([
             'class' => 'clear-image',
             'style' => 'margin-left:20px;line-height:10px;background-color:transparent',
-            'onclick' => 'document.getElementById("' . $previewId . '").src = "' . self::PLACEHOLDER_IMAGE_BASE64 . '";'
-                        . ' document.getElementById("' . $this->getId() . '").value=null;'
-                        . ' document.getElementById("' . $hiddenId . '").value=null'
+            'onclick' => 'let input = this.parentNode.nextSibling.firstChild; '
+                        . 'input.nextSibling.src = "' . self::PLACEHOLDER_IMAGE_BASE64 . '";'
+                        . 'input.value=null;'
+                        . 'input.nextSibling.nextSibling.value=null'
         ])->add('clear');
         $labelDiv->set('onclick', 'return false');
         $labelDiv->add($closeButton);
@@ -92,7 +93,7 @@ class Image extends File
             'alt' => '',
             'style' => 'max-width:200px;max-height:200px;cursor:pointer',
             'onclick' => $this->javascriptSelectFunction ?:
-                'document.getElementById("' . $this->getId() . '").dispatchEvent('
+                'this.previousSibling.dispatchEvent('
                 . 'new MouseEvent("click",{bubbles: false,cancelable: true,view: window})'
                 . ');'
         ]);

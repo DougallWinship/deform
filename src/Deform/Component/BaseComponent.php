@@ -446,4 +446,31 @@ abstract class BaseComponent implements IToString
     {
         return $id . '-' . str_replace(" ", "-", $value);
     }
+
+    /**
+     * @return \ReflectionMethod[]
+     * @throws \ReflectionException
+     */
+    public function getTemplateMethods(): array
+    {
+        $thisClass = get_called_class();
+        $reflectionSelf = new \ReflectionClass($thisClass);
+        $methods = $reflectionSelf->getMethods();
+        $templateMethods = [];
+        foreach ($methods as $method) {
+            if ($method->class === $thisClass) {
+                $docComment = $method->getDocComment();
+                if ($docComment) {
+                    $comments = explode(PHP_EOL, $method->getDocComment());
+                    array_walk($comments, function ($comment) use ($method, &$templateMethods) {
+                        $trimmed = Strings::trimInternal($comment);
+                        if (strpos($trimmed, '* @templateMethod') === 0) {
+                            $templateMethods[] = $method;
+                        }
+                    });
+                }
+            }
+        }
+        return $templateMethods;
+    }
 }

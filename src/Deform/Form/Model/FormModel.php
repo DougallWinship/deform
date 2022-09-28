@@ -39,8 +39,6 @@ use Deform\Util\IToString;
  */
 class FormModel
 {
-    use FormModelBuilder;
-
     public const METHOD_GET = 'get';
     public const METHOD_POST = 'post';
     public const HTML_KEY = "HTML:";

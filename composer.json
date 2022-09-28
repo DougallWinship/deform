@@ -1,6 +1,12 @@
 {
+    "name": "dougallwinship/deform",
     "autoload": {
         "psr-4": {"": "src/"}
+    },
+    "config": {
+        "platform": {
+            "php": ">=7.4"
+        }
     },
     "require": {
         "ext-dom": "*",

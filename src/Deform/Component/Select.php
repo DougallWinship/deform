@@ -33,6 +33,7 @@ class Select extends BaseComponent
     }
 
     /**
+     * @templateMethod
      * @param array $options
      * @return $this
      * @throws \Exception

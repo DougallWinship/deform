@@ -27,6 +27,7 @@ class RadioButtonSet extends BaseComponent
     }
 
     /**
+     * @templateMethod
      * @param array $radioButtons
      * @return RadioButtonSet
      * @throws \Exception

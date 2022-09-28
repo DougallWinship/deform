@@ -4,6 +4,12 @@ error_reporting(E_ALL);
 ini_set('display_errors', TRUE);
 ini_set('display_startup_errors', TRUE);
 
+const REQUIRED_PHP_MIN_VERSION = '7.4.0.';
+
+if (version_compare(PHP_VERSION, REQUIRED_PHP_MIN_VERSION, '<')) {
+    die("Requires a minimum PHP version of '".REQUIRED_PHP_MIN_VERSION."', you are running '".PHP_VERSION."'");
+}
+
 set_error_handler(function(int $errNo, string $errStr, string $errFile, int $errLine) {
     throw new \ErrorException('ERROR : '.$errStr, $errNo,0, $errFile, $errLine);
 });

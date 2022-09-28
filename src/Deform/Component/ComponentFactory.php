@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Deform\Component;
 
+use Deform\Html\Html;
 use Deform\Util\Strings;
 
 /**
@@ -39,7 +40,7 @@ class ComponentFactory
     /** @var \ReflectionClass|null */
     private static ?\ReflectionClass $reflectionSelf = null;
 
-    /** @var object[]|null */
+    /** @var string[]|null */
     public static ?array $components = null;
 
     /**
@@ -107,6 +108,18 @@ class ComponentFactory
     }
 
     /**
+     * @param string $component
+     * @return BaseComponent|object
+     * @throws \Exception
+     */
+    public static function buildTemplate(string $component)
+    {
+        $lowerName = strtolower($component);
+        $htmlTag = self::build($component, 'template', $lowerName);
+        return Html::div()->id('template-' . $lowerName)->add($htmlTag);
+    }
+
+    /**
      * @param string $componentName
      * @return bool
      * @throws \Exception
@@ -115,6 +128,16 @@ class ComponentFactory
     {
         self::identifyComponents();
         return in_array($componentName, self::$components);
+    }
+
+    /**
+     * @return string[]
+     * @throws \Exception
+     */
+    public static function getRegisteredComponents(): array
+    {
+        self::identifyComponents();
+        return self::$components;
     }
 
     /**
