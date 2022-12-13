@@ -1,187 +1,29 @@
-<?php
-
-use Deform\Html\Html;
-
-$componentNames = \Deform\Component\ComponentFactory::getRegisteredComponents();
-$customElements = [];
-?>
 <script>
 <?php
-foreach ($componentNames as $componentName) {
-    $lowerName = strtolower($componentName);
-    $component = \Deform\Component\ComponentFactory::build($componentName, 'namespace', "name")
-        ->label("{label}")
-        ->hint("{hint}")
-        ->setError('{error}');
-    $templateMethods = $component->getTemplateMethods();
-    $callables = [];
-    $callableRepeaters = [];
-    if (count($templateMethods)>0) {
-        foreach ($templateMethods as $method) {
-            $params = $method->getParameters();
-            if (count($params)>1) {
-                throw new \Exception("Not yet supported!");
-            }
-            else if (count($params)===1) {
-                $type = $params[0]->getType();
-                $typeName = $type->getName();
-                if ($typeName==='array') {
-                    $method->invoke($component,['{repeatable-value}' => '{repeatable-value-label}']);
-                    $callableRepeaters[] = $method;
-                }
-                elseif ($typeName==='string') {
-                    $method->invoke($component,'{item}');
-                }
-                else {
-                    throw new \Exception("As yet unsupported @templateMethod parameter type '".$typeName."' for ".$method->name);
-                }
-            }
-        }
-    }
-    $snakeName = "component-".\Deform\Util\Strings::separateCased($componentName,"-");
-    $componentName = "Component".$componentName;
-    $customElements[]=$snakeName;
-    $controls = $component->componentContainer->control->getControls();
-?>
-window.customElements.define('<?= $snakeName ?>',
-    class <?= $componentName ?> extends HTMLElement {
-        template = null;
-        componentContainer = null;
-        labelContainer = null;
-        label = null;
-        controlContainer = null;
-        control = null;
-        constructor() {
-            super();
-            console.log('------------------');
-            this.template = document.createElement('div');
-            this.template.id='<?= $snakeName ;?>';
-            this.template.innerHTML = `<?= $component.'' ?>`;
-            this.componentContainer = this.template.querySelector('#namespace-name-container');
-            this.controlContainer = this.template.querySelector(".control-container");
-            const shadowRoot = this.attachShadow({mode:'open'});
-            shadowRoot.appendChild(this.template)
-        }
-
-        connectedCallback() {
-            let name = null
-            if (this.hasAttribute('namespace') && this.hasAttribute('id')) {
-                name = "["+this.getAttribute('namespace')+"]"+this.getAttribute('id')
-                if (this.componentContainer!==null) {
-                    this.componentContainer.id = this.getAttribute('namespace')+"-"+this.getAttribute('id')+"-container";
-                }
-            }
-            else if (this.hasAttribute('id')) {
-                name = this.getAttribute('id');
-                this.componentContainer.id = this.getAttribute('id')+"-container";
-            }
-            else {
-                //this.controlContainer
-            }
-            //console.log(this.template);
-        }
-    }
-)
-<?php
-}
+echo \Deform\Component\ComponentFactory::getCustomElementDefinitionsJavascript();
 ?>
 </script>
-
-
-<?php foreach ($customElements as $elementName) { ?>
-    <<?= $elementName; ?>></<?= $elementName; ?>><br><hr><br>
-<?php } ?>
-
-
-<?php /*
-<script>
-
-    window.customElements.define('component-text-test',
-        class ComponentText extends HTMLElement {
-
-            template = null;
-            componentContainer = null;
-            labelContainer = null;
-            label = null;
-            controlContainer = null;
-            control = null;
-            hintContainer = null;
-            errorContainer = null;
-            namespace = null;
-            name = null;
-
-            constructor() {
-                super();
-                this.template = document.createElement('div');
-                this.template.id='component-text-test';
-                this.template.innerHTML = `<div id="{namespace}-{name}-container" class="component-container container-type-text"><div class="label-container"><label style="margin-bottom:0" for="text-{namespace}-{name}">{label}</label></div><div class="control-container"><input id="text-{namespace}-{name}" name="{namespace}[{name}]" type="text"></div><div class='hint-container'>{hint}</div><div class='error-container'>{error}</div></div>`;
-
-                this.componentContainer = this.template.firstChild;
-                this.labelContainer = this.componentContainer.firstChild;
-                this.label = this.labelContainer.firstChild;
-                this.controlContainer = this.labelContainer.nextSibling;
-                this.control = this.controlContainer.firstChild;
-                this.hintContainer = this.controlContainer.nextSibling;
-                this.errorContainer = this.hintContainer.nextSibling;
-
-                const shadowRoot = this.attachShadow({mode:'open'});
-                shadowRoot.appendChild(this.template)
-            }
-
-            connectedCallback() {
-
-                console.log('connected callback');
-                console.log(this.getAttributeNames());
-                if (this.hasAttribute('namespace')) {
-                    console.log('has namespace');
-                    this.namespace = this.getAttribute('namespace');
-                    this.componentContainer.setAttribute('id', this.componentContainer.getAttribute('id').replace('{namespace}', this.namespace));
-                    this.label.setAttribute('for', this.label.getAttribute('for').replace('{namespace}', this.namespace));
-                    this.control.setAttribute('id', this.control.getAttribute('id').replace('{namespace}', this.namespace));
-                    this.control.setAttribute('name', this.control.getAttribute('name').replace('{namespace}', this.namespace));
-                }
-                if (this.hasAttribute('name')) {
-                    this.name = this.getAttribute('name');
-                    this.componentContainer.setAttribute('id', this.componentContainer.getAttribute('id').replace('{name}', this.name));
-                    this.label.setAttribute('for', this.label.getAttribute('for').replace('{name}', this.name));
-                    this.control.setAttribute('id', this.control.getAttribute('id').replace('{name}', this.name));
-                    this.control.setAttribute('name', this.control.getAttribute('name').replace('{name}', this.name));
-                }
-                if (this.hasAttribute('label')) {
-                    this.label.innerText = this.getAttribute('label')
-                }
-                if (this.hasAttribute('hint')) {
-                    this.hintContainer.innerText = this.getAttribute('hint')
-                }
-                if (this.hasAttribute('error')) {
-                    this.errorContainer.innerText = this.getAttribute('error')
-                }
-
-                if (this.hasAttribute('value')) {
-                    this.control.setAttribute('value', this.getAttribute('value'));
-                }
-                this.getAttributeNames().filter((name) => name.endsWith('-class')).forEach((nameClass) => {
-                    const checkForProperty = this.toCamel(nameClass.substring(0, nameClass.length-6));
-                    if (checkForProperty in this) {
-                        this.getAttribute(nameClass).split(' ').forEach((classItem) => {
-                            this[checkForProperty].classList.add(classItem);
-                        })
-                    }
-                })
-            }
-
-            toCamel(str) {
-                return str.replace(/([-_][a-z])/ig, (gr) => {
-                    return gr.toUpperCase()
-                        .replace('-', '')
-                        .replace('_', '');
-                });
-            }
-        }
-    )
-</script>
-
-
-<component-text-test namespace="namespace" name="name" label="label" error="error" hint="hint" value="55" ></component-text-test>
-
- */ ?>
+<form name="potatoes" data-namespace="potatoes">
+<component-button name='button1' value='buttonvalue' label='Button Label' onclick="this.parentNode.submit()">Button</component-button><br>
+<component-checkbox name='checkbox1' value="checkboxvalue" label="Checkbox Label"></component-checkbox><br>
+<component-checkbox-multi name='checkbox-multi1' values='{"one":"One","two":"Two","three":"Three"}' label='CheckboxMulti Label'></component-checkbox-multi><br>
+<component-currency name='currency1' currency="&pound;" label='Currency Label'></component-currency><br>
+<component-date name='date1' label='Date Label'></component-date><br>
+<component-date-time name='datetime1' label='DateTime Label'></component-date-time><br>
+<component-display name='display1' label='Display Label' value='show this'></component-display><br>
+<component-email name='email1' label='Component Email' value='potatoes'></component-email><br>
+<component-file name='file1' label='Component File'></component-file><br>
+<component-image name='image1' label='Component Image'></component-image><br>
+<component-multiple-file name='multiplefile1' label='Component Multiple File'></component-multiple-file><br>
+<component-multiple-email name='multipleemail1' label='Component Multiple Email'>Button</component-multiple-email><br>
+<component-hidden name='hidden1' value='hiddenvalue'></component-hidden> &laquo;Hidden Input<br><br>
+<component-input-button name='inputbutton1' label='Component Input Button' value='value1' label='Input Button Label'></component-input-button><br>
+<component-password name='password1' label='Component Password' value='password1' label='Password Label'></component-password><br>
+<component-radio-button-set name='radiobuttonset1' label='Component Radio Button Set' values='{"one":"One","two":"Two","three":"Three"}' label='Radio Buton Set Label'></component-radio-button-set><br>
+<component-select name='select1' label="component-select" options='{"one":"One","two":"Two","three":"Three"}' label='Select Label'></component-select>
+<component-select-multi name='selectmulti1' options='{"one":"One","two":"Two","three":"Three"}' label='Select Multi'></component-select-multi>
+<component-slider name='slider1' label='Slider Label' min="50" max="150" showOutput="true"></component-slider><br>
+<component-submit name='submit1' value="potatoes"></component-submit><br>
+<component-text name='text1' label='Text Label' value='text value'></component-text><br>
+<component-text-area name='textarea1' label='component-text-area'>this is some text area value</component-text-area><br>
+</form>

@@ -38,7 +38,7 @@ class CheckboxMulti extends BaseComponent
         $id = $this->getId();
 
         foreach ($checkboxes as $key => $value) {
-            $wrapper = Html::div(['class' => 'checkbox-wrapper']);
+            $wrapper = Html::div(['class' => 'checkboxmulti-checkbox-wrapper']);
             $checkboxId = self::getMultiControlId($id, (string)$key);
             $checkbox = Html::input([
                 'type' => 'checkbox',
@@ -84,5 +84,35 @@ class CheckboxMulti extends BaseComponent
             }
         }
         return $this;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function shadowJavascript(): array
+    {
+        return[
+            '.control-container .checkboxmulti-checkbox-wrapper' => <<<JS
+if (this.hasAttribute('values')) {
+    let values = JSON.parse(this.getAttribute('values'));
+    Object.keys(values).forEach((key) => {
+        let checkBoxWrapper = element.cloneNode(true);
+        let checkBoxInput = checkBoxWrapper.querySelector('input');
+        checkBoxInput.id = id+'-'+key;
+        checkBoxInput.value = key;
+        checkBoxInput.name = name+"[]";
+        let checkBoxLabel = checkBoxWrapper.querySelector('label');
+        checkBoxLabel.innerHTML = values[key];
+        checkBoxLabel.setAttribute('for',id+'-'+key);
+        element.parentNode.append(checkBoxWrapper);
+    });
+}
+element.remove();
+JS,
+            '.component-container input[type=hidden]' => <<<JS
+element.name= (namespaceAttr ? namespaceAttr+'[expected_data][]' : 'expected_data');
+element.value = nameAttr;
+JS
+        ]  + parent::shadowJavascript();
     }
 }

@@ -36,4 +36,18 @@ class TextArea extends BaseComponent
     public function hydrate()
     {
     }
+
+    public function shadowJavascript(): array
+    {
+        return [
+            '.control-container textarea' => <<<JS
+setTimeout(()=> { this.textarea.textContent = this.textContent; })
+JS
+        ] + parent::shadowJavascript();
+    }
+
+    public function shadowJavascriptProperties(): array
+    {
+        return ['textarea' => "this.template.querySelector('textarea');"];
+    }
 }

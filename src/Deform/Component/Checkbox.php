@@ -82,4 +82,49 @@ class Checkbox extends Input
         }
         return $this;
     }
+
+    /**
+     * @return string[]
+     */
+    public function shadowJavascript(): array
+    {
+        return
+            [
+            '.label-container label' => null,// explicitly remove this rule (not strictly necessary as it won't be found anyway!)
+            '.control-container label' => <<<JS
+if (this.hasAttribute('label')) {
+    element.innerHTML = this.getAttribute('label')
+}
+else if (this.hasAttribute('value')) {
+    element.innerHTML = this.getAttribute('value')
+}
+else if (this.hasAttribute('name')) {
+    element.innerHTML = this.getAttribute('name')
+}
+element.setAttribute('for', id);
+JS,
+            '.control-container input' => <<<JS
+element.id = id;
+element.name = name;
+if (this.hasAttribute('checked')) {
+    let checked = this.getAttribute('checked');
+    if (checked.toLowerCase()==='false' || parseInt(checked)===0) {
+        element.checked = false;
+    } 
+    else {
+        element.checked = true;
+    }
+}
+else {
+    element.checked = false
+}
+if (this.hasAttribute('value')) {
+    element.value = this.getAttribute('value');
+}
+JS,
+            '.component-container input[type=hidden]' => <<<JS
+element.name= (namespaceAttr ? namespaceAttr+'[expected_data][]' : 'expected_data');
+JS
+        ] + parent::shadowJavascript();
+    }
 }

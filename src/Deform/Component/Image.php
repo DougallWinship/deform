@@ -105,7 +105,7 @@ class Image extends File
      * @return $this
      * @throws \Exception
      */
-    public function setJavscriptSelectFunction(string $js): self
+    public function setJavascriptSelectFunction(string $js): self
     {
         $id = $this->getId();
         $previewId = 'preview-' . $id;
@@ -114,5 +114,17 @@ class Image extends File
         $this->javascriptSelectFunction = 'if (typeof $js!=="function") { alert("' . $js . ' is not a valid javascript function"); } else { ' . $js . '(event).then(function(url) { if (url) { document.getElementById("' . $previewId . '").src=url; document.getElementById("' . $hiddenId . '").value=url } }, function(error) { console.log(error); } ) }';
         // phpcs:enable
         return $this;
+    }
+
+    public function shadowJavascript(): array
+    {
+        return ['.control-container input#hidden-image-namespace-name' => <<<JS
+element.id = 'hidden-'+id;
+element.name = name;
+if (this.hasAttribute('value')) {
+    element.value = this.getAttribute('value');
+}
+JS
+        ] + parent::shadowJavascript();
     }
 }

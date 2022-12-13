@@ -6,7 +6,6 @@ namespace Deform\Component;
 
 use Deform\Html\Html;
 use Deform\Html\HtmlTag;
-use Deform\Html\IHtml;
 use Deform\Util\IToString;
 use Deform\Util\Strings;
 
@@ -458,7 +457,7 @@ abstract class BaseComponent implements IToString
         $methods = $reflectionSelf->getMethods();
         $templateMethods = [];
         foreach ($methods as $method) {
-            if ($method->class === $thisClass) {
+            if ($method->class !== BaseComponent::class) {
                 $docComment = $method->getDocComment();
                 if ($docComment) {
                     $comments = explode(PHP_EOL, $method->getDocComment());
@@ -472,5 +471,63 @@ abstract class BaseComponent implements IToString
             }
         }
         return $templateMethods;
+    }
+
+    /**
+     * @return string[]|null
+     */
+    public function shadowJavascript() {
+        return [];
+    }
+
+    public function getShadowJavascript() {
+        $shadowJavascript = $this->shadowJavascript();
+        if (!$this->componentContainer->controlOnly) {
+            $shadowJavascript += [
+                '.label-container label' => <<<JS
+if (this.hasAttribute('label')) {
+    element.innerHTML = this.getAttribute('label');
+} 
+element.setAttribute('for', id);
+JS,
+                '.hint-container' => <<<JS
+if (this.hasAttribute('hint')) {
+    element.innerHTML = this.getAttribute('hint');
+}
+else {
+    element.remove();
+}
+JS,
+                '.error-container' => <<<JS
+if (this.hasAttribute('error')) {
+    element.innerHTML = this.getAttribute('error');
+}
+else if (this.hasAttribute('errors')) {
+    let errors = JSON.parse(this.getAttribute('errors'));
+    if (nameAttr in errors) {
+        element.innerHTML = errors[nameAttr]
+    }
+}
+else {
+    element.remove();
+}
+JS
+            ];
+        }
+        foreach ($shadowJavascript as $selector=>$js) {
+            $shadowJavascript[$selector] = $js;
+        }
+        return $shadowJavascript;
+    }
+
+    /**
+     * @return string
+     */
+    public function getShadowTemplate() {
+        return $this.'';//triggers toString
+    }
+
+    public function shadowJavascriptProperties(): array {
+        return [];
     }
 }
