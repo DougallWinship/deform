@@ -18,7 +18,7 @@ class Arrays
     /**
      * extracts the specified set of keys from an array
      *
-     * if $fields is non-associative the specified fields will be extracted (identical to Arr::only)
+     * if $fields is non-associative the specified fields will be extracted
      * if $fields is associative then the keys will be extracted and remapped using the values
      *
      * @param array $data

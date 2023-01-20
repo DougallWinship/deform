@@ -476,11 +476,13 @@ abstract class BaseComponent implements IToString
     /**
      * @return string[]|null
      */
-    public function shadowJavascript() {
+    public function shadowJavascript()
+    {
         return [];
     }
 
-    public function getShadowJavascript() {
+    public function getShadowJavascript()
+    {
         $shadowJavascript = $this->shadowJavascript();
         if (!$this->componentContainer->controlOnly) {
             $shadowJavascript += [
@@ -514,7 +516,7 @@ else {
 JS
             ];
         }
-        foreach ($shadowJavascript as $selector=>$js) {
+        foreach ($shadowJavascript as $selector => $js) {
             $shadowJavascript[$selector] = $js;
         }
         return $shadowJavascript;
@@ -523,11 +525,13 @@ JS
     /**
      * @return string
      */
-    public function getShadowTemplate() {
-        return $this.'';//triggers toString
+    public function getShadowTemplate()
+    {
+        return $this . '';//triggers toString
     }
 
-    public function shadowJavascriptProperties(): array {
+    public function shadowJavascriptProperties(): array
+    {
         return [];
     }
 }

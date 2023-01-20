@@ -61,7 +61,8 @@ class Currency extends Input
         }
     }
 
-    public function shadowJavascript(): array {
+    public function shadowJavascript(): array
+    {
         return [
             '.currency-symbol' => <<<JS
 if (this.hasAttribute('currency')) {

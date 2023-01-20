@@ -79,7 +79,8 @@ class ComponentControls
      * @param HtmlTag $htmlTag
      * @return void
      */
-    public function addHtmlTag(HtmlTag $htmlTag) {
+    public function addHtmlTag(HtmlTag $htmlTag)
+    {
         $this->allTags[] = $htmlTag;
     }
 

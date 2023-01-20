@@ -11,48 +11,48 @@ foreach ($componentNames as $componentName) {
     $templateMethods = $component->getTemplateMethods();
     $callables = [];
     $callableRepeaters = [];
-    if (count($templateMethods)>0) {
+    if (count($templateMethods) > 0) {
         foreach ($templateMethods as $method) {
             $params = $method->getParameters();
-            if (count($params)>1) {
+            if (count($params) > 1) {
                 throw new \Exception("Not yet supported!");
-            }
-            else if (count($params)===1) {
+            } elseif (count($params) === 1) {
                 $type = $params[0]->getType();
                 $typeName = $type->getName();
-                if ($typeName==='array') {
-                    $method->invoke($component,['{repeatable-value}' => '{repeatable-value-label}']);
+                if ($typeName === 'array') {
+                    $method->invoke($component, ['{repeatable-value}' => '{repeatable-value-label}']);
                     $callableRepeaters[] = $method;
-                }
-                elseif ($typeName==='string') {
-                    $method->invoke($component,'{item}');
-                }
-                else {
-                    throw new \Exception("As yet unsupported @templateMethod parameter type '".$typeName."' for ".$method->name);
+                } elseif ($typeName === 'string') {
+                    $method->invoke($component, '{item}');
+                } else {
+                    throw new \Exception("As yet unsupported @templateMethod parameter type " .
+                        "'" . $typeName . "' for " . $method->name);
                 }
             }
         }
     }
-    $snakeName = "component-".\Deform\Util\Strings::separateCased($componentName,"-");
-    $componentName = "Component".$componentName;
-    $customElements[]=$snakeName;
+    $snakeName = "component-" . \Deform\Util\Strings::separateCased($componentName, "-");
+    $componentName = "Component" . $componentName;
+    $customElements[] = $snakeName;
     $controls = $component->componentContainer->control->getControls();
     ?>
     window.customElements.define('<?= $snakeName ?>',
         class <?= $componentName ?> extends HTMLElement {
             template = null;
             container = null;
-            <?php foreach ($component->shadowJavascriptProperties() as $property=>$selector) { ?>
-            <?= $property ?>=null;
+            <?php foreach ($component->shadowJavascriptProperties() as $property => $selector) { ?>
+                <?= $property ?>=null;
             <?php } ?>
             constructor() {
                 super();
                 this.template = document.createElement('div');
                 this.template.id='<?= $snakeName ;?>';
                 this.template.innerHTML = `<?= $component->getShadowTemplate() ?>`;
-                this.container = <?= $component->componentContainer->controlOnly ? "this.template;" : "this.template.querySelector('#namespace-name-container');" ?>
+                this.container = <?= $component->componentContainer->controlOnly
+                    ? "this.template;"
+                    : "this.template.querySelector('#namespace-name-container');" ?>
 
-                <?php foreach ($component->shadowJavascriptProperties() as $property=>$selector) { ?>
+                <?php foreach ($component->shadowJavascriptProperties() as $property => $selector) { ?>
                 this.<?= $property ?>=<?= $selector ?>;
                 <?php } ?>
                 const shadowRoot = this.attachShadow({mode:'open'});
@@ -62,8 +62,9 @@ foreach ($componentNames as $componentName) {
             connectedCallback() {
                 if (!this.hasAttribute('name')) {
                     console.error('"<?= $snakeName ?>" is missing the required attribute \'name\'');
-                    this.container.innerHTML = "<div style='color:red'>'<?= $snakeName ?>' is missing the required attribute 'name'</div>";
-                    return
+                    let e = "<div style='color:red'>'<?= $snakeName ?>' is missing the required attribute 'name'</div>";
+                    this.container.innerHTML = e;
+                    return;
                 }
                 let namespaceAttr = null;
                 if (this.hasAttribute('namespace')) {
@@ -107,15 +108,15 @@ foreach ($componentNames as $componentName) {
 
                     /* start : generated component rules */
                     let element
-                    <?php foreach ($component->getShadowJavascript() as $selector=>$javascript) { if ($javascript!==null) { ?>
+                    <?php foreach ($component->getShadowJavascript() as $selector => $javascript) { ?>
+                        <?php if ($javascript !== null) { ?>
                     element = this.container.querySelector('<?= $selector ?>');
                     if (element!==null) {<?php echo \Deform\Util\Strings::trimInternal($javascript); ?>}
-                    <?php } } ?>
+                        <?php } ?>
+                    <?php } ?>
                     /* end : generated component rules */
                 }
             }
         }
     )
-<?php
-}
-?>
+<?php } ?>

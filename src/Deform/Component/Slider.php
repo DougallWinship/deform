@@ -31,7 +31,7 @@ class Slider extends Input
      * @param bool $showOutput
      * @return $this|void
      */
-    public function showOutput(bool $showOutput = true) : self
+    public function showOutput(bool $showOutput = true): self
     {
         if ($showOutput) {
             $this->componentContainer->control->addHtmlTag(Html::output(['class' => 'slider-output']));

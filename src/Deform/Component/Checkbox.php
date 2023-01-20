@@ -90,7 +90,7 @@ class Checkbox extends Input
     {
         return
             [
-            '.label-container label' => null,// explicitly remove this rule (not strictly necessary as it won't be found anyway!)
+            '.label-container label' => null,// explicitly remove this rule from the parent (it's ignored anyway!)
             '.control-container label' => <<<JS
 if (this.hasAttribute('label')) {
     element.innerHTML = this.getAttribute('label')

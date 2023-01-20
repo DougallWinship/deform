@@ -140,11 +140,16 @@ class ComponentFactory
         return self::$components;
     }
 
+    /**
+     * generate javascript definitions for the components
+     * @return false|string
+     * @throws \Exception
+     */
     public static function getCustomElementDefinitionsJavascript()
     {
         $componentNames = self::getRegisteredComponents();
         ob_start();
-        require(__DIR__.DIRECTORY_SEPARATOR.'custom-element-definitions.php');
+        require(__DIR__ . DIRECTORY_SEPARATOR . 'custom-element-definitions.php');
         return ob_get_clean();
     }
 

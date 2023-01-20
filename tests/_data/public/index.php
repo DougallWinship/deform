@@ -22,7 +22,8 @@ set_exception_handler(function(\Throwable $exc) {
     renderLayout("Exception : ".$exc->getMessage(), $errorMessage);
 });
 
-$path = trim($_SERVER['REQUEST_URI'],'/');
+$requestUri = trim($_SERVER['REQUEST_URI'],'/');
+$path = parse_url($requestUri, PHP_URL_PATH);
 
 include dirname(dirname(dirname(__DIR__)))."/vendor/autoload.php";
 
