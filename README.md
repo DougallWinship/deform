@@ -8,13 +8,15 @@ Form coding is highly repetitive & IDE auto-completion is your friend.
 * consistent generation of components (as regards the HTML structure)
 * strong IDE auto-completion support & chaining wherever appropriate
 * generate forms in a controller action which can then be tailored in a view
-* export a form to an array & build a form from an json array definition (so you can persist them via json etc.)
+* export a form to an array & build a form from an array definition (so you can persist them via json etc.)
 * custom HTML element creation using the shadow dom
-* todo: - auto-generate forms from a model or a database table
-* todo: - sensible default form handling
-* todo: - validation support (this maybe out of scope but it should at least be made easy)
-* todo: - rendering adapters
-* todo: - make styling easy 
+
+### Planned
+* auto-generate forms from a model or a database table
+* sensible default form handling
+* validation support (this maybe out of scope but it should at least be made as easy as possible)
+* rendering adapters
+* make styling easy 
 
 ## Layers
 There are 3 principal layers:
@@ -122,6 +124,41 @@ echo Component::RadioButtonSet('form1', 'myradiobuttonset')
 ```
 
 > **_NOTE:_** You can see all the available components by looking at the annotations of the [ComponentFactory](src/Deform/Component/ComponentFactory.php).
+
+#### Custom element definitions
+The components can also generate a set of customElements via javascript.
+```php
+<script>
+<?php echo \Deform\Component\ComponentFactory::getCustomElementDefinitionsJavascript() ?>
+</script>
+```
+Which can then be used like this:
+```html
+<form name="potatoes" data-namespace="potatoes">
+    <deform-button name='button1' value='buttonvalue' label='Button Label' onclick="this.parentNode.submit()">Button</deform-button><br>
+    <deform-checkbox name='checkbox1' value="checkboxvalue" label="Checkbox Label"></deform-checkbox><br>
+    <deform-checkbox-multi name='checkbox-multi1' values='{"one":"One","two":"Two","three":"Three"}' label='CheckboxMulti Label'></deform-checkbox-multi><br>
+    <deform-currency name='currency1' currency="&pound;" label='Currency Label'></deform-currency><br>
+    <deform-date name='date1' label='Date Label'></deform-date><br>
+    <deform-date-time name='datetime1' label='DateTime Label'></deform-date-time><br>
+    <deform-display name='display1' label='Display Label' value='show this'></deform-display><br>
+    <deform-email name='email1' label='Component Email' value='potatoes'></deform-email><br>
+    <deform-file name='file1' label='Component File'></deform-file><br>
+    <deform-image name='image1' label='Component Image'></deform-image><br>
+    <deform-multiple-file name='multiplefile1' label='Component Multiple File'></deform-multiple-file><br>
+    <deform-multiple-email name='multipleemail1' label='Component Multiple Email'>Button</deform-multiple-email><br>
+    <deform-hidden name='hidden1' value='hiddenvalue'></deform-hidden> &laquo;Hidden Input<br><br>
+    <deform-input-button name='inputbutton1' label='Component Input Button' value='value1' label='Input Button Label'></deform-input-button><br>
+    <deform-password name='password1' label='Component Password' value='password1' label='Password Label'></deform-password><br>
+    <deform-radio-button-set name='radiobuttonset1' label='Component Radio Button Set' values='{"one":"One","two":"Two","three":"Three"}' label='Radio Buton Set Label'></deform-radio-button-set><br>
+    <deform-select name='select1' label="component-select" options='{"one":"One","two":"Two","three":"Three"}' label='Select Label'></deform-select>
+    <deform-select-multi name='selectmulti1' options='{"one":"One","two":"Two","three":"Three"}' label='Select Multi'></deform-select-multi>
+    <deform-slider name='slider1' label='Slider Label' min="50" max="150" showOutput="true"></deform-slider><br>
+    <deform-submit name='submit1' value="potatoes"></deform-submit><br>
+    <deform-text name='text1' label='Text Label' value='text value'></deform-text><br>
+    <deform-text-area name='textarea1' label='component-text-area'>this is some text area value</deform-text-area><br>
+</form>
+```
 
 ### Deform\Form
 Still under construction!

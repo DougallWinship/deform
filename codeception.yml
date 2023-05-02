@@ -22,3 +22,5 @@ coverage:
     enabled: true
     include:
         - src/*
+    exclude:
+        - src/Deform/Component/custom-element-definitions.php

@@ -10,6 +10,8 @@ namespace Deform\Component;
  */
 class Date extends Input
 {
+    use Shadow\Input;
+
     /**
      * @inheritDoc
      */

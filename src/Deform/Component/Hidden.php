@@ -6,6 +6,8 @@ namespace Deform\Component;
 
 class Hidden extends Input
 {
+    use Shadow\Hidden;
+
     /**
      * @inheritDoc
      */

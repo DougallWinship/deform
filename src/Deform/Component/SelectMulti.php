@@ -10,6 +10,8 @@ namespace Deform\Component;
  */
 class SelectMulti extends Select
 {
+    use Shadow\SelectMulti;
+
     /**
      * @inheritDoc
      */

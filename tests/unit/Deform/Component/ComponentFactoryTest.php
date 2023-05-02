@@ -24,7 +24,6 @@ class ComponentFactoryTest extends \Codeception\Test\Unit
             "File",
             "MultipleFile",
             "Hidden",
-            "InputButton",
             "Password",
             "RadioButtonSet",
             "Select",
@@ -35,7 +34,7 @@ class ComponentFactoryTest extends \Codeception\Test\Unit
             "TextArea",
         ];
         foreach ($expectedComponents as $component) {
-            $this->assertTrue(ComponentFactory::isRegisteredComponent($component));
+            $this->assertTrue(ComponentFactory::isRegisteredComponent($component),"is registered component : ".$component);
         }
     }
 

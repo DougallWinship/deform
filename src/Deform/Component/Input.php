@@ -18,6 +18,8 @@ use Deform\Html\HtmlTag;
  */
 abstract class Input extends BaseComponent
 {
+    use Shadow\Input;
+
     public bool $autoAddControl = true;
 
     /** @var HtmlTag */
@@ -48,16 +50,5 @@ abstract class Input extends BaseComponent
         return $this;
     }
 
-    public function shadowJavascript(): array
-    {
-        return [
-            '.control-container input' => <<<JS
-element.id = id;
-element.name = name;
-if (this.hasAttribute('value')) {
-    element.value = this.getAttribute('value');
-}
-JS
-        ] + parent::shadowJavascript();
-    }
+
 }

@@ -13,6 +13,8 @@ use Deform\Html\HtmlTag;
  */
 class Checkbox extends Input
 {
+    use Shadow\Checkbox;
+
     public ?string $inputLabelText = null;
 
     /** @var HtmlTag $inputLabel */
@@ -33,7 +35,6 @@ class Checkbox extends Input
             ' ',
             $this->inputLabel,
         ]);
-        $this->componentContainer->disableLabel = true;
         $this->addExpectedField($this->fieldName);
     }
 
@@ -47,17 +48,6 @@ class Checkbox extends Input
         $this->inputLabelText = $text;
         $this->inputLabel->reset($text);
         return $this;
-    }
-
-    /**
-     * for convenience since it's a special case
-     * @param string $text
-     * @return $this
-     * @throws \Exception
-     */
-    public function label(string $text): self
-    {
-        return $this->text($text);
     }
 
     /**
@@ -81,50 +71,5 @@ class Checkbox extends Input
             $this->input->unset('checked');
         }
         return $this;
-    }
-
-    /**
-     * @return string[]
-     */
-    public function shadowJavascript(): array
-    {
-        return
-            [
-            '.label-container label' => null,// explicitly remove this rule from the parent (it's ignored anyway!)
-            '.control-container label' => <<<JS
-if (this.hasAttribute('label')) {
-    element.innerHTML = this.getAttribute('label')
-}
-else if (this.hasAttribute('value')) {
-    element.innerHTML = this.getAttribute('value')
-}
-else if (this.hasAttribute('name')) {
-    element.innerHTML = this.getAttribute('name')
-}
-element.setAttribute('for', id);
-JS,
-            '.control-container input' => <<<JS
-element.id = id;
-element.name = name;
-if (this.hasAttribute('checked')) {
-    let checked = this.getAttribute('checked');
-    if (checked.toLowerCase()==='false' || parseInt(checked)===0) {
-        element.checked = false;
-    } 
-    else {
-        element.checked = true;
-    }
-}
-else {
-    element.checked = false
-}
-if (this.hasAttribute('value')) {
-    element.value = this.getAttribute('value');
-}
-JS,
-            '.component-container input[type=hidden]' => <<<JS
-element.name= (namespaceAttr ? namespaceAttr+'[expected_data][]' : 'expected_data');
-JS
-        ] + parent::shadowJavascript();
     }
 }

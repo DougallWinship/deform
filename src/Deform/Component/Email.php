@@ -6,6 +6,8 @@ namespace Deform\Component;
 
 class Email extends Input
 {
+    use Shadow\Input;
+
     /**
      * @inheritDoc
      */

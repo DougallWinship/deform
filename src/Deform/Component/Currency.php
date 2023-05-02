@@ -12,6 +12,8 @@ use Deform\Html\HtmlTag;
  */
 class Currency extends Input
 {
+    use Shadow\Input;
+
     public ?string $currencyLabelValue = null;
     public HtmlTag $currencyLabel;
 
