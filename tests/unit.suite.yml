@@ -11,8 +11,9 @@ modules:
             dsn: 'mysql:host=localhost;dbname=deform-test-db'
             user: 'root'
             password: 'root'
+            create: true
             dump: tests/_data/dump.sql
             populate: true
             cleanup: true
-            populator: 'mysql --login-path=local $dbname < $dump'
+            populator: 'mysql --defaults-extra-file=tests/.user.cnf  $dbname < $dump'
     step_decorators: ~

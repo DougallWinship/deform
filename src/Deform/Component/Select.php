@@ -19,6 +19,7 @@ class Select extends BaseComponent
 
     public bool $hasOptGroups = false;
     public array $options = [];
+    public array $optionsHtml = [];
 
     /**
      * @inheritDoc

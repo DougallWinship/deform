@@ -433,7 +433,8 @@ class HtmlTagTest extends \Codeception\Test\Unit
             'checked' => false,
             'other' => ["foo", "bar", "baz"],
         ]);
-        $this->assertEquals(" tooltip='&lt;'blah'&gt;&amp;&quot;' style='color:red;background-color:green;position:relative;top:4px' class='foo bar baz' onclick='alert('foo');alert('bar');alert('baz')' selected other='baz'", $attrString);
+        //$this->assertEquals(" tooltip='&lt;'blah'&gt;&amp;&quot;' style='color:red;background-color:green;position:relative;top:4px' class='foo bar baz' onclick='alert('foo');alert('bar');alert('baz')' selected other='baz'", $attrString);
+        $this->assertEquals(" tooltip='&lt;&#039;blah&#039;&gt;&amp;&quot;' style='color:red;background-color:green;position:relative;top:4px' class='foo bar baz' onclick='alert(&#039;foo&#039;);alert(&#039;bar&#039;);alert(&#039;baz&#039;)' selected other='baz'", $attrString);
     }
 
     public function testDeform1()
