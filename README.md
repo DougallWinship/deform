@@ -170,15 +170,7 @@ That's it!
 
 ## Tests
 
-Run the codecept tests like this:
-```
-./codecept run
-```
-
-And with coverage html report generated to [tests/_output/coverage/index.html](tests/_output/coverage/index.html)
-```
-./codecept run --coverage-html
-```
+See [tests/README.md](tests/README.md)
 
 ## Code style - PSR-12
 The code is meant to conform to the PSR-12 standard as far as is sensible. 

@@ -51,7 +51,7 @@ class Select extends BaseComponent
         foreach ($this->options as $key => $value) {
             $option = Html::option(['value' => $isAssoc ? $key : $value])->add($value);
             $this->select->add($option);
-            $this->optionsHtml[] = $option;
+            $this->options[] = $option;
         }
         return $this;
     }
@@ -75,7 +75,7 @@ class Select extends BaseComponent
             foreach ($options as $key => $value) {
                 $option = Html::option(['value' => $isAssoc ? $key : $value])->add($value);
                 $optgroup->add($option);
-                $this->optionsHtml[] = $option;
+                $this->options[] = $option;
             }
             $this->select->add($optgroup);
         }
