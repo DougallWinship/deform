@@ -1,4 +1,8 @@
 {
+    "name": "dougallwinship/deform",
+    "description": "deform form library",
+    "type": "library",
+    "version": "0.1",
     "autoload": {
         "psr-4": {"": "src/"}
     },

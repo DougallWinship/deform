@@ -447,14 +447,7 @@ class FormModel
     {
         switch ($this->csrfStrategy) {
             case self::CSRF_STRATEGY_SESSION:
-                $sessionStatus = session_status();
-                if ($sessionStatus === PHP_SESSION_DISABLED) {
-                    throw new \Exception(
-                        "Unable to use CSRF strategy '" . self::CSRF_STRATEGY_SESSION . "' since sessions are disabled!"
-                    );
-                } elseif ($sessionStatus === PHP_SESSION_NONE) {
-                    session_start();
-                }
+                $this->ensureSessionStarted();
                 $token = bin2hex(random_bytes(35));
                 $_SESSION[$this->getCSRFFormTokenName()] = $token;
                 return ComponentFactory::Hidden($this->namespace, self::CSRF_TOKEN_FIELD)->value($token);
@@ -482,6 +475,22 @@ class FormModel
 
             default:
                 throw new \Exception("Unrecognised CSRF strategy '" . $this->csrfStrategy . "'");
+        }
+    }
+
+    /**
+     * @return void
+     * @throws \Exception
+     */
+    public function ensureSessionStarted()
+    {
+        $sessionStatus = session_status();
+        if ($sessionStatus === PHP_SESSION_DISABLED) {
+            throw new \Exception(
+                "PHP sessions are disabled!"
+            );
+        } elseif ($sessionStatus === PHP_SESSION_NONE) {
+            session_start();
         }
     }
 
