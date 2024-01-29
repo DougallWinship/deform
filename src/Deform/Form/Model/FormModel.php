@@ -6,12 +6,10 @@ namespace Deform\Form\Model;
 
 use Deform\Component\BaseComponent;
 use Deform\Component\ComponentFactory;
-use Deform\Component\Hidden;
 use Deform\Html\Html;
 use Deform\Html\HtmlTag;
 use Deform\Html\IHtml;
 use Deform\Util\Arrays;
-use Deform\Util\IToString;
 
 /**
  * @method \Deform\Component\Button addButton(string $field, array $options=[])
@@ -156,12 +154,12 @@ class FormModel
     }
 
     /**
-     * @param string|IToString $html
+     * @param string|\Stringable $html
      * @throws \Exception
      */
     public function addHtml($html)
     {
-        if ($html instanceof IToString) {
+        if ($html instanceof \Stringable) {
             $html = (string)$html;
         }
         if (!is_string($html)) {

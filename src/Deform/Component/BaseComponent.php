@@ -6,10 +6,9 @@ namespace Deform\Component;
 
 use Deform\Html\Html;
 use Deform\Html\HtmlTag;
-use Deform\Util\IToString;
 use Deform\Util\Strings;
 
-abstract class BaseComponent implements IToString
+abstract class BaseComponent implements \Stringable
 {
     public const EXPECTED_DATA_FIELD = "expected_data";
 
