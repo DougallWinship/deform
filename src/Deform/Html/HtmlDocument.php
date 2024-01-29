@@ -4,9 +4,7 @@ declare(strict_types=1);
 
 namespace Deform\Html;
 
-use Deform\Util\IToString;
-
-class HtmlDocument implements IToString
+class HtmlDocument implements \Stringable
 {
     private \DOMDocument $domDocument;
     private ?\DOMXPath $domXPath = null;
