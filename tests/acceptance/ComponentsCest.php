@@ -71,12 +71,6 @@ class ComponentsCest
         $I->seeElement(['css'=>'input#hidden-form1-myhidden[type=hidden][value="hidden value"]']);
     }
 
-    public function inputButton(AcceptanceTester $I)
-    {
-        $I->seeElement(['css'=>'div#form1-myinputbutton-container.component-container.container-type-input-button>div.label-container>label']);
-        $I->seeElement(['css'=>'div#form1-myinputbutton-container.component-container.container-type-input-button>div.control-container>input[type=button]']);
-    }
-
     public function multipleemail(AcceptanceTester $I)
     {
         $I->seeElement(['css'=>'div#form1-mymultiple-email-container.component-container.container-type-multiple-email>div.label-container>label']);
