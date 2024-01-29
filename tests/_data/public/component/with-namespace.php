@@ -27,6 +27,8 @@ if (isset($_POST) && count($_POST)) { ?>
 
     <?= Component::Hidden( 'form1','myhidden')->value('hidden value') ?>
 
+    <?= Component::Image('form1','myimage')->label("My Image") ?>
+
     <?= Component::InputButton('form1','myinputbutton')->label('My Input Button')->value('Click Me!') ?>
 
     <?= Component::MultipleEmail('form1','mymultiple-email')->label('My Multiple Email'); ?>
@@ -47,7 +49,7 @@ if (isset($_POST) && count($_POST)) { ?>
 
     <?= Component::SelectMulti( 'form1','myselectmulti2')->optgroupOptions(['group 1'=>['one'=>'One','two'=>'Two','three'=>'Three'],'group 2'=>['four'=>'Four','five'=>'Five']])->label('My Select Multi (optgroups)')->setValue(['two','five']) ?>
 
-    <?= Component::Slider('form1','myslider')->label('My Slider'); ?>
+    <?= Component::Slider('form1','myslider')->label('My Slider') ?>
 
     <?= Component::Submit( 'form1','mysubmitbutton')->value('My Submit Button') ?>
 

@@ -12,9 +12,9 @@ class Hidden extends Input
     public function setup()
     {
         parent::setup();
-        $this->componentContainer->controlOnly = true;
         $this->autolabel(false);
         $this->type('hidden');
+        $this->componentContainer->controlOnly = true;
     }
 
     public function hydrate()

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Deform\Component;
 
+use Deform\Html\Html;
 use Deform\Util\Strings;
 
 /**
@@ -16,6 +17,7 @@ use Deform\Util\Strings;
  * @method static Display Display(string $namespace, string $field, array $attributes=[])
  * @method static Email Email(string $namespace, string $field, array $attributes=[])
  * @method static File File(string $namespace, string $field, array $attributes=[])
+ * @method static Image Image(string $namespace, string $field, array $attributes=[])
  * @method static MultipleFile MultipleFile(string $namespace, string $field, array $attributes=[])
  * @method static MultipleEmail MultipleEmail(string $namespace, string $field, array $attributes=[])
  * @method static Hidden Hidden(string $namespace, string $field, array $attributes=[])
@@ -35,11 +37,11 @@ class ComponentFactory
     public const EUROS = "&euro;";
     public const AUSTRALIAN_DOLLARS = "A&dollar;";
 
-    /** @var \ReflectionClass */
-    private static $reflectionSelf;
+    /** @var \ReflectionClass|null */
+    private static ?\ReflectionClass $reflectionSelf = null;
 
-    /** @var object[] */
-    public static $components;
+    /** @var string[]|null */
+    public static ?array $components = null;
 
     /**
      * @param string $method
@@ -61,7 +63,7 @@ class ComponentFactory
         $namespace = array_shift($arguments);
         $fieldName = array_shift($arguments);
         $attributes = array_shift($arguments);
-        return self::build($method, $namespace, $fieldName, $attributes ?? []);
+        return call_user_func([get_called_class(),'build'], $method, $namespace, $fieldName, $attributes ?? []);
     }
 
     /**
@@ -95,7 +97,7 @@ class ComponentFactory
         $reflectionClass = new \ReflectionClass($class);
         $constructor = $reflectionClass->getConstructor();
         $constructor->setAccessible(true);
-        /** @var BaseComponent $object it's not actually this, but BaseComponent is the parent */
+        /** @var BaseComponent $object it's not actually this, but BaseComponent *is* the parent */
         $object = $reflectionClass->newInstanceWithoutConstructor();
         $constructor->invokeArgs($object, [
             $formNamespace,
@@ -103,6 +105,18 @@ class ComponentFactory
             $arguments
         ]);
         return $object;
+    }
+
+    /**
+     * @param string $component
+     * @return BaseComponent|object
+     * @throws \Exception
+     */
+    public static function buildTemplate(string $component)
+    {
+        $lowerName = strtolower($component);
+        $htmlTag = self::build($component, 'template', $lowerName);
+        return Html::div()->id('template-' . $lowerName)->add($htmlTag);
     }
 
     /**
@@ -114,6 +128,29 @@ class ComponentFactory
     {
         self::identifyComponents();
         return in_array($componentName, self::$components);
+    }
+
+    /**
+     * @return string[]
+     * @throws \Exception
+     */
+    public static function getRegisteredComponents(): array
+    {
+        self::identifyComponents();
+        return self::$components;
+    }
+
+    /**
+     * generate javascript definitions for the components
+     * @return false|string
+     * @throws \Exception
+     */
+    public static function getCustomElementDefinitionsJavascript()
+    {
+        $componentNames = self::getRegisteredComponents();
+        ob_start();
+        require(__DIR__ . DIRECTORY_SEPARATOR . 'custom-element-definitions.php');
+        return ob_get_clean();
     }
 
     /**

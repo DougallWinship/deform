@@ -24,6 +24,7 @@ use Deform\Util\IToString;
  * @method \Deform\Component\Email addEmail(string $field, array $options=[])
  * @method \Deform\Component\File addFile(string $field, array $options=[])
  * @method \Deform\Component\Hidden addHidden(string $field, array $options=[])
+ * @method \Deform\Component\Image addImage(string $field, array $options=[])
  * @method \Deform\Component\InputButton addInputButton(string $field, array $options=[])
  * @method \Deform\Component\MultipleEmail addMultipleEmail(string $field, array $options=[])
  * @method \Deform\Component\MultipleFile addMultipleFile(string $field, array $options=[])
@@ -81,6 +82,9 @@ class FormModel
     /** @var string */
     private string $csrfStrategy = self::CSRF_STRATEGY_SESSION;
 
+
+    private string $encType = self::ENCTYPE_MULTIPART_URL_ENCODED;
+
     /**
      * @param string $namespace
      * @param string $formMethod
@@ -119,7 +123,7 @@ class FormModel
             $componentName = substr($name, 3);
             if (!ComponentFactory::isRegisteredComponent($componentName)) {
                 throw new \Exception(
-                    "There is no component named '" . $componentName . " registered in ComponentFactory"
+                    "There is no component named '" . $componentName . "' registered in ComponentFactory"
                 );
             }
             $field = $arguments[0];
@@ -144,6 +148,11 @@ class FormModel
             return $component;
         }
         throw new \BadMethodCallException("Call to undefined method " . __CLASS__ . "::" . $name . "()");
+    }
+
+    public function addCancelLink(string $url, $text = "Cancel")
+    {
+        $this->addHtml(Html::div(['class' => 'form-cancel-button'])->add(Html::a(['href' => $url])->add($text)));
     }
 
     /**
@@ -174,8 +183,13 @@ class FormModel
             'autocomplete' => $this->autoComplete
         ];
         foreach ($this->sections as $section) {
-            if (($section instanceof BaseComponent) && ($section->requiresMultiformEncoding())) {
+            if (
+                ($section instanceof BaseComponent) &&
+                ($this->encType === self::ENCTYPE_MULTIPART_URL_ENCODED) &&
+                ($section->requiresMultiformEncoding())
+            ) {
                 $formAttributes['enctype'] = self::ENCTYPE_MULTIPART_FORM_DATA;
+                $this->encType = self::ENCTYPE_MULTIPART_FORM_DATA;
             }
         }
         $formHtml = Html::form($formAttributes);
@@ -257,11 +271,13 @@ class FormModel
     }
 
     /**
+     * extracts the data and populates the form
      * @param array $formData
-     * @return bool
+     * @param bool $exceptionIfMissing throw an exception if there was not a corresponding component, otherwise ignored
+     * @return array data without any form specific details (e.g. expected data fields & csrf token)
      * @throws \Exception
      */
-    protected function populateFormData(array $formData): bool
+    protected function populateFormData(array $formData, bool $exceptionIfMissing = true): array
     {
         if (isset($formData[BaseComponent::EXPECTED_DATA_FIELD])) {
             foreach ($formData[BaseComponent::EXPECTED_DATA_FIELD] as $expectedDatum) {
@@ -277,12 +293,15 @@ class FormModel
         $this->formData = $formData;
         foreach ($this->formData as $field => $value) {
             if (!isset($this->sections[$field])) {
-                throw new \Exception("No component found for '" . $field . "'");
+                if ($exceptionIfMissing) {
+                    throw new \Exception("No component found for '" . $field . "'");
+                }
+            } else {
+                $fieldComponent = $this->fieldComponents[$field];
+                $fieldComponent->setValue($value);
             }
-            $fieldComponent = $this->fieldComponents[$field];
-            $fieldComponent->setValue($value);
         }
-        return true;
+        return $this->formData;
     }
 
     /**
@@ -550,5 +569,22 @@ class FormModel
         ob_end_clean();
         http_response_code(405);
         die("Method not allowed");
+    }
+
+    /**
+     * @return string
+     */
+    public function getNamespace(): string
+    {
+        return $this->namespace;
+    }
+
+    /**
+     * @param string $field
+     * @return bool
+     */
+    public function hasComponent(string $field): bool
+    {
+        return isset($this->fieldComponents[$field]);
     }
 }

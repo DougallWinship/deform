@@ -19,6 +19,8 @@ namespace Deform\Html;
  * @method HtmlTag autocomplete(string $autocomplete)
  * @method HtmlTag onsubmit(string $onsubmit)
  * @method HtmlTag onclick(string $onclick)
+ * @method HtmlTag onchange(string $onchange)
+ * @method HtmlTag oninput(string $oninput)
  * @method HtmlTag style(string $style)
  * @method HtmlTag force_style(string $style)
  * @method HtmlTag disabled(string $value)

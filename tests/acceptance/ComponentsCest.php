@@ -25,8 +25,8 @@ class ComponentsCest
     public function checkboxMulti(AcceptanceTester $I)
     {
         $I->seeElement(['css' => 'div#form1-mymulticheckbox-container.component-container.container-type-checkbox-multi>div.label-container>label']);
-        $I->seeElement(['css' => 'div#form1-mymulticheckbox-container.component-container.container-type-checkbox-multi>div.control-container>div.checkbox-wrapper>input[type=checkbox]']);
-        $I->seeElement(['css' => 'div#form1-mymulticheckbox-container.component-container.container-type-checkbox-multi>div.control-container>div.checkbox-wrapper>label']);
+        $I->seeElement(['css' => 'div#form1-mymulticheckbox-container.component-container.container-type-checkbox-multi>div.control-container>div.checkboxmulti-checkbox-wrapper>input[type=checkbox]']);
+        $I->seeElement(['css' => 'div#form1-mymulticheckbox-container.component-container.container-type-checkbox-multi>div.control-container>div.checkboxmulti-checkbox-wrapper>label']);
     }
 
     public function currency(AcceptanceTester $I)
@@ -98,15 +98,15 @@ class ComponentsCest
     public function radioButtonSet(AcceptanceTester $I)
     {
         $I->seeElement(['css'=>'div#form1-myradiobuttonset-container.component-container.container-type-radio-button-set>div.label-container>label']);
-        $I->seeElement(['css'=>'div#form1-myradiobuttonset-container.component-container.container-type-radio-button-set>div.control-container>div.radiobuttonset-container>input[type=radio]']);
-        $I->seeElement(['css'=>'div#form1-myradiobuttonset-container.component-container.container-type-radio-button-set>div.control-container>div.radiobuttonset-container>label']);
+        $I->seeElement(['css'=>'div#form1-myradiobuttonset-container.component-container.container-type-radio-button-set>div.control-container>div.radiobuttonset-radio-container>input[type=radio]']);
+        $I->seeElement(['css'=>'div#form1-myradiobuttonset-container.component-container.container-type-radio-button-set>div.control-container>div.radiobuttonset-radio-container>label']);
     }
 
     public function radioButtonSet2(AcceptanceTester $I)
     {
         $I->seeElement(['css'=>'div#form1-myradiobuttonset2-container.component-container.container-type-radio-button-set>div.label-container>label']);
-        $I->seeElement(['css'=>'div#form1-myradiobuttonset2-container.component-container.container-type-radio-button-set>div.control-container>div.radiobuttonset-container>input#radiobuttonset-form1-myradiobuttonset2-four[type=radio][checked=checked]']);
-        $I->seeElement(['css'=>'div#form1-myradiobuttonset2-container.component-container.container-type-radio-button-set>div.control-container>div.radiobuttonset-container>label']);
+        $I->seeElement(['css'=>'div#form1-myradiobuttonset2-container.component-container.container-type-radio-button-set>div.control-container>div.radiobuttonset-radio-container>input#radiobuttonset-form1-myradiobuttonset2-four[type=radio][checked=checked]']);
+        $I->seeElement(['css'=>'div#form1-myradiobuttonset2-container.component-container.container-type-radio-button-set>div.control-container>div.radiobuttonset-radio-container>label']);
     }
 
     public function select(AcceptanceTester $I)

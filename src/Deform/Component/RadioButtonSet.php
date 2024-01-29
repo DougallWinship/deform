@@ -27,6 +27,7 @@ class RadioButtonSet extends BaseComponent
     }
 
     /**
+     * @templateMethod
      * @param array $radioButtons
      * @return RadioButtonSet
      * @throws \Exception
@@ -36,7 +37,7 @@ class RadioButtonSet extends BaseComponent
         $isAssoc = \Deform\Util\Arrays::isAssoc($radioButtons);
         $this->radioButtons = $radioButtons;
         foreach ($radioButtons as $key => $value) {
-            $radioButtonContainer = Html::div(['class' => 'radiobuttonset-container']);
+            $radioButtonContainer = Html::div(['class' => 'radiobuttonset-radio-container']);
             $radioLabel = $value;
             $radioValue = $isAssoc ? $key : $value;
             $id = self::getMultiControlId($this->getId(), $radioValue);
@@ -90,5 +91,32 @@ class RadioButtonSet extends BaseComponent
         if (count($this->radioButtons) > 0) {
             $this->radioButtons($this->radioButtons);
         }
+    }
+
+    public function shadowJavascript()
+    {
+        return [
+            '.control-container .radiobuttonset-radio-container' => <<<JS
+if (this.hasAttribute('values')) {
+    let values = JSON.parse(this.getAttribute('values'));
+    Object.keys(values).forEach((key) => {
+        let radiobuttonWrapper = element.cloneNode(true);
+        let radiobuttonInput = radiobuttonWrapper.querySelector('input');
+        radiobuttonInput.id = id+'-'+key;
+        radiobuttonInput.value = key;
+        radiobuttonInput.name = name+"[]";
+        let radiobuttonLabel = radiobuttonWrapper.querySelector('label');
+        radiobuttonLabel.innerHTML = values[key];
+        radiobuttonLabel.setAttribute('for',id+'-'+key);
+        element.parentNode.append(radiobuttonWrapper);
+    });
+}
+element.remove();
+JS,
+            '.component-container input[type=hidden]' => <<<JS
+element.name= (namespaceAttr ? namespaceAttr+'[expected_data][]' : 'expected_data');
+element.value = nameAttr;
+JS
+            ] + parent::shadowJavascript();
     }
 }

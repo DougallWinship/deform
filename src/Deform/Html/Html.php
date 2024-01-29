@@ -130,6 +130,9 @@ use Deform\Util\Strings;
  * @method static HtmlTag track(array $attributes=[])
  * @method static HtmlTag video(array $attributes=[])
  *
+ * Special Tags:
+ * @method static HtmlTag template(array $attributes=[])
+ *
  * Notes:
  * - the purpose is to allow code generated strings of HTML which can still be
  *   altered just prior to rendering (so a controller can make it and a view

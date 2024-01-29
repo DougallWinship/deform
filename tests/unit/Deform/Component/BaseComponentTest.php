@@ -211,7 +211,7 @@ class BaseComponentTest extends \Codeception\Test\Unit
             ->checkboxes($checkboxes);
 
         $checkboxMultiTag = $checkboxMulti->getHtmlTag();
-        $findClass = "checkbox-wrapper";
+        $findClass = "checkboxmulti-checkbox-wrapper";
         $nodes = $checkboxMultiTag->findNodes('.'.$findClass);
         $this->assertSameSize($checkboxes, $nodes);
         for ($idx=0; $idx<count($checkboxes); $idx++) {

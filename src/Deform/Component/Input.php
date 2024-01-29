@@ -47,4 +47,17 @@ abstract class Input extends BaseComponent
         $this->input->set('type', $type);
         return $this;
     }
+
+    public function shadowJavascript(): array
+    {
+        return [
+            '.control-container input' => <<<JS
+element.id = id;
+element.name = name;
+if (this.hasAttribute('value')) {
+    element.value = this.getAttribute('value');
+}
+JS
+        ] + parent::shadowJavascript();
+    }
 }

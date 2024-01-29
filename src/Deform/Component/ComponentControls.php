@@ -75,6 +75,16 @@ class ComponentControls
     }
 
     /**
+     * add some arbitrary html to the control container
+     * @param HtmlTag $htmlTag
+     * @return void
+     */
+    public function addHtmlTag(HtmlTag $htmlTag)
+    {
+        $this->allTags[] = $htmlTag;
+    }
+
+    /**
      *
      */
     public function reset()

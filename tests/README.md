@@ -7,10 +7,23 @@ valet link deform-acceptance
 ```
 ... after which you can visit http://deform-acceptance.test
 
+Run the unit & acceptance tests like this:
+```
+./codecept run
+```
+
+Additionally generate a coverage report (to /_output/coverage) like this:
+```
+./codecept run --coverage-html
+```
+
 ## Db
 Unless you want to manually alter the codeception settings, you should create a local db called 'deform-test-db' which 
 can be accessed via host='local' user='root' and password='root'.
 
 ## Troubleshooting
 
- * ``` XDEBUG_MODE=coverage or xdebug.mode=coverage has to be set```
+``` XDEBUG_MODE=coverage or xdebug.mode=coverage has to be set```
+
+
+

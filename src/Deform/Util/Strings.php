@@ -71,7 +71,7 @@ class Strings
     /**
      * extract the method name, if available, from a PHPDocs style annotation comment line (not particularly strict!)
      * @param string $comment
-     * @return array|null
+     * @return string[]|null
      * @throws \Exception
      */
     public static function extractStaticMethodSignature(string $comment): ?array

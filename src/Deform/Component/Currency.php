@@ -10,7 +10,7 @@ use Deform\Html\HtmlTag;
 /**
  * @persistAttribute currencyLabelValue
  */
-class Currency extends BaseComponent
+class Currency extends Input
 {
     public ?string $currencyLabelValue = null;
     public HtmlTag $currencyLabel;
@@ -39,6 +39,7 @@ class Currency extends BaseComponent
     }
 
     /**
+     * @templateMethod
      * @param string $currency
      * @return $this
      * @throws \Exception
@@ -58,5 +59,19 @@ class Currency extends BaseComponent
         if ($this->currencyLabelValue != null) {
             $this->currency($this->currencyLabelValue);
         }
+    }
+
+    public function shadowJavascript(): array
+    {
+        return [
+            '.currency-symbol' => <<<JS
+if (this.hasAttribute('currency')) {
+    element.innerHTML = this.getAttribute('currency')
+}
+else {
+    element.remove()
+}
+JS
+        ] + parent::shadowJavascript();
     }
 }

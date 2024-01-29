@@ -34,6 +34,7 @@ class Select extends BaseComponent
     }
 
     /**
+     * @templateMethod
      * @param array $options
      * @return $this
      * @throws \Exception
@@ -127,5 +128,28 @@ class Select extends BaseComponent
             throw new \Exception("A select component must contain at least one option");
         }
         return parent::getHtmlTag();
+    }
+
+    public function shadowJavascript()
+    {
+        return [
+            '.control-container select option' => <<<JS
+if (this.hasAttribute('options')) {
+    
+    let options = JSON.parse(this.getAttribute('options'));
+    Object.keys(options).forEach((key)=> {
+      let option = element.cloneNode(true);
+      option.value = key;
+      option.innerHTML = options[key];
+      element.parentNode.append(option);
+    })
+}
+else if (this.hasAttribute('optgroupOptions')) {
+    console.log('not yet supported')
+}
+element.remove()
+JS
+
+        ] + parent::shadowJavascript();
     }
 }
