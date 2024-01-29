@@ -1,10 +1,13 @@
 <?php
 // basic routing & bare-bones html template
+use Deform\Html\Html;
+
 error_reporting(E_ALL);
 ini_set('display_errors', TRUE);
 ini_set('display_startup_errors', TRUE);
 
 const REQUIRED_PHP_MIN_VERSION = '7.4.0.';
+const CLOUDFLARE_NORMALISE_URL = "https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css";
 
 if (version_compare(PHP_VERSION, REQUIRED_PHP_MIN_VERSION, '<')) {
     die("Requires a minimum PHP version of '".REQUIRED_PHP_MIN_VERSION."', you are running '".PHP_VERSION."'");
@@ -81,21 +84,18 @@ else {
 
 renderLayout($path, $contents);
 
-function renderLayout($title, $contents) {
-    echo <<<HTML
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <title>$title</title>
-    <meta charset="utf-8" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css">
-    <link rel="stylesheet" href="/styles.css">
-    <style>a{text-decoration:none}</style>
-</head>
-<body>
-$contents
-</body>
-</html>
-HTML;
+function renderLayout($title, $contents, $defaultCss=null)
+{
+    $head = [
+        Html::title()->add($title),
+        Html::meta(['charset' => 'utf-8']),
+        Html::link(['rel' => 'stylesheet', 'href' => CLOUDFLARE_NORMALISE_URL]),
+        Html::link(['rel' => 'stylesheet', 'href' => '/styles.css']),
+        Html::style()->add("{text-decoration:none}")
+    ];
+    $html = Html::html(['lang' => 'en'])->add([
+        Html::head()->add($head),
+        Html::body()->add($contents)
+    ]);
+    echo "<!DOCTYPE html>" . $html;
 }
-?>

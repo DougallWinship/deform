@@ -14,6 +14,8 @@ use Deform\Html\IHtml;
  */
 class Button extends BaseComponent
 {
+    use Shadow\Button;
+
     public const VALID_BUTTON_TYPES = ['submit', 'reset', 'button'];
 
     /** @var string */
@@ -77,23 +79,5 @@ class Button extends BaseComponent
             $this->type($this->buttonType);
         }
         $this->html($this->buttonHtml);
-    }
-
-    public function getShadowTemplate(): string
-    {
-        return str_replace('</button>', '<slot></slot></button>', parent::getShadowTemplate());
-    }
-
-    public function shadowJavascript()
-    {
-        return [
-            'button' => <<<JS
-element.id = id;
-element.name = name;
-if (this.hasAttribute('value')) {
-    element.value = this.getAttribute('value')
-}
-JS
-        ] + parent::shadowJavascript();
     }
 }

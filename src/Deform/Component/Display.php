@@ -6,6 +6,8 @@ namespace Deform\Component;
 
 class Display extends Input
 {
+    use Shadow\Input;
+
     /**
      * @inheritDoc
      */

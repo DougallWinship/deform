@@ -67,4 +67,12 @@ class HtmlDocumentTest extends \Codeception\Test\Unit
         $html = (string)$htmlDocument;
         $this->assertEquals('<div><ul><li class="bar">one</li><li class="bar">two</li><li><input name="name" value="foo"></li></ul></div>', $html);
     }
+
+    public function testCanConvertCssSelectorToXPath()
+    {
+        $htmlDocument = HtmlDocument::load("<div></div>");
+        $isInstalled = \Composer\InstalledVersions::isInstalled('bdk/css-xpath');
+        $canConvert = $htmlDocument->canConvertCssSelectorToXpath();
+        $this->assertEquals($isInstalled, $canConvert);
+    }
 }

@@ -438,6 +438,7 @@ class HtmlTag implements IHtml
      * gets a corresponding DOMElement for this node for use with the specified domDocument
      * @param \DOMDocument $domDocument
      * @return \DOMElement|false
+     * @throws \DOMException
      */
     public function getDomNode(\DOMDocument $domDocument): \DOMNode
     {

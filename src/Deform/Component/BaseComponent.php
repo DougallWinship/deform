@@ -359,6 +359,7 @@ abstract class BaseComponent implements IToString
     /**
      * hydrate the component using its properties (those annotated as @persistAttribute) when it's being rebuilt
      * from an array definition
+     * @throws \Exception
      */
     abstract public function hydrate();
 
@@ -490,6 +491,9 @@ abstract class BaseComponent implements IToString
 if (this.hasAttribute('label')) {
     element.innerHTML = this.getAttribute('label');
 } 
+else {
+    element.style.display = 'none';
+}
 element.setAttribute('for', id);
 JS,
                 '.hint-container' => <<<JS
@@ -524,12 +528,39 @@ JS
 
     /**
      * @return string
+     * @throws \Exception
      */
-    public function getShadowTemplate()
+    public function getShadowTemplate(): string
     {
-        return $this . '';//triggers toString
+        $htmlTag = $this->getHtmlTag();
+        $this->addPartAttributesRecursive($htmlTag);
+        return (string)$htmlTag;
     }
 
+    /**
+     * @param HtmlTag $tag
+     * @return void
+     * @throws \Exception
+     */
+    public function addPartAttributesRecursive(HtmlTag $tag)
+    {
+        if ($tag->has('class')) {
+            $tag->set('part', $tag->get('class'));
+        } else {
+            $tag->set('part', $tag->getTagType());
+        }
+        if ($tag->hasChildren()) {
+            foreach ($tag->getChildren() as $child) {
+                if ($child instanceof HtmlTag) {
+                    $this->addPartAttributesRecursive($child);
+                }
+            }
+        }
+    }
+
+    /**
+     * @return array which (if any) auto-generated properties to make available for customisation
+     */
     public function shadowJavascriptProperties(): array
     {
         return [];

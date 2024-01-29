@@ -5,6 +5,7 @@ declare(strict_types=1);
 namespace Deform\Component;
 
 use Deform\Html\Html;
+use Deform\Html\HtmlTag;
 use Deform\Util\Strings;
 
 /**
@@ -21,7 +22,6 @@ use Deform\Util\Strings;
  * @method static MultipleFile MultipleFile(string $namespace, string $field, array $attributes=[])
  * @method static MultipleEmail MultipleEmail(string $namespace, string $field, array $attributes=[])
  * @method static Hidden Hidden(string $namespace, string $field, array $attributes=[])
- * @method static InputButton InputButton(string $namespace, string $field, array $attributes=[])
  * @method static Password Password(string $namespace, string $field, array $attributes=[])
  * @method static RadioButtonSet RadioButtonSet(string $namespace, string $field, array $attributes=[])
  * @method static Select Select(string $namespace, string $field, array $attributes=[])
@@ -109,7 +109,7 @@ class ComponentFactory
 
     /**
      * @param string $component
-     * @return BaseComponent|object
+     * @return HtmlTag
      * @throws \Exception
      */
     public static function buildTemplate(string $component)
@@ -149,7 +149,7 @@ class ComponentFactory
     {
         $componentNames = self::getRegisteredComponents();
         ob_start();
-        require(__DIR__ . DIRECTORY_SEPARATOR . 'custom-element-definitions.php');
+        require(__DIR__ . DIRECTORY_SEPARATOR . '/Shadow/custom-element-definitions.php');
         return ob_get_clean();
     }
 

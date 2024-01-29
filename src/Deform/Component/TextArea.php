@@ -9,6 +9,8 @@ use Deform\Html\HtmlTag;
 
 class TextArea extends BaseComponent
 {
+    use Shadow\TextArea;
+
     /** @var HtmlTag */
     public $textarea;
 
@@ -37,17 +39,4 @@ class TextArea extends BaseComponent
     {
     }
 
-    public function shadowJavascript(): array
-    {
-        return [
-            '.control-container textarea' => <<<JS
-setTimeout(()=> { this.textarea.textContent = this.textContent; })
-JS
-        ] + parent::shadowJavascript();
-    }
-
-    public function shadowJavascriptProperties(): array
-    {
-        return ['textarea' => "this.template.querySelector('textarea');"];
-    }
 }

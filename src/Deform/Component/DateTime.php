@@ -6,6 +6,8 @@ namespace Deform\Component;
 
 class DateTime extends Input
 {
+    use Shadow\Input;
+
     /**
      * @inheritDoc
      */

@@ -29,8 +29,6 @@ if (isset($_POST) && count($_POST)) { ?>
 
     <?= Component::Image('form1','myimage')->label("My Image") ?>
 
-    <?= Component::InputButton('form1','myinputbutton')->label('My Input Button')->value('Click Me!') ?>
-
     <?= Component::MultipleEmail('form1','mymultiple-email')->label('My Multiple Email'); ?>
 
     <?= Component::MultipleFile('form1','mymultiple-file')->label('My Multiple File'); ?>

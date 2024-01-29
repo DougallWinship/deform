@@ -16,4 +16,3 @@ $html->deform('.blue-text',function(\Deform\Html\HtmlTag $node) {
 })."<br>";
 
 echo $html."<br>";
-?>

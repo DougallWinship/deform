@@ -1,3 +1,11 @@
 body {
     padding:4px;
 }
+.component-container {
+    padding:6px;
+}
+.container-type-button button,deform-button::part(button) {
+    border-radius:10px;
+    border-style:solid;
+    cursor:pointer;
+}

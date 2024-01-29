@@ -6,6 +6,7 @@ namespace Deform\Component;
 
 use Deform\Html\Html;
 use Deform\Html\HtmlTag;
+use Deform\Util\Strings;
 
 /**
  * @persistAttribute $javascriptSelectFunction
@@ -27,8 +28,8 @@ class Image extends File
 
     public function getHtmlTag(): HtmlTag
     {
-        $previewId = 'preview-' . $this->getId();
-        $hiddenId = 'hidden-' . $this->getId();
+//        $previewId = 'preview-' . $this->getId();
+//        $hiddenId = 'hidden-' . $this->getId();
         $this->input->set(
             'onchange',
             'if (0 in this.files)'
@@ -110,9 +111,22 @@ class Image extends File
         $id = $this->getId();
         $previewId = 'preview-' . $id;
         $hiddenId = 'hidden-' . $id;
-        // phpcs:disable
-        $this->javascriptSelectFunction = 'if (typeof $js!=="function") { alert("' . $js . ' is not a valid javascript function"); } else { ' . $js . '(event).then(function(url) { if (url) { document.getElementById("' . $previewId . '").src=url; document.getElementById("' . $hiddenId . '").value=url } }, function(error) { console.log(error); } ) }';
-        // phpcs:enable
+
+        $javascriptSelectFunction = <<<JS
+if (typeof $js!=="function") { 
+    alert("'$js' is not a valid javascript function");
+} else { 
+    $js(event).then(function(url) { 
+        if (url) { 
+            document.getElementById("$previewId").src=url; 
+            document.getElementById("$hiddenId").value=url 
+        } 
+    }, function(error) {
+        console.log(error); 
+    }) 
+}
+JS;
+        $this->javascriptSelectFunction = Strings::trimInternal($javascriptSelectFunction);
         return $this;
     }
 

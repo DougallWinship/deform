@@ -138,13 +138,20 @@ class HtmlDocument implements IToString
      */
     protected function convertCssSelectorToXpathQuery($cssSelector): string
     {
-
         if (!class_exists('\bdk\CssXpath\CssXpath')) {
             // @codeCoverageIgnoreStart
             throw new \Exception("If you want to use css selectors then install https://github.com/bkdotcom/CssXpath");
             // @codeCoverageIgnoreEnd
         }
         return \bdk\CssXpath\CssXpath::cssToXpath($cssSelector);
+    }
+
+    /**
+     * @return bool
+     */
+    public function canConvertCssSelectorToXpath(): bool
+    {
+        return class_exists('\bdk\CssXpath\CssXpath');
     }
 
     /**
