@@ -6,7 +6,7 @@ namespace Deform\Component;
 
 /**
  * @persistAttribute hasOptGroups
- * @persistAttribute options
+ * @persistAttribute optionsValues
  */
 class SelectMulti extends Select
 {
