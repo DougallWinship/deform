@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Deform\Component\Shadow;
 
-trait Checkbox {
-
+trait Checkbox
+{
     /**
      * @return string[]
      * @noinspection
@@ -53,5 +53,4 @@ element.parentElement.removeChild(element);
 JS
             ] + parent::shadowJavascript();
     }
-
 }

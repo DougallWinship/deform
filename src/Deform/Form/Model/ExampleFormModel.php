@@ -17,7 +17,7 @@ class ExampleFormModel extends FormModel
         $this->addCurrency('cu')->currency("&pound;")->label("how much?");
         $this->addDate('dt')->label("when?");
         $this->addDateTime('ddt')->label("when?");
-        $this->addEmail('eml')->autocomplete('off');
+        $this->addEmail('eml')->label("email")->autocomplete('off');
         $this->addFile('fl')->label("File");
         $this->addPassword('password')->autocomplete("off");
         $this->addRadioButtonSet('rbs')->radioButtons(['four','five','six']);

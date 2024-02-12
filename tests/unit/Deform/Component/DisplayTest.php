@@ -45,6 +45,7 @@ class DisplayTest extends \Codeception\Test\Unit
         $namespace = 'ns';
         $name = 'dp';
         $display = ComponentFactory::Display($namespace ,$name, ['foo'=>'bar']);
+        // @todo: check hydration properly
         $this->assertNull($display->hydrate());
     }
 }

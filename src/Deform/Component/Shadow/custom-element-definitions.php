@@ -41,9 +41,9 @@ foreach ($componentNames as $componentName) {
             static formAssociated = true;
             template = null;
             container = null;
-<?php foreach ($component->shadowJavascriptProperties() as $property => $selector) { ?>
+    <?php foreach ($component->shadowJavascriptProperties() as $property => $selector) { ?>
                 <?= $property ?>=null;
-<?php } ?>
+    <?php } ?>
             constructor() {
                 super();
                 this.internals_ = this.attachInternals();
@@ -54,9 +54,9 @@ foreach ($componentNames as $componentName) {
                     ? "this.template;"
                     : "this.template.querySelector('#namespace-name-container');" ?>
 
-<?php foreach ($component->shadowJavascriptProperties() as $property => $selector) { ?>
+    <?php foreach ($component->shadowJavascriptProperties() as $property => $selector) { ?>
                 this.<?= $property ?>=<?= $selector ?>;
-<?php } ?>
+    <?php } ?>
                 const shadowRoot = this.attachShadow({mode:'open'});
                 shadowRoot.appendChild(this.template)
             }
@@ -91,9 +91,9 @@ foreach ($componentNames as $componentName) {
                 this.setAttribute('name',name);
 
                 if (this.container!==null) {
-<?php if ($component->componentContainer->controlOnly) { ?>
+    <?php if ($component->componentContainer->controlOnly) { ?>
                     this.container.firstElementChild.name = id;
-<?php } else { ?>
+    <?php } else { ?>
                     this.container.removeAttribute('id');
                     let controlContainer = this.container.querySelector('.control-container');
                     if (controlContainer!==null) {
@@ -108,19 +108,20 @@ foreach ($componentNames as $componentName) {
                             controlContainer.firstElementChild.name = name;
                         }
                     }
-<?php } ?>
+    <?php } ?>
 
 
                     /* start : generated component rules */
-<?php $idx=0 ?>
-<?php foreach ($component->getShadowJavascript() as $selector => $javascript) { $idx++?>
-<?php     if ($javascript !== null) { ?>
+    <?php $idx = 0 ?>
+    <?php foreach ($component->getShadowJavascript() as $selector => $javascript) {
+        $idx++?>
+        <?php     if ($javascript !== null) { ?>
                     (()=>{
                         let element = this.container.querySelector('<?= $selector ?>');
                         if (element!==null) {<?php echo \Deform\Util\Strings::trimInternal($javascript);  ?>}
                     })();
-<?php     } ?>
-<?php } ?>
+        <?php     } ?>
+    <?php } ?>
                     /* end : generated component rules */
                 }
             }

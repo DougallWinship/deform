@@ -38,5 +38,4 @@ class TextArea extends BaseComponent
     public function hydrate()
     {
     }
-
 }

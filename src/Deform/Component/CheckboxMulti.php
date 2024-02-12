@@ -26,20 +26,20 @@ class CheckboxMulti extends BaseComponent
 
     /**
      * @templateMethod
-     * @param array $checkboxes
+     * @param array $checkboxValues
      * @return $this
      * @throws \Exception
      */
-    public function checkboxes(array $checkboxes): self
+    public function checkboxes(array $checkboxValues): self
     {
-        $this->checkboxValues = $checkboxes;
+        $this->checkboxValues = $checkboxValues;
         $this->checkboxes = [];
         $this->componentContainer->control->reset();
-        $isAssoc = Arrays::isAssoc($checkboxes);
+        $isAssoc = Arrays::isAssoc($checkboxValues);
         $name = $this->getName() . "[]";
         $id = $this->getId();
 
-        foreach ($checkboxes as $key => $value) {
+        foreach ($checkboxValues as $key => $value) {
             $wrapper = Html::div(['class' => 'checkboxmulti-checkbox-wrapper']);
             $checkboxId = self::getMultiControlId($id, (string)$key);
             $checkbox = Html::input([
@@ -87,6 +87,4 @@ class CheckboxMulti extends BaseComponent
         }
         return $this;
     }
-
-
 }

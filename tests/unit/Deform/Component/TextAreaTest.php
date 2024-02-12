@@ -58,6 +58,7 @@ class TextAreaTest extends \Codeception\Test\Unit
         $namespace = 'ns';
         $name = 'ta';
         $textarea = ComponentFactory::TextArea($namespace ,$name, ['foo'=>'bar']);
+        // @todo: check hydration properly
         $this->assertNull($textarea->hydrate());
 
     }

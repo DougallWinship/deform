@@ -10,7 +10,7 @@ use Deform\Html\IHtml;
 
 /**
  * @persistAttribute hasOptGroups
- * @persistAttribute options
+ * @persistAttribute optionsValues
  */
 class Select extends BaseComponent
 {
@@ -20,9 +20,9 @@ class Select extends BaseComponent
     public IHtml $select;
 
     public bool $hasOptGroups = false;
-    public array $options = [];
-    public array $optionsHtml = [];
 
+    public array $options = [];
+    public ?array $optionsValues = null;
     /**
      * @inheritDoc
      */
@@ -37,19 +37,20 @@ class Select extends BaseComponent
 
     /**
      * @templateMethod
-     * @param array $options
+     * @param array $optionsValues
      * @return $this
      * @throws \Exception
      */
-    public function options(array $options): self
+    public function options(array $optionsValues): self
     {
-        if ($this->options != $options) {
-            $this->options = $options;
+        if ($this->optionsValues !== $optionsValues) {
+            $this->optionsValues = $optionsValues;
             $this->hasOptGroups = false;
         }
+        $this->options = [];
         $this->select->clear();
-        $isAssoc = \Deform\Util\Arrays::isAssoc($options);
-        foreach ($this->options as $key => $value) {
+        $isAssoc = \Deform\Util\Arrays::isAssoc($optionsValues);
+        foreach ($this->optionsValues as $key => $value) {
             $option = Html::option(['value' => $isAssoc ? $key : $value])->add($value);
             $this->select->add($option);
             $this->options[] = $option;
@@ -64,8 +65,8 @@ class Select extends BaseComponent
      */
     public function optgroupOptions(array $optgroupOptions): self
     {
-        if ($this->options != $optgroupOptions) {
-            $this->options = $optgroupOptions;
+        if ($this->optionsValues != $optgroupOptions) {
+            $this->optionsValues = $optgroupOptions;
             $this->hasOptGroups = true;
         }
         $this->select->clear();
@@ -115,9 +116,9 @@ class Select extends BaseComponent
     public function hydrate()
     {
         if ($this->hasOptGroups) {
-            $this->optgroupOptions($this->options);
+            $this->optgroupOptions($this->optionsValues);
         } else {
-            $this->options($this->options);
+            $this->options($this->optionsValues);
         }
     }
 
@@ -126,10 +127,9 @@ class Select extends BaseComponent
      */
     public function getHtmlTag(): HtmlTag
     {
-        if (count($this->options) == 0) {
+        if (count($this->optionsValues) == 0) {
             throw new \Exception("A select component must contain at least one option");
         }
         return parent::getHtmlTag();
     }
-
 }

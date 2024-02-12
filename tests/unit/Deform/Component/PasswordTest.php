@@ -43,6 +43,7 @@ class PasswordTest extends \Codeception\Test\Unit
         $namespace = 'ns';
         $name = 'dt';
         $password = ComponentFactory::Password($namespace ,$name, ['foo'=>'bar']);
+        // @todo: check hydration properly
         $this->assertNull($password->hydrate());
     }
 }

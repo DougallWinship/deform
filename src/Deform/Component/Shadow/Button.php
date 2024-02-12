@@ -26,5 +26,4 @@ if (this.hasAttribute('value')) {
 JS
             ] + parent::shadowJavascript();
     }
-
 }

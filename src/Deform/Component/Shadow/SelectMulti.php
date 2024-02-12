@@ -6,7 +6,6 @@ namespace Deform\Component\Shadow;
 
 trait SelectMulti
 {
-
     public function shadowJavascript()
     {
         return [

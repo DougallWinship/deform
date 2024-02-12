@@ -43,6 +43,7 @@ class DateTimeTest extends \Codeception\Test\Unit
         $namespace = 'ns';
         $name = 'dt';
         $datetime = ComponentFactory::DateTime($namespace ,$name, ['foo'=>'bar']);
+        // @todo: check hydration properly
         $this->assertNull($datetime->hydrate());
     }
 }

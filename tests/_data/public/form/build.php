@@ -20,17 +20,18 @@ echo htmlspecialchars(print_r($formArray,true));
 </pre>
 
 <br><br>
-
 <h2>Deformed Form Model</h2>
 <?php
 $formHtml
     ->css('display','inline-block')
     ->css('border-radius','8px')
-    ->css('padding','8px')
+    ->css('padding','14px')
     ->css('background-color','#ccc')
     ->css('margin','8px');
 $formHtml->deform('.container-type-email',function($node) {
-    $node->css('background-color','green');
+    $node->css('background-color','green')
+        ->css('color','white')
+        ->css('padding', '10px');
 });
 echo $formHtml;
 ?>
@@ -43,6 +44,7 @@ $formArray['namespace'] = 'rebuilt-login-form';
 $rebuildForm = \Deform\Form\Model\FormModel::buildForm($formArray);
 $formHtml = $rebuildForm->getFormHtml();
 echo $formHtml;
+
 ?>
 
 <br><br>
@@ -57,3 +59,4 @@ $htmlDocument->selectCss("form",function(\DOMNode $domNode) {
     $domNode->setAttribute('style','background-color:green');
 });
 echo $htmlDocument;
+

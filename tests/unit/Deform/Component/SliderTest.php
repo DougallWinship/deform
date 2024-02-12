@@ -43,6 +43,7 @@ class SliderTest extends \Codeception\Test\Unit
         $namespace = 'ns';
         $name = 'dp';
         $display = ComponentFactory::Slider($namespace ,$name, ['foo'=>'bar']);
+        // @todo: check hydration properly
         $this->assertNull($display->hydrate());
     }
 

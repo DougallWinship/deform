@@ -29,10 +29,10 @@ There are 3 principal layers:
 Here are some very simple examples of each layer: 
 
 > **_NOTE:_** If you set up /tests/_data/public/ as a doc root on a local webserver you can view what the 
-> codeception acceptance tests see!   
+> codeception acceptance tests see (you'll want to rewrite all urls to the index.php).
 > 
 > Using php's built in webserver on port 8000:   
-> ```php -S localhost:8000 -t ./tests/_data/public/```
+> ```php -S localhost:8000 ./tests/_data/public/router.php```
 
 ### Deform\Html
 
@@ -175,7 +175,7 @@ See [tests/README.md](tests/README.md)
 ## Code style - PSR-12
 The code is meant to conform to the PSR-12 standard as far as is sensible. 
 
-This is the tool that is used to check : https://github.com/squizlabs/PHP_CodeSniffer
+This is the tool that is used to check : https://github.com/PHPCSStandards/PHP_CodeSniffer/
 
 Once installed and available globally (presumably via PATH settings), something like this can be used from the root dir.
 ```
