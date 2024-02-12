@@ -4,8 +4,8 @@ declare(strict_types=1);
 
 namespace Deform\Component\Shadow;
 
-trait CheckboxMulti {
-
+trait CheckboxMulti
+{
     /**
      * @return string[]
      */

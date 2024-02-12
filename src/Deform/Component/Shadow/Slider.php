@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Deform\Component\Shadow;
 
-trait Slider {
+trait Slider
+{
     public function shadowJavascript(): array
     {
         return [

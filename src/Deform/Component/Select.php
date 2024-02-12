@@ -130,5 +130,4 @@ class Select extends BaseComponent
         }
         return parent::getHtmlTag();
     }
-
 }

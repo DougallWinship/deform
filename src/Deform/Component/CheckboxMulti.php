@@ -87,6 +87,4 @@ class CheckboxMulti extends BaseComponent
         }
         return $this;
     }
-
-
 }

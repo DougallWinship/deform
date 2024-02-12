@@ -39,7 +39,12 @@ if (!$path || $path==='index') {
         if ($iterator->hasChildren()) {
             return true;
         }
-        if ($current->isFile() && substr($current->getFilename(),-4)=='.php' && $current->getFilename()!='index.php') {
+        if (
+            $current->isFile()
+            && substr($current->getFilename(),-4)=='.php'
+            && $current->getFilename()!='index.php'
+            && $current->getFilename()!='router.php'
+        ) {
             return true;
         }
         return false;

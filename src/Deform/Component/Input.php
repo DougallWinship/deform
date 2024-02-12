@@ -49,6 +49,4 @@ abstract class Input extends BaseComponent
         $this->input->set('type', $type);
         return $this;
     }
-
-
 }

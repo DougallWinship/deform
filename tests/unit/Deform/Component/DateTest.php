@@ -44,6 +44,7 @@ class DateTest extends \Codeception\Test\Unit
         $namespace = 'ns';
         $name = 'dt';
         $date = ComponentFactory::Date($namespace ,$name, ['foo'=>'bar']);
+        // @todo: check hydration properly
         $this->assertNull($date->hydrate());
     }
 }
