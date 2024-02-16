@@ -16,9 +16,18 @@ class SelectMultiTest extends \Codeception\Test\Unit
     {
     }
 
-    public function testInvalidSetup()
+    public function testInvalidSetupNull()
     {
         $select = ComponentFactory::SelectMulti('ns','sl');
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Select component options must be an array');
+        $select->getHtmlTag();
+    }
+
+    public function testInvalidSetup()
+    {
+        $select = ComponentFactory::SelectMulti('ns','sl')
+            ->options([]);
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('A select component must contain at least one option');
         $select->getHtmlTag();
