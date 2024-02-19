@@ -13,6 +13,7 @@ echo \Deform\Component\ComponentFactory::getCustomElementDefinitionsJavascript()
     <deform-button name='button1' value='buttonvalue' label="buttonLabel" onclick="this.parentNode.submit()">Button</deform-button><br>
     <deform-checkbox name='checkbox1' value="checkboxvalue" label="Checkbox Label" text="Check me?" checked></deform-checkbox><br>
     <deform-checkbox-multi name='checkbox-multi1' value='{"one":"One","two":"Two","three":"Three"}' checked='["one","two"]' label='CheckboxMulti Label'></deform-checkbox-multi><br>
+    <deform-color-selector name='color-selector1' label='Colour Selector Label'></deform-color-selector>
     <deform-currency name='currency1' currency="&pound;" label='Currency Label'></deform-currency><br>
     <deform-date name='date1' label='Date Label' value="2012-12-12"></deform-date><br>
     <deform-date-time name='datetime1' label='DateTime Label' value="2012-12-12T10:10"></deform-date-time><br>

@@ -6,12 +6,6 @@ namespace Deform\Html;
 
 /**
  * for convenient link generation
- *
- * @method Link target($target)
- * @method Link media($media)
- * @method Link rel($rel)
- * @method Link type($charset)
- * @method Link href($url)
  */
 class Link extends HtmlTag
 {

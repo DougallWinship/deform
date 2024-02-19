@@ -88,7 +88,7 @@ $document = \Deform\Html\HtmlDocument::loadHtmlTag($html)
 
 > **_NOTE:_** Ugh! XPath's selectors can be ugly! 
 > You can alternatively use selectCss(...) directly if you install https://github.com/bkdotcom/CssXpath via composer,
-> otherwise a conversion tool such as https://css2xpath.github.io/ can be useful.
+> otherwise an online conversion tool such as https://css2xpath.github.io/ can be useful.
 
 You can also generate an HtmlTag from an arbitrary HTML string rather than by chaining if you want to for some, as yet undetermined, reason:
 ```php
