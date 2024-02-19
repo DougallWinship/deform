@@ -44,7 +44,7 @@ Here are some very simple examples of each layer:
 > Using php's built in webserver on port 8000:   
 > ```php -S localhost:8000 ./tests/_data/public/router.php```
 
-### Deform\Html
+### Deform\Html§
 
 ```php
 use \Deform\Html\Html as Html;
@@ -86,7 +86,9 @@ $document = \Deform\Html\HtmlDocument::loadHtmlTag($html)
     })
 ```
 
-> **_NOTE:_** Ugh! XPath selectors can be ugly! You can alternatively use selectCss(...) if you install https://github.com/bkdotcom/CssXpath via composer.
+> **_NOTE:_** Ugh! XPath's selectors can be ugly! 
+> You can alternatively use selectCss(...) directly if you install https://github.com/bkdotcom/CssXpath via composer,
+> otherwise a conversion tool such as https://css2xpath.github.io/ can be useful.
 
 You can also generate an HtmlTag from an arbitrary HTML string rather than by chaining if you want to for some, as yet undetermined, reason:
 ```php
