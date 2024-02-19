@@ -124,7 +124,7 @@ abstract class BaseComponent implements \Stringable
      * @return $this
      * @throws \Exception
      */
-    public function addControl(HtmlTag $control, $controlTagDecorator = null): BaseComponent
+    public function addControl(HtmlTag $control, mixed $controlTagDecorator = null): BaseComponent
     {
         $this->componentContainer->control->addControl($control, $controlTagDecorator);
         return $this;
@@ -312,7 +312,7 @@ abstract class BaseComponent implements \Stringable
      * @param $attributes
      * @throws \Exception
      */
-    public function setAttributes($attributes)
+    public function setAttributes($attributes): void
     {
         $this->componentContainer->setControlAttributes($attributes);
     }
@@ -321,7 +321,7 @@ abstract class BaseComponent implements \Stringable
      * @param $attributes
      * @throws \Exception
      */
-    public function setContainerAttributes($attributes)
+    public function setContainerAttributes($attributes): void
     {
         $this->componentContainer->setContainerAttributes($attributes);
     }
@@ -344,7 +344,7 @@ abstract class BaseComponent implements \Stringable
      * @param array $properties
      * @throws \ReflectionException
      */
-    public function setRegisteredPropertyValues(array $properties)
+    public function setRegisteredPropertyValues(array $properties): void
     {
         $reflectionProperties = self::getRegisteredReflectionProperties();
         foreach ($properties as $propertyName => $setPropertyValue) {

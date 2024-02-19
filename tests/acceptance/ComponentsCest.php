@@ -29,6 +29,11 @@ class ComponentsCest
         $I->seeElement(['css' => 'div#form1-mymulticheckbox-container.component-container.container-type-checkbox-multi>div.control-container>div.checkboxmulti-checkbox-wrapper>label']);
     }
 
+    public function colorSelector(AcceptanceTester $I) {
+        $I->seeElement(['css' => 'div#form1-mycolorselector-container.component-container.container-type-color-selector>div.control-container>input[type=color]']);
+        $I->seeElement(['css' => 'div#form1-mycolorselector-container.component-container.container-type-color-selector>div.label-container>label']);
+    }
+
     public function currency(AcceptanceTester $I)
     {
         $I->seeElement(['css'=>'div#form1-mycurrency-container.component-container.container-type-currency>div.label-container>label']);

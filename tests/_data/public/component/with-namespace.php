@@ -13,6 +13,8 @@ if (isset($_POST) && count($_POST)) { ?>
 
     <?= Component::CheckboxMulti('form1','mymulticheckbox')->checkboxes(['true'=>'True','false'=>"False",'File Not Found'])->label('New Booleans'); ?>
 
+    <?= Component::ColorSelector('form1', 'mycolorselector')->label("select a colour!"); ?>
+
     <?= Component::Currency('form1', 'mycurrency')->currency('&pound;')->label('Pay this:'); ?>
 
     <?= Component::Date('form1','mydate')->label('My Date'); ?>

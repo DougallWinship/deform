@@ -15,6 +15,7 @@ use Deform\Util\Arrays;
  * @method \Deform\Component\Button addButton(string $field, array $options=[])
  * @method \Deform\Component\Checkbox addCheckbox(string $field, array $options=[])
  * @method \Deform\Component\CheckboxMulti addCheckboxMulti(string $field, array $options=[])
+ * @method \Deform\Component\ColorSelector addColorSelector(string $field, array $options=[])
  * @method \Deform\Component\Currency addCurrency(string $field, array $options=[])
  * @method \Deform\Component\Date addDate(string $field, array $options=[])
  * @method \Deform\Component\DateTime addDateTime(string $field, array $options=[])

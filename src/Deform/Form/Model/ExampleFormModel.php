@@ -13,7 +13,8 @@ class ExampleFormModel extends FormModel
     {
         parent::__construct('example');
         $this->addCheckbox('cb')->label("Yes or No");
-        $this->addCheckboxMulti('cbm')->checkboxes(['True','False','File not Found'])->label("Yes or No");
+        $this->addCheckboxMulti('cbm')->checkboxes(['True','False','File not Found'])->label("Some checkboxes");
+        $this->addColorSelector('cs')->label("Color Selector");
         $this->addCurrency('cu')->currency("&pound;")->label("how much?");
         $this->addDate('dt')->label("when?");
         $this->addDateTime('ddt')->label("when?");

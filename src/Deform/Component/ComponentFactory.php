@@ -12,6 +12,7 @@ use Deform\Util\Strings;
  * @method static Button Button(string $namespace, string $field, array $attributes=[])
  * @method static Checkbox Checkbox(string $namespace, string $field, array $attributes=[])
  * @method static CheckboxMulti CheckboxMulti(string $namespace, string $field, array $attributes=[])
+ * @method static ColorSelector ColorSelector(string $namespace, string $field, array $attributes=[])
  * @method static Currency Currency(string $namespace, string $field, array $attributes=[])
  * @method static Date Date(string $namespace, string $field, array $attributes=[])
  * @method static DateTime DateTime(string $namespace, string $field, array $attributes=[])
@@ -74,7 +75,7 @@ class ComponentFactory
      * @return object
      * @throws \Exception
      */
-    public static function build(string $component, ?string $formNamespace, string $fieldName, array $arguments = [])
+    public static function build(string $component, ?string $formNamespace, string $fieldName, array $arguments = []): object
     {
         if (($namespaceDividerPos = strrpos($component, '\\')) !== false) {
             // if a namespace was included then check & strip it!
@@ -112,7 +113,7 @@ class ComponentFactory
      * @return HtmlTag
      * @throws \Exception
      */
-    public static function buildTemplate(string $component)
+    public static function buildTemplate(string $component): HtmlTag
     {
         $lowerName = strtolower($component);
         $htmlTag = self::build($component, 'template', $lowerName);
@@ -145,7 +146,7 @@ class ComponentFactory
      * @return false|string
      * @throws \Exception
      */
-    public static function getCustomElementDefinitionsJavascript()
+    public static function getCustomElementDefinitionsJavascript(): false|string
     {
         $componentNames = self::getRegisteredComponents();
         ob_start();
@@ -157,7 +158,7 @@ class ComponentFactory
      * analyses the phpdoc element from this class
      * @throws \Exception
      */
-    private static function identifyComponents()
+    private static function identifyComponents(): void
     {
         if (self::$components === null) {
             self::$components = [];
