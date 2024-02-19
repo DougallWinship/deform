@@ -161,7 +161,7 @@ class Link extends HtmlTag
             ? $this->urlParts["scheme"] . "://"
             : "https://";
         if (isset($this->urlParts["username"])) {
-            $url = isset($this->urlParts["password"])
+            $url .= isset($this->urlParts["password"])
                 ? $this->urlParts["username"] . ":" . $this->urlParts["password"] . "@"
                 : $this->urlParts["username"] . "@";
         }

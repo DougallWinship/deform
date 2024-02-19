@@ -16,9 +16,18 @@ class SelectTest extends \Codeception\Test\Unit
     {
     }
 
-    public function testInvalidSetup()
+    public function testInvalidSetupNull()
     {
         $select = ComponentFactory::Select('ns','sl');
+        $this->expectException(\Exception::class);
+        $this->expectExceptionMessage('Select component options must be an array');
+        $select->getHtmlTag();
+    }
+
+    public function testInvalidSetupEmpty()
+    {
+        $select = ComponentFactory::Select('ns','sl');
+        $select->options([]);
         $this->expectException(\Exception::class);
         $this->expectExceptionMessage('A select component must contain at least one option');
         $select->getHtmlTag();
@@ -160,7 +169,7 @@ class SelectTest extends \Codeception\Test\Unit
         $selectOptions = ['true'=>'labelTrue','false'=>'labelFalse', 'filenotfound'=>'labelFileNotFound'];
         $select = ComponentFactory::Select($namespace ,$name, ['foo'=>'bar']);
         $this->tester->setAttributeValue($select,'hasOptGroups', false);
-        $this->tester->setAttributeValue($select,'options', $selectOptions);
+        $this->tester->setAttributeValue($select,'optionsValues', $selectOptions);
         $select->hydrate();
 
         $container = $this->tester->getAttributeValue($select, 'componentContainer');
@@ -184,7 +193,7 @@ class SelectTest extends \Codeception\Test\Unit
         ];
         $select = ComponentFactory::Select($namespace ,$name, ['foo'=>'bar']);
         $this->tester->setAttributeValue($select,'hasOptGroups', true);
-        $this->tester->setAttributeValue($select,'options', $selectOptions);
+        $this->tester->setAttributeValue($select,'optionsValues', $selectOptions);
         $select->hydrate();
 
         $container = $this->tester->getAttributeValue($select, 'componentContainer');

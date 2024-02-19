@@ -1,28 +1,38 @@
 # Deform
-Easily define consistent forms in PHP, which can be subsequently manipulated before rendering. 
+Easily define consistent forms in PHP, which can be subsequently manipulated before rendering.
 
 ## Why?
 Form coding is highly repetitive & IDE auto-completion is your friend.
 
-## Features
-* consistent generation of components (as regards the HTML structure)
-* strong IDE auto-completion support & chaining wherever appropriate
-* generate forms in a controller action which can then be tailored in a view
-* export a form to an array & build a form from an array definition (so you can persist them via json etc.)
-* custom HTML element creation using the shadow dom
+## Installation
+Not yet released, so unavailable via composer etc.
 
-### Planned
-* auto-generate forms from a model or a database table
-* sensible default form handling
-* validation support (this maybe out of scope but it should at least be made as easy as possible)
-* rendering adapters
-* make styling easy 
+### With composer
+The repo is currently private and not available by composer.
 
-## Layers
-There are 3 principal layers:
-1. Deform\Html - generate an HTML tree which can be manipulated
-2. Deform\Component - generate various components using Deform\Html
-3. Deform\Form - generate forms using Deform\Component
+### Manual
+> You may not be using composer, but you will need to use a PSR-4 autoloader to ```/src``` to load the library with
+> the root namespace ```\Deform```
+>
+> If you were to manually do so for now you'll have to figure it but the [composer.json](./composer.json) definition is:
+> ```
+>    "autoload": {
+>        "psr-4": {"": "src/"}
+>    },
+>```
+Move to a suitable dir (maybe 'libs',or via a symlink) then
+```
+git clone https://github.com/DougallWinship/deform.git
+```
+
+Make the /deform/src dir available to autoload.
+> basically, its fairly straight-forward but until released to composer you'll have to figure shizzle for yourself!
+
+___
+
+## Features & Plans
+
+[Here](FEATURES.md) 
 
 ## Examples
 
@@ -34,7 +44,7 @@ Here are some very simple examples of each layer:
 > Using php's built in webserver on port 8000:   
 > ```php -S localhost:8000 ./tests/_data/public/router.php```
 
-### Deform\Html
+### Deform\Html§
 
 ```php
 use \Deform\Html\Html as Html;
@@ -76,7 +86,9 @@ $document = \Deform\Html\HtmlDocument::loadHtmlTag($html)
     })
 ```
 
-> **_NOTE:_** Ugh! XPath selectors can be ugly! You can alternatively use selectCss(...) if you install https://github.com/bkdotcom/CssXpath via composer.
+> **_NOTE:_** Ugh! XPath's selectors can be ugly! 
+> You can alternatively use selectCss(...) directly if you install https://github.com/bkdotcom/CssXpath via composer,
+> otherwise a conversion tool such as https://css2xpath.github.io/ can be useful.
 
 You can also generate an HtmlTag from an arbitrary HTML string rather than by chaining if you want to for some, as yet undetermined, reason:
 ```php

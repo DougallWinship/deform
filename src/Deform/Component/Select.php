@@ -127,6 +127,9 @@ class Select extends BaseComponent
      */
     public function getHtmlTag(): HtmlTag
     {
+        if (!is_array($this->optionsValues)) {
+            throw new \Exception("Select component options must be an array");
+        }
         if (count($this->optionsValues) == 0) {
             throw new \Exception("A select component must contain at least one option");
         }
