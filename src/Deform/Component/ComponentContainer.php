@@ -17,7 +17,7 @@ class ComponentContainer
     public bool $controlOnly = false;
 
     /** @var bool|string */
-    public $tooltip = false;
+    public string|bool $tooltip = false;
 
     /** @var string */
     public string $containerType;
@@ -26,7 +26,7 @@ class ComponentContainer
     public array $controlContainerAttributes = ['class' => 'control-container'];
 
     /** @var null|ComponentControls */
-    public ComponentControls $control;
+    public ?ComponentControls $control;
 
     /** @var array|string[]  */
     public array $labelContainerAttributes = ['class' => 'label-container'];
@@ -75,7 +75,7 @@ class ComponentContainer
      * @param string $newName
      * @throws \Exception
      */
-    public function changeNamespacedAttributes(string $newId, string $newName)
+    public function changeNamespacedAttributes(string $newId, string $newName): void
     {
         $this->control->changeNamespacedAttributes($newId, $newName);
         if ($this->labelTag) {
@@ -87,7 +87,7 @@ class ComponentContainer
      * @param string $label
      * @throws \Exception
      */
-    public function setLabel(string $label)
+    public function setLabel(string $label): void
     {
         $this->label = $label;
         $this->labelTag = Html::label(['style' => 'margin-bottom:0'])->add($label);
@@ -96,7 +96,7 @@ class ComponentContainer
     /**
      * @param string $tooltip
      */
-    public function setTooltip(string $tooltip)
+    public function setTooltip(string $tooltip): void
     {
         $this->tooltip = $tooltip;
     }
@@ -104,7 +104,7 @@ class ComponentContainer
     /**
      * @param string $hint
      */
-    public function setHint(string $hint)
+    public function setHint(string $hint): void
     {
         $this->hint = $hint;
         $this->hintTag = $hint;
@@ -113,7 +113,7 @@ class ComponentContainer
     /**
      * @param string $error
      */
-    public function setError(string $error)
+    public function setError(string $error): void
     {
         $this->errorTag = $error;
     }
@@ -134,7 +134,7 @@ class ComponentContainer
      * @param string $fieldName
      * @param string $getExpectedDataName
      */
-    public function addExpectedInput(string $fieldName, string $getExpectedDataName)
+    public function addExpectedInput(string $fieldName, string $getExpectedDataName): void
     {
         $this->expectedInput = Html::input([
             "type" => "hidden",
@@ -230,10 +230,10 @@ class ComponentContainer
     }
 
     /**
-     * @param bool|HtmlTag $controlTag
-     * @return false|string|null
+     * @param null|HtmlTag|string|array $controlTag
+     * @return false|string
      */
-    private function guessLabelFor($controlTag)
+    private function guessLabelFor(mixed $controlTag): false|string
     {
         if (!$controlTag) {
             return false;
@@ -255,7 +255,7 @@ class ComponentContainer
      * @param array $attributes
      * @throws \Exception
      */
-    public function setControlAttributes(array $attributes)
+    public function setControlAttributes(array $attributes): void
     {
         foreach ($this->control->getControls() as $control) {
             $control->setMany($attributes);
@@ -266,7 +266,7 @@ class ComponentContainer
      * @param array $attributes
      * @throws \Exception
      */
-    public function setContainerAttributes(array $attributes)
+    public function setContainerAttributes(array $attributes): void
     {
         foreach ($attributes as $key => $value) {
             switch ($key) {
@@ -291,7 +291,7 @@ class ComponentContainer
     /**
      * @return array
      */
-    public function toArray()
+    public function toArray(): array
     {
         $array = [];
         if ($this->label) {

@@ -43,7 +43,12 @@ class DateTimeTest extends \Codeception\Test\Unit
         $namespace = 'ns';
         $name = 'dt';
         $datetime = ComponentFactory::DateTime($namespace ,$name, ['foo'=>'bar']);
-        // @todo: check hydration properly
-        $this->assertNull($datetime->hydrate());
+        $container = $this->tester->getAttributeValue($datetime, 'componentContainer');
+        $control = $this->tester->getAttributeValue($container, 'control');
+        $allTags = $this->tester->getAttributeValue($control, 'allTags');
+        $this->assertCount(1, $allTags);
+        $inputDate = $allTags[0];
+        $this->tester->assertIsHtmlTag($inputDate, "input", ["type"=>"datetime-local"]);
+        $datetime->hydrate();
     }
 }

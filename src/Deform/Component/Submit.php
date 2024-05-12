@@ -9,7 +9,7 @@ class Submit extends Input
     /**
      * @inheritDoc
      */
-    public function setup()
+    public function setup(): void
     {
         parent::setup();
         $this->autolabel(false);

@@ -23,7 +23,7 @@ class Currency extends Input
     /**
      * @throws \Exception
      */
-    public function setup()
+    public function setup(): void
     {
         $this->currencyLabel = Html::label(['class' => 'currency-symbol']);
         $this->currencyInput = Html::input([
@@ -43,7 +43,7 @@ class Currency extends Input
     /**
      * @templateMethod
      * @param string $currency
-     * @return $this
+     * @return self
      * @throws \Exception
      */
     public function currency(string $currency): self
@@ -56,7 +56,7 @@ class Currency extends Input
     /**
      * @inheritDoc
      */
-    public function hydrate()
+    public function hydrate(): void
     {
         if ($this->currencyLabelValue != null) {
             $this->currency($this->currencyLabelValue);

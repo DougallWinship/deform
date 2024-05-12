@@ -62,7 +62,7 @@ class HtmlTag implements IHtml
      * @param string|string[]|HtmlTag|HtmlTag[] $childNodes
      * @throws \Exception
      */
-    public function add($childNodes): HtmlTag
+    public function add(mixed $childNodes): HtmlTag
     {
         $this->disallowSelfClosingCheck();
         if (is_array($childNodes)) {
@@ -80,7 +80,7 @@ class HtmlTag implements IHtml
      * @param string|HtmlTag $childNode
      * @throws \Exception
      */
-    public function prepend($childNode): HtmlTag
+    public function prepend(mixed $childNode): HtmlTag
     {
         $this->disallowSelfClosingCheck();
         array_unshift($this->childTags, $childNode);
@@ -89,7 +89,7 @@ class HtmlTag implements IHtml
 
     /**
      * clears any children
-     * @return $this
+     * @return self
      * @throws \Exception
      */
     public function clear(): HtmlTag
@@ -102,7 +102,7 @@ class HtmlTag implements IHtml
     /**
      * replace any children with a new child
      * @param IHtml|string $htmlTag
-     * @return $this
+     * @return self
      * @throws \Exception
      */
     public function reset($htmlTag): HtmlTag
@@ -137,7 +137,7 @@ class HtmlTag implements IHtml
      * either false if no children or how many there are
      * @return false|int
      */
-    public function hasChildren()
+    public function hasChildren(): false|int
     {
         if ($this->isSelfClosing || count($this->childTags) === 0) {
             return false;
@@ -167,7 +167,7 @@ class HtmlTag implements IHtml
      * set an attribute if it already exists
      * @param string $name
      * @param string|array $arguments
-     * @return $this
+     * @return self
      * @throws \Exception
      */
     public function setIfExists(string $name, $arguments): HtmlTag
@@ -234,10 +234,10 @@ class HtmlTag implements IHtml
     /**
      * returns an attribute value or null if it doesn't exist
      * breaks chaining!!
-     * @param $name
+     * @param string $name
      * @return string|null
      */
-    public function get($name): ?string
+    public function get(string $name): ?string
     {
         return $this->attributes[$name] ?? null;
     }
@@ -272,7 +272,7 @@ class HtmlTag implements IHtml
     }
 
     /**
-     * set a single css rule without affecting any others in the style attribute
+     * set a single css rule (without affecting any others) in the style attribute
      * @param string $setRule
      * @param string $setValue
      * @return HtmlTag
@@ -367,7 +367,7 @@ class HtmlTag implements IHtml
      */
     public static function implodeAttributeValues(string $key, array $values): string
     {
-        if (substr($key, 0, 2) == 'on') {
+        if (str_starts_with($key, 'on')) {
             // assume it's onclick, onsubmit, onhover, etc ... it's up to the user to get these right!
             return implode(";", $values);
         } elseif ($key == 'style') {
@@ -388,7 +388,7 @@ class HtmlTag implements IHtml
 
     /**
      * very basic manipulation of the HtmlTag tree, to do anything more complex convert it to DOMDocument instead
-     * the selector is *extremely* primitive & only supports (i.e. no descendants etc.)
+     * the selector is *extremely* primitive (i.e. no descendants etc.) & only supports
      *  "tag" - a tag type
      *  "#id" - an id
      *  ".class" - a class
@@ -437,7 +437,7 @@ class HtmlTag implements IHtml
     /**
      * gets a corresponding DOMElement for this node for use with the specified domDocument
      * @param \DOMDocument $domDocument
-     * @return \DOMElement|false
+     * @return \DOMNode
      * @throws \DOMException
      */
     public function getDomNode(\DOMDocument $domDocument): \DOMNode
@@ -460,7 +460,7 @@ class HtmlTag implements IHtml
      * internal check for invalid operations on self-closing tags
      * @throws \Exception
      */
-    private function disallowSelfClosingCheck()
+    private function disallowSelfClosingCheck(): void
     {
         if ($this->isSelfClosing) {
             $callingMethod = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);

@@ -17,7 +17,7 @@ class TextArea extends BaseComponent
     /**
      * @inheritDoc
      */
-    public function setup()
+    public function setup(): void
     {
         $this->textarea = Html::textarea([
            'id' => $this->getId(),

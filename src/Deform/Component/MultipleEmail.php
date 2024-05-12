@@ -11,7 +11,7 @@ class MultipleEmail extends Email
     /**
      * @inheritDoc
      */
-    public function setup()
+    public function setup(): void
     {
         parent::setup();
         $this->input->set('multiple', 'multiple');

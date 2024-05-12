@@ -44,7 +44,12 @@ class DateTest extends \Codeception\Test\Unit
         $namespace = 'ns';
         $name = 'dt';
         $date = ComponentFactory::Date($namespace ,$name, ['foo'=>'bar']);
-        // @todo: check hydration properly
-        $this->assertNull($date->hydrate());
+        $date->hydrate();
+        $container = $this->tester->getAttributeValue($date, 'componentContainer');
+        $control = $this->tester->getAttributeValue($container, 'control');
+        $allTags = $this->tester->getAttributeValue($control, 'allTags');
+        $this->assertCount(1, $allTags);
+        $inputDate = $allTags[0];
+        $this->tester->assertIsHtmlTag($inputDate, "input", ["type"=>"date"]);
     }
 }

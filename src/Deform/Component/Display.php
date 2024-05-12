@@ -11,7 +11,7 @@ class Display extends Input
     /**
      * @inheritDoc
      */
-    public function setup()
+    public function setup(): void
     {
         parent::setup();
         $this->input->set('disabled', 'disabled');

@@ -179,4 +179,18 @@ class RadioButtonSetTest extends \Codeception\Test\Unit
             $this->assertEquals($values[$idx], $attributes['value']);
         }
     }
+
+    public function testShadowJavascript()
+    {
+        $namespace = 'ns';
+        $name = 'dt';
+        $radioButtonSetValues = ['true'=>'labelTrue','false'=>'labelFalse', 'filenotfound'=>'labelFileNotFound'];
+        $radioButtonSet = ComponentFactory::RadioButtonSet($namespace ,$name, ['foo'=>'bar'])
+            ->radioButtons($radioButtonSetValues);
+        $shadowJavascript = $radioButtonSet->getShadowJavascript();
+        $this->assertArrayHasKey('.control-container .radiobuttonset-radio-container', $shadowJavascript);
+        $this->assertArrayHasKey('.component-container input[type=hidden]', $shadowJavascript);
+        $this->assertArrayHasKey('.hint-container', $shadowJavascript);
+        $this->assertArrayHasKey('.error-container', $shadowJavascript);
+    }
 }

@@ -15,7 +15,7 @@ class SelectMulti extends Select
     /**
      * @inheritDoc
      */
-    public function setup()
+    public function setup(): void
     {
         parent::setup();
         $this->select->set('multiple', 'multiple');

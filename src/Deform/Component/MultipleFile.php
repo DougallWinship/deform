@@ -12,7 +12,7 @@ class MultipleFile extends File
     /**
      * @inheritDoc
      */
-    public function setup()
+    public function setup(): void
     {
         parent::setup();
         $this->input->set('multiple', 'multiple');

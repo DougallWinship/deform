@@ -1,11 +1,37 @@
 body {
     padding:4px;
 }
-.component-container {
+.component-container,*::part(component-container) {
     padding:6px;
+    background-color:#eee;
+    border-radius:6px;
+    margin-top:4px;
+    margin-bottom:4px;
+    width:fit-content;
+}
+*::part(component-container) {
+    display: inline-block;
 }
 .container-type-button button,deform-button::part(button) {
     border-radius:10px;
-    border-style:solid;
     cursor:pointer;
+    background-color:#ddd;
+    border:1px solid #ccc;
+    padding:4px;
+}
+.container-type-button button:hover, deform-button::part(button):hover {
+    opacity:0.7;
+}
+.container-type-image button.clear-image, deform-image::part(clear-image) {
+    border-radius:4px;
+    cursor:pointer;
+    background-color:#ddd;
+    border:1px solid #ccc;
+    padding:3px;
+    position:relative;
+    top:-2px;
+}
+
+.container-type-image button.clear-image:hover, deform-image::part(clear-image):hover {
+    opacity:0.7;
 }

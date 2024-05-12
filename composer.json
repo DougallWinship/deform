@@ -1,11 +1,16 @@
 {
     "name": "dougallwinship/deform",
     "autoload": {
-        "psr-4": {"": "src/"}
+        "psr-4": {"Deform\\": "src/Deform"}
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "App\\": "tests/_data/App"
+        }
     },
     "config": {
         "platform": {
-            "php": ">=7.4"
+            "php": "8.3.0"
         }
     },
     "require": {

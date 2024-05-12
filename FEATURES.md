@@ -1,9 +1,9 @@
 # Features
 * consistent generation of components (as regards the HTML structure)
 * strong IDE auto-completion support & chaining wherever appropriate
-* generate forms in a controller action which can then be tailored in a view
+* generate forms in a controller action which can subsequently be tailored in a view
 * export a form to an array & build a form from an array definition (so you can persist them via json etc.)
-* custom HTML element creation using the shadow dom
+* custom HTML element creation using shadow dom
 
 ## Layers
 There are 3 principal layers:
@@ -14,6 +14,6 @@ There are 3 principal layers:
 ### Planned
 * auto-generate forms from a model or a database table
 * sensible default form handling
-* validation support (this maybe out of scope but it should at least be made as easy as possible)
+* validation support (this maybe out of scope, but it should at least be made as easy as possible)
 * rendering adapters
 * make styling easy

@@ -32,7 +32,7 @@ class Button extends BaseComponent
     /**
      * @inheritDoc
      */
-    public function setup()
+    public function setup(): void
     {
         $this->autolabel(false);
         $this->button = Html::button([
@@ -44,7 +44,7 @@ class Button extends BaseComponent
 
     /**
      * @param string $html
-     * @return $this
+     * @return self
      * @throws \Exception
      */
     public function html(string $html): self
@@ -56,7 +56,7 @@ class Button extends BaseComponent
 
     /**
      * @param string $type
-     * @return $this
+     * @return self
      * @throws \Exception
      */
     public function type(string $type): self

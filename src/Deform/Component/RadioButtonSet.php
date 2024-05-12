@@ -21,7 +21,7 @@ class RadioButtonSet extends BaseComponent
     /**
      * @inheritDoc
      */
-    public function setup()
+    public function setup(): void
     {
         // unusually don't do any setup here as it's only possible to do once the buttons have been specified
     }
@@ -93,7 +93,7 @@ class RadioButtonSet extends BaseComponent
         }
     }
 
-    public function shadowJavascript()
+    public function shadowJavascript(): ?array
     {
         return [
             '.control-container .radiobuttonset-radio-container' => <<<JS

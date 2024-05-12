@@ -4,9 +4,8 @@
     <pre data-method="get"><?= serialize($_GET); ?></pre>
 <?php } ?>
 
-<h2>Form Model</h2>
 <?php
-$exampleForm = new \Deform\Form\Model\ExampleFormModel();
+$exampleForm = new \App\ExampleFormModel();
 $formHtml = $exampleForm->getFormHtml();
 echo $formHtml;
 ?>
@@ -41,7 +40,7 @@ echo $formHtml;
 <h2>Rebuilt Form Model (from array)</h2>
 <?php
 $formArray['namespace'] = 'rebuilt-login-form';
-$rebuildForm = \Deform\Form\Model\FormModel::buildForm($formArray);
+$rebuildForm = \Deform\Form\FormModel::buildForm($formArray);
 $formHtml = $rebuildForm->getFormHtml();
 echo $formHtml;
 
@@ -51,7 +50,7 @@ echo $formHtml;
 <h2>Document Deformed Form</h2>
 <?php
 $formArray['namespace'] = 'rebuilt-login-form-2';
-$rebuildForm2 = \Deform\Form\Model\FormModel::buildForm($formArray);
+$rebuildForm2 = \Deform\Form\FormModel::buildForm($formArray);
 $htmlDocument = \Deform\Html\HtmlDocument::load($rebuildForm2->getFormHtml());
 $htmlDocument->selectCss("form",function(\DOMNode $domNode) {
     $domNode->setAttribute('id','loaded-deformed-form');

@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Deform\Form\Model;
+namespace Deform\Form;
 
 use Deform\Component\BaseComponent;
 use Deform\Component\ComponentFactory;
@@ -24,7 +24,6 @@ use Deform\Util\Arrays;
  * @method \Deform\Component\File addFile(string $field, array $options=[])
  * @method \Deform\Component\Hidden addHidden(string $field, array $options=[])
  * @method \Deform\Component\Image addImage(string $field, array $options=[])
- * @method \Deform\Component\InputButton addInputButton(string $field, array $options=[])
  * @method \Deform\Component\MultipleEmail addMultipleEmail(string $field, array $options=[])
  * @method \Deform\Component\MultipleFile addMultipleFile(string $field, array $options=[])
  * @method \Deform\Component\Password addPassword(string $field, array $options=[])
@@ -38,18 +37,18 @@ use Deform\Util\Arrays;
  */
 class FormModel
 {
-    public const METHOD_GET = 'get';
-    public const METHOD_POST = 'post';
-    public const HTML_KEY = "HTML:";
+    public const string METHOD_GET = 'get';
+    public const string METHOD_POST = 'post';
+    public const string HTML_KEY = "HTML:";
 
-    public const ENCTYPE_MULTIPART_URL_ENCODED = "application/x-www-form-urlencoded";
-    public const ENCTYPE_MULTIPART_FORM_DATA = "multipart/form-data";
+    public const string ENCTYPE_MULTIPART_URL_ENCODED = "application/x-www-form-urlencoded";
+    public const string ENCTYPE_MULTIPART_FORM_DATA = "multipart/form-data";
 
-    public const CSRF_STRATEGY_OFF = 'off';
-    public const CSRF_STRATEGY_SESSION = 'session';
-    public const CSRF_STRATEGY_COOKIE = 'cookie';
+    public const string CSRF_STRATEGY_OFF = 'off';
+    public const string CSRF_STRATEGY_SESSION = 'session';
+    public const string CSRF_STRATEGY_COOKIE = 'cookie';
 
-    public const CSRF_TOKEN_FIELD = 'csrf-token';
+    public const string CSRF_TOKEN_FIELD = 'csrf-token';
 
     /** @var int */
     private int $htmlCounter = 1;
@@ -81,7 +80,7 @@ class FormModel
     /** @var string */
     private string $csrfStrategy = self::CSRF_STRATEGY_SESSION;
 
-
+    /** @var string */
     private string $encType = self::ENCTYPE_MULTIPART_URL_ENCODED;
 
     /**
@@ -115,7 +114,7 @@ class FormModel
     public function __call($name, $arguments)
     {
         if (
-            substr($name, 0, 3) === 'add'
+            str_starts_with($name, 'add')
             && strlen($name) > 3
             && count($arguments) > 0
         ) {
@@ -149,16 +148,23 @@ class FormModel
         throw new \BadMethodCallException("Call to undefined method " . __CLASS__ . "::" . $name . "()");
     }
 
-    public function addCancelLink(string $url, $text = "Cancel")
+    /**
+     * @param string $url
+     * @param string $text
+     * @return void
+     * @throws \Exception
+     */
+    public function addCancelLink(string $url, string $text = "Cancel"): void
     {
-        $this->addHtml(Html::div(['class' => 'form-cancel-button'])->add(Html::a(['href' => $url])->add($text)));
+        $this->addHtml(Html::div(['class' => 'form-cancel-button'])
+            ->add(Html::a(['href' => $url])->add($text)));
     }
 
     /**
-     * @param string|\Stringable $html
+     * @param \Stringable|string $html
      * @throws \Exception
      */
-    public function addHtml($html)
+    public function addHtml(\Stringable|string $html): void
     {
         if ($html instanceof \Stringable) {
             $html = (string)$html;
@@ -315,7 +321,7 @@ class FormModel
      * @param array $errors
      * @throws \Exception
      */
-    protected function setErrors(array $errors)
+    protected function setErrors(array $errors): void
     {
         foreach ($errors as $field => $error) {
             if (!isset($this->sections[$field])) {
@@ -329,7 +335,7 @@ class FormModel
     /**
      * @param callable $formProcessor
      */
-    public function setFormProcessor(callable $formProcessor)
+    public function setFormProcessor(callable $formProcessor): void
     {
         $this->formProcessor = $formProcessor;
     }
@@ -339,7 +345,7 @@ class FormModel
      * @return bool|array true for success or an array of errors (by field)
      * @throws \Exception
      */
-    public function processFormData(array $formData)
+    public function processFormData(array $formData): bool|array
     {
         if (is_callable($this->formProcessor)) {
             return ($this->formProcessor)($formData);
@@ -352,7 +358,7 @@ class FormModel
      * @param string $field
      * @return mixed
      */
-    public function getFieldComponent(string $field)
+    public function getFieldComponent(string $field): mixed
     {
         return $this->sections[$field];
     }
@@ -445,7 +451,7 @@ class FormModel
      * @param string $csrfStrategy
      * @throws \Exception
      */
-    public function setCSRFStrategy(string $csrfStrategy)
+    public function setCSRFStrategy(string $csrfStrategy): void
     {
         switch ($csrfStrategy) {
             case self::CSRF_STRATEGY_OFF:
@@ -461,7 +467,7 @@ class FormModel
     /**
      * @throws \Exception
      */
-    private function implementCSRFStrategy()
+    private function implementCSRFStrategy(): ?\Deform\Component\Input
     {
         switch ($this->csrfStrategy) {
             case self::CSRF_STRATEGY_SESSION:
@@ -554,11 +560,11 @@ class FormModel
     /**
      * override to do something more useful!
      */
-    protected function handleCSRFTokenFailure()
+    protected function handleCSRFTokenFailure(): never
     {
         ob_end_clean();
-        http_response_code(405);
-        die("Method not allowed");
+        http_response_code(403);
+        die("Forbidden");
     }
 
     /**

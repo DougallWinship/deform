@@ -34,10 +34,10 @@ class ComponentControls
      *    single checkbox has one control with multiple decorations
      *
      * @param HtmlTag $controlTag
-     * @param HtmlTag|string|IHtml|array|null $controlDecoration
+     * @param array|string|HtmlTag|IHtml|null $controlDecoration
      * @throws \Exception
      */
-    public function addControl(HtmlTag $controlTag, $controlDecoration = null)
+    public function addControl(HtmlTag $controlTag, HtmlTag|IHtml|array|string $controlDecoration = null): void
     {
         if (!$controlTag->has('id')) {
             throw new \Exception("The control tag must contain an 'id'");
@@ -67,7 +67,7 @@ class ComponentControls
                 }
                 $this->allTags = array_merge($this->allTags, $controlDecoration);
             } else {
-                array_push($this->allTags, $controlDecoration);
+                $this->allTags[] = $controlDecoration;
             }
         } else {
             $this->allTags[] = $controlTag;
@@ -79,15 +79,16 @@ class ComponentControls
      * @param HtmlTag $htmlTag
      * @return void
      */
-    public function addHtmlTag(HtmlTag $htmlTag)
+    public function addHtmlTag(HtmlTag $htmlTag): void
     {
         $this->allTags[] = $htmlTag;
     }
 
     /**
-     *
+     * clear all controls
+     * @return void
      */
-    public function reset()
+    public function reset(): void
     {
         $this->allTags = [];
         $this->controlTags = [];
@@ -95,11 +96,12 @@ class ComponentControls
     }
 
     /**
+     * update all controls id and name entries, and any for values
      * @param string $newId
      * @param string $newName
      * @throws \Exception
      */
-    public function changeNamespacedAttributes(string $newId, string $newName)
+    public function changeNamespacedAttributes(string $newId, string $newName): void
     {
         $multipleControlTags = count($this->controlTags) > 1;
         foreach ($this->controlTags as $control) {
@@ -124,10 +126,11 @@ class ComponentControls
     }
 
     /**
+     * set the value(s))
      * @param mixed $value
      * @throws \Exception
      */
-    public function setValue($value)
+    public function setValue(mixed $value): void
     {
         if (is_array($value)) {
             if (count($value) != count($this->controlTags)) {
@@ -144,6 +147,7 @@ class ComponentControls
     }
 
     /**
+     * get the controls as tags
      * @return HtmlTag[]
      */
     public function getControls(): array
@@ -152,6 +156,7 @@ class ComponentControls
     }
 
     /**
+     * get all the tags
      * @return array
      */
     public function getHtmlTags(): array

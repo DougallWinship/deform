@@ -2,7 +2,9 @@
 
 declare(strict_types=1);
 
-namespace Deform\Form\Model;
+namespace App;
+
+use Deform\Form\FormModel;
 
 class ExampleFormModel extends FormModel
 {
@@ -12,6 +14,7 @@ class ExampleFormModel extends FormModel
     public function __construct()
     {
         parent::__construct('example');
+        $this->addHtml("<h1>Example Form Model</h1>");
         $this->addCheckbox('cb')->label("Yes or No");
         $this->addCheckboxMulti('cbm')->checkboxes(['True','False','File not Found'])->label("Some checkboxes");
         $this->addColorSelector('cs')->label("Color Selector");
@@ -30,7 +33,7 @@ class ExampleFormModel extends FormModel
         $this->addSubmit('submit');
     }
 
-    public function processFormData($formData)
+    public function processFormData($formData): bool|array
     {
         return true;
     }

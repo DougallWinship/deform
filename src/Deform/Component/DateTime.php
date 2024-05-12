@@ -11,7 +11,7 @@ class DateTime extends Input
     /**
      * @inheritDoc
      */
-    public function setup()
+    public function setup(): void
     {
         parent::setup();
         $this->type('datetime-local');

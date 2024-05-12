@@ -11,7 +11,7 @@ trait Button
         return str_replace('</button>', '<slot></slot></button>', parent::getShadowTemplate());
     }
 
-    public function shadowJavascript()
+    public function shadowJavascript(): ?array
     {
         return [
                 'button' => <<<JS

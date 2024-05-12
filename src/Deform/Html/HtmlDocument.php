@@ -4,6 +4,14 @@ declare(strict_types=1);
 
 namespace Deform\Html;
 
+/**
+ * basic DOMDocument helper
+ *
+ * please note this is a specific implementation for this library, for a more generic solution try
+ *   https://github.com/phpbench/dom
+ * or
+ *   https://github.com/scotteh/php-dom-wrapper
+ */
 class HtmlDocument implements \Stringable
 {
     private \DOMDocument $domDocument;
@@ -106,7 +114,7 @@ class HtmlDocument implements \Stringable
     /**
      * @param string $xpathQuery
      * @param callable $callback
-     * @return $this
+     * @return self
      */
     public function selectXPath(string $xpathQuery, callable $callback): self
     {
@@ -118,7 +126,7 @@ class HtmlDocument implements \Stringable
     /**
      * @param string $cssSelector
      * @param callable $callback
-     * @return $this
+     * @return self
      * @throws \Exception
      */
     public function selectCss(string $cssSelector, callable $callback): self
@@ -156,7 +164,7 @@ class HtmlDocument implements \Stringable
      * @param \DOMNodeList $domNodeList
      * @param callable $callback
      */
-    protected function applyCallback(\DOMNodeList $domNodeList, callable $callback)
+    protected function applyCallback(\DOMNodeList $domNodeList, callable $callback): void
     {
         foreach ($domNodeList as $domNode) {
             /** @var \DOMNode $domNode */

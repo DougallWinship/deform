@@ -27,7 +27,7 @@ class CheckboxMulti extends BaseComponent
     /**
      * @templateMethod
      * @param array $checkboxValues
-     * @return $this
+     * @return self
      * @throws \Exception
      */
     public function checkboxes(array $checkboxValues): self

@@ -8,13 +8,13 @@ Run the unit & acceptance tests like this:
 
 Additionally generate a coverage report (to /_output/coverage) like this:
 ```
-./codecept run --coverage-html
+./codecept run --coverage --coverage-html
 ```
 
 During coverage report generation you may see this error:
 ```XDEBUG_MODE=coverage or xdebug.mode=coverage has to be set```
 If so then you can either run it like this
-```XDEBUG_MODE=coverage```
+```XDEBUG_MODE=coverage && ./codecept run --coverage --coverage-html```
 or update your php.ini settings for xdebug with multiple available modes like this
 ```xdebug.mode=develop,debug,coverage```
 ... and then restart php-fpm
