@@ -1,12 +1,6 @@
 # Codeception Tests
 You can mount /_data/public/ in a local webserver to see exactly what is being tested by the acceptance tests.
 
-Using Laravel Valet this can be accomplished by navigating to that directory then
-```
-valet link deform-acceptance
-```
-... after which you can visit http://deform-acceptance.test
-
 Run the unit & acceptance tests like this:
 ```
 ./codecept run
@@ -14,16 +8,13 @@ Run the unit & acceptance tests like this:
 
 Additionally generate a coverage report (to /_output/coverage) like this:
 ```
-./codecept run --coverage-html
+./codecept run --coverage --coverage-html
 ```
 
-## Db
-Unless you want to manually alter the codeception settings, you should create a local db called 'deform-test-db' which 
-can be accessed via host='local' user='root' and password='root'.
-
-## Troubleshooting
-
-``` XDEBUG_MODE=coverage or xdebug.mode=coverage has to be set```
-
-
-
+During coverage report generation you may see this error:
+```XDEBUG_MODE=coverage or xdebug.mode=coverage has to be set```
+If so then you can either run it like this
+```XDEBUG_MODE=coverage && ./codecept run --coverage --coverage-html```
+or update your php.ini settings for xdebug with multiple available modes like this
+```xdebug.mode=develop,debug,coverage```
+... and then restart php-fpm

@@ -64,13 +64,23 @@ class CurrencyTest extends \Codeception\Test\Unit
         $currency->hydrate();
         $container = $this->tester->getAttributeValue($currency, 'componentContainer');
         $control = $this->tester->getAttributeValue($container, 'control');
-        $allControls = $this->tester->getAttributeValue($control, 'allTags');
-        $this->assertCount(3, $allControls);
-        list($currencyLabel, $space, $input) = $allControls;
+        $allTags = $this->tester->getAttributeValue($control, 'allTags');
+        $this->assertCount(3, $allTags);
+        list($currencyLabel, $space, $input) = $allTags;
         $this->tester->assertIsHtmlTag($currencyLabel,'label',['class'=>'currency-symbol']);
         $currencyLabelChildren = $currencyLabel->getChildren();
         $this->assertCount(1, $currencyLabelChildren);
         $this->assertEquals($useCurrencySymbol, $currencyLabelChildren[0]);
+
+    }
+
+
+    public function testShadowJavascript()
+    {
+        $currency = ComponentFactory::Currency('ns', 'cr', ['foo'=>'bar']);
+        $shadowJs = $currency->shadowJavascript();
+        $this->assertArrayHasKey('.currency-symbol', $shadowJs);
+        $this->assertArrayHasKey('.control-container input', $shadowJs);
 
     }
 

@@ -75,8 +75,12 @@ class ComponentFactory
      * @return object
      * @throws \Exception
      */
-    public static function build(string $component, ?string $formNamespace, string $fieldName, array $arguments = []): object
-    {
+    public static function build(
+        string $component,
+        ?string $formNamespace,
+        string $fieldName,
+        array $arguments = []
+    ): object {
         if (($namespaceDividerPos = strrpos($component, '\\')) !== false) {
             // if a namespace was included then check & strip it!
             $checkNamespace = substr($component, 0, $namespaceDividerPos);

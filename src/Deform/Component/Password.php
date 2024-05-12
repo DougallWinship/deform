@@ -12,7 +12,7 @@ class Password extends Input
     /**
      * @inheritDoc
      */
-    public function setup()
+    public function setup(): void
     {
         parent::setup();
         $this->type('password');

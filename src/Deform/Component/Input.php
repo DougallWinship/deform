@@ -28,7 +28,7 @@ abstract class Input extends BaseComponent
     /**
      * @inheritDoc
      */
-    public function setup()
+    public function setup(): void
     {
         $this->input = Html::input([
             'id' => $this->getId(),
@@ -41,7 +41,7 @@ abstract class Input extends BaseComponent
 
     /**
      * @param string $type
-     * @return $this
+     * @return self
      * @throws \Exception
      */
     public function type(string $type): self

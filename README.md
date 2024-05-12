@@ -8,25 +8,26 @@ Form coding is highly repetitive & IDE auto-completion is your friend.
 Not yet released, so unavailable via composer etc.
 
 ### With composer
-The repo is currently private and not available by composer.
+The repo is currently private and, as mentioned, not yet available via composer.
 
 ### Manual
-> You may not be using composer, but you will need to use a PSR-4 autoloader to ```/src``` to load the library with
-> the root namespace ```\Deform```
->
-> If you were to manually do so for now you'll have to figure it but the [composer.json](./composer.json) definition is:
-> ```
->    "autoload": {
->        "psr-4": {"": "src/"}
->    },
->```
-Move to a suitable dir (maybe 'libs',or via a symlink) then
+Move to a suitable dir such as '/libs' then
 ```
 git clone https://github.com/DougallWinship/deform.git
 ```
 
 Make the /deform/src dir available to autoload.
-> basically, its fairly straight-forward but until released to composer you'll have to figure shizzle for yourself!
+
+> You may not be using composer, but you will need to use a PSR-4 autoloader to ```/src``` to load the library with
+> the root namespace ```\Deform```
+>
+> If you were to manually do so for now you'll have to figure it, but the [composer.json](./composer.json) definition is something
+> like:
+> ```
+>    "autoload": {
+>        "psr-4": {"Deform": "libs/deform/src/Deform"}
+>    },
+>```
 
 ___
 
@@ -41,11 +42,11 @@ Here are some very simple examples of each layer:
 > **_NOTE:_** If you set up /tests/_data/public/ as a doc root on a local webserver you can view what the 
 > codeception acceptance tests see (you'll want to rewrite all urls to the index.php).
 > 
-> Using php's built in webserver on port 8000:   
+> Using PHP's built in webserver, something like this:   
 > ```php -S localhost:8000 ./tests/_data/public/router.php```
 
-### Deform\Html§
-
+### Deform\Html
+Tools for generating HTML programmatically.
 ```php
 use \Deform\Html\Html as Html;
 
@@ -90,7 +91,8 @@ $document = \Deform\Html\HtmlDocument::loadHtmlTag($html)
 > You can alternatively use selectCss(...) directly if you install https://github.com/bkdotcom/CssXpath via composer,
 > otherwise an online conversion tool such as https://css2xpath.github.io/ can be useful.
 
-You can also generate an HtmlTag from an arbitrary HTML string rather than by chaining if you want to for some, as yet undetermined, reason:
+You can also generate an HtmlTag from an arbitrary HTML string rather than by chaining if you want to for some, as yet 
+undetermined, reason:
 ```php
 $htmlString = <<<HTML
 <div style='border:10px solid red' class='outerdiv'>
@@ -135,7 +137,8 @@ echo Component::RadioButtonSet('form1', 'myradiobuttonset')
 </div>
 ```
 
-> **_NOTE:_** You can see all the available components by looking at the annotations of the [ComponentFactory](src/Deform/Component/ComponentFactory.php).
+> **_NOTE:_** You can see all the available components by looking at the annotations of the
+> [ComponentFactory](src/Deform/Component/ComponentFactory.php).
 
 #### Custom element definitions
 The components can also generate a set of customElements via javascript.

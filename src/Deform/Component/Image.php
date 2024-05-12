@@ -28,8 +28,6 @@ class Image extends File
 
     public function getHtmlTag(): HtmlTag
     {
-//        $previewId = 'preview-' . $this->getId();
-//        $hiddenId = 'hidden-' . $this->getId();
         $this->input->set(
             'onchange',
             'if (0 in this.files)'
@@ -44,7 +42,7 @@ class Image extends File
         }
         $closeButton = Html::button([
             'class' => 'clear-image',
-            'style' => 'margin-left:20px;line-height:10px;background-color:transparent',
+            'style' => 'float:right;line-height:10px;background-color:transparent',
             'onclick' => 'let input = this.parentNode.nextSibling.firstChild; '
                         . 'input.nextSibling.src = "' . self::PLACEHOLDER_IMAGE_BASE64 . '";'
                         . 'input.value=null;'
@@ -59,7 +57,7 @@ class Image extends File
 
     /**
      * @param mixed $value
-     * @return $this
+     * @return self
      * @throws \Exception
      */
     public function setValue($value): self
@@ -74,7 +72,7 @@ class Image extends File
 
     /**
      * @param string $src
-     * @return $this
+     * @return self
      * @throws \Exception
      */
     private function addSupportTags(string $src = ''): self
@@ -102,8 +100,21 @@ class Image extends File
     }
 
     /**
+     * specify a function to determine what happens when the preview image is clicked
+     * such a function should return a Promise which resolves with the url of an image, for example
+     * ```JS
+     * const selectImage = (evt) => {
+     *     return new Promise(function(resolve,reject) {
+     * };
+     * ```
+     * and then
+     * ```PHP
+     * $imageComponent->setJavascriptSelectFunction('selectImage');
+     * ```
+     * the default behaviour will just open the component's hidden input
+     *
      * @param string $js
-     * @return $this
+     * @return self
      * @throws \Exception
      */
     public function setJavascriptSelectFunction(string $js): self

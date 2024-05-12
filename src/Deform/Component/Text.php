@@ -25,7 +25,7 @@ class Text extends Input
     /**
      * @inheritDoc
      */
-    public function setup()
+    public function setup(): void
     {
         parent::setup();
         $this->input->type('text');
@@ -34,7 +34,7 @@ class Text extends Input
     /**
      * @param array $datalist
      * @param string|null $datalistId
-     * @return $this
+     * @return self
      * @throws \Exception
      */
     public function datalist(array $datalist, string $datalistId = null): Text

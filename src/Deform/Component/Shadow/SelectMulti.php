@@ -6,7 +6,7 @@ namespace Deform\Component\Shadow;
 
 trait SelectMulti
 {
-    public function shadowJavascript()
+    public function shadowJavascript(): ?array
     {
         return [
                 '.control-container select option' => <<<JS

@@ -162,7 +162,7 @@ class Html
      * @return IHtml
      * @throws \Exception
      */
-    public static function __callStatic(string $tag, $arguments): IHtml
+    public static function __callStatic(string $tag, mixed $arguments): IHtml
     {
         self::identifyTags();
 
@@ -187,7 +187,7 @@ class Html
     /**
      * @throws \Exception
      */
-    private static function identifyTags()
+    private static function identifyTags(): void
     {
         if (self::$reflectionSelf === null) {
             self::$reflectionSelf = new \ReflectionClass(self::class);

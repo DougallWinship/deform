@@ -23,7 +23,7 @@ class Checkbox extends Input
     /**
      * @inheritDoc
      */
-    public function setup()
+    public function setup(): void
     {
         $this->autoAddControl = false;
         parent::setup();
@@ -40,7 +40,7 @@ class Checkbox extends Input
 
     /**
      * @param string $text
-     * @return $this
+     * @return self
      * @throws \Exception
      */
     public function text(string $text): self

@@ -1,7 +1,7 @@
 <?php
 namespace Deform\Component;
 
-use Deform\Form\Form;
+use Deform\Form\FormModel;
 
 class ComponentFactoryTest extends \Codeception\Test\Unit
 {
@@ -16,14 +16,17 @@ class ComponentFactoryTest extends \Codeception\Test\Unit
             "Button",
             "Checkbox",
             "CheckboxMulti",
+            "ColorSelector",
             "Currency",
             "Date",
             "DateTime",
             "Display",
             "Email",
             "File",
-            "MultipleFile",
             "Hidden",
+            "Image",
+            "MultipleEmail",
+            "MultipleFile",
             "Password",
             "RadioButtonSet",
             "Select",
@@ -77,7 +80,7 @@ class ComponentFactoryTest extends \Codeception\Test\Unit
     public function testBuildWithWrongNamespace()
     {
         $this->expectException(\Exception::class);
-        ComponentFactory::build(Form::class, "namespace","button");
+        ComponentFactory::build(FormModel::class, "namespace","button");
     }
 
     public function testBuildInvalidClass()

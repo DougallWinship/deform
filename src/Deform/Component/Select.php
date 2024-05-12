@@ -26,7 +26,7 @@ class Select extends BaseComponent
     /**
      * @inheritDoc
      */
-    public function setup()
+    public function setup(): void
     {
         $this->select = Html::select([
             'id' => $this->getId(),
@@ -38,7 +38,7 @@ class Select extends BaseComponent
     /**
      * @templateMethod
      * @param array $optionsValues
-     * @return $this
+     * @return self
      * @throws \Exception
      */
     public function options(array $optionsValues): self
@@ -60,7 +60,7 @@ class Select extends BaseComponent
 
     /**
      * @param array $optgroupOptions
-     * @return $this
+     * @return self
      * @throws \Exception
      */
     public function optgroupOptions(array $optgroupOptions): self

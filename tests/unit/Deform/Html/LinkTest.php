@@ -130,4 +130,14 @@ class LinkTest extends \Codeception\Test\Unit
         $this->expectException(\Exception::class);
         $html = (string)$link;
     }
+
+    public function testSetProtocolAlias()
+    {
+        $link = Link::url("https://github.com/DougallWinship/deform");
+        $link->setProtocol("http");
+        $this->assertInstanceOf(Link::class, $link);
+        $html = (string)$link;
+        $this->assertEquals("<a href='http://github.com/DougallWinship/deform'>http://github.com/DougallWinship/deform</a>",$html);
+    }
+
 }

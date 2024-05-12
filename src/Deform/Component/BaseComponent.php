@@ -8,9 +8,12 @@ use Deform\Html\Html;
 use Deform\Html\HtmlTag;
 use Deform\Util\Strings;
 
+/**
+ * base component
+ */
 abstract class BaseComponent implements \Stringable
 {
-    public const EXPECTED_DATA_FIELD = "expected_data";
+    public const string EXPECTED_DATA_FIELD = "expected_data";
 
     /** @var bool whether to use auto labelling by default */
     public static bool $useAutoLabelling = true;
@@ -75,8 +78,8 @@ abstract class BaseComponent implements \Stringable
     /**
      * set a tooltip for the component
      * @param string $tooltip
-     * @return $this
-     */
+     * @return self
+ */
     public function tooltip(string $tooltip): BaseComponent
     {
         $this->componentContainer->setTooltip($tooltip);
@@ -86,7 +89,7 @@ abstract class BaseComponent implements \Stringable
     /**
      * set the component's label
      * @param string $label
-     * @return $this
+     * @return self
      * @throws \Exception
      */
     public function label(string $label): BaseComponent
@@ -98,7 +101,7 @@ abstract class BaseComponent implements \Stringable
     /**
      * set a hint for the component
      * @param $hint string
-     * @return $this
+     * @return self
      */
     public function hint(string $hint): BaseComponent
     {
@@ -109,7 +112,7 @@ abstract class BaseComponent implements \Stringable
     /**
      * whether to try and guess the components label automatically
      * @param bool $autoLabel
-     * @return $this
+     * @return self
      */
     public function autolabel(bool $autoLabel): BaseComponent
     {
@@ -121,7 +124,7 @@ abstract class BaseComponent implements \Stringable
      * add a control and optionally a decorator (an optional wrapper for the control)
      * @param HtmlTag $control
      * @param array|HtmlTag|null $controlTagDecorator
-     * @return $this
+     * @return self
      * @throws \Exception
      */
     public function addControl(HtmlTag $control, mixed $controlTagDecorator = null): BaseComponent
@@ -142,7 +145,7 @@ abstract class BaseComponent implements \Stringable
     /**
      * set an error on this component
      * @param $error string
-     * @return $this
+     * @return self
      */
     public function setError(string $error): BaseComponent
     {
@@ -153,7 +156,7 @@ abstract class BaseComponent implements \Stringable
     /**
      * sets the components value
      * @param mixed $value
-     * @return $this
+     * @return self
      * @throws \Exception
      */
     public function setValue($value): self
@@ -476,12 +479,12 @@ abstract class BaseComponent implements \Stringable
     /**
      * @return string[]|null
      */
-    public function shadowJavascript()
+    public function shadowJavascript(): ?array
     {
         return [];
     }
 
-    public function getShadowJavascript()
+    public function getShadowJavascript(): array
     {
         $shadowJavascript = $this->shadowJavascript();
         if (!$this->componentContainer->controlOnly) {
@@ -541,7 +544,7 @@ JS
      * @return void
      * @throws \Exception
      */
-    public function addPartAttributesRecursive(HtmlTag $tag)
+    public function addPartAttributesRecursive(HtmlTag $tag): void
     {
         if ($tag->has('class')) {
             $tag->set('part', $tag->get('class'));

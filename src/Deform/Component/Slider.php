@@ -18,7 +18,7 @@ class Slider extends Input
     /**
      * @inheritDoc
      */
-    public function setup()
+    public function setup(): void
     {
         parent::setup();
         $this->input->type('range');
@@ -31,9 +31,9 @@ class Slider extends Input
     /**
      * whether to add an output tag showing the current value
      * @param bool $showOutput
-     * @return $this|void
+     * @return self|void
      */
-    public function showOutput(bool $showOutput = true): self
+    public function showOutput(bool $showOutput = true): mixed
     {
         if ($showOutput) {
             $this->componentContainer->control->addHtmlTag(Html::output(['class' => 'slider-output']));
