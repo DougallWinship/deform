@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "33c244e351552e3bd2ec12b5888ab2f1",
+    "content-hash": "101b7c15160813897e23ecc87703c479",
     "packages": [
         {
             "name": "bdk/css-xpath",
