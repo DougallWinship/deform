@@ -15,7 +15,7 @@ class ExampleFormModel extends FormModel
     {
         parent::__construct('example');
         $this->addHtml("<h1>Example Form Model</h1>");
-        $this->addCheckbox('cb')->label("Yes or No");
+        $this->addCheckbox('cb')->label("Yes or No")->text("input label text");
         $this->addCheckboxMulti('cbm')->checkboxes(['True','False','File not Found'])->label("Some checkboxes");
         $this->addColorSelector('cs')->label("Color Selector");
         $this->addCurrency('cu')->currency("&pound;")->label("how much?");
@@ -33,7 +33,7 @@ class ExampleFormModel extends FormModel
         $this->addSubmit('submit');
     }
 
-    public function processFormData($formData): bool|array
+    public function processFormData(array $formData): bool|array
     {
         return true;
     }

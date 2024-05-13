@@ -1,6 +1,6 @@
 <?php
 
-class HtmlCest
+class HtmlBuildCest
 {
     public function _before(AcceptanceTester $I)
     {

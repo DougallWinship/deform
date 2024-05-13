@@ -12,7 +12,7 @@ class TextArea extends BaseComponent
     use Shadow\TextArea;
 
     /** @var HtmlTag */
-    public $textarea;
+    public HtmlTag $textarea;
 
     /**
      * @inheritDoc
@@ -33,9 +33,5 @@ class TextArea extends BaseComponent
     {
         $this->textarea->reset($value);
         return $this;
-    }
-
-    public function hydrate()
-    {
     }
 }

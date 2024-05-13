@@ -39,13 +39,4 @@ class HiddenTest extends \Codeception\Test\Unit
             'type' => 'hidden',
         ]);
     }
-
-    public function testHydrate()
-    {
-        $namespace = 'ns';
-        $name = 'dp';
-        $hidden = ComponentFactory::Hidden($namespace, $name, ['foo' => 'bar']);
-        // @todo: check hydration properly
-        $this->assertNull($hidden->hydrate());
-    }
 }

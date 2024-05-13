@@ -45,7 +45,13 @@ class DisplayTest extends \Codeception\Test\Unit
         $namespace = 'ns';
         $name = 'dp';
         $display = ComponentFactory::Display($namespace ,$name, ['foo'=>'bar']);
-        // @todo: check hydration properly
-        $this->assertNull($display->hydrate());
+        $display->hydrate();
+        $expectedId = 'display-'.$namespace.'-'.$name;
+        $this->tester->assertIsHtmlTag($display->input,'input',[
+            'id' => $expectedId,
+            'name' => $namespace.'['.$name.']',
+            'type' => 'text',
+            'disabled' => 'disabled'
+        ]);
     }
 }

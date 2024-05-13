@@ -17,8 +17,4 @@ class ColorSelector extends Input
         parent::setup();
         $this->type('color');
     }
-
-    public function hydrate()
-    {
-    }
 }

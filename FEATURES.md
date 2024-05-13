@@ -12,6 +12,7 @@ There are 3 principal layers:
 3. Deform\Form - generate forms using Deform\Component
 
 ### Planned
+* change acceptance test to use a real browser via selenium & test custom components (etc)
 * auto-generate forms from a model or a database table
 * sensible default form handling
 * validation support (this maybe out of scope, but it should at least be made as easy as possible)

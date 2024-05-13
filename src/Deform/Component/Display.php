@@ -6,8 +6,6 @@ namespace Deform\Component;
 
 class Display extends Input
 {
-    use Shadow\Input;
-
     /**
      * @inheritDoc
      */
@@ -16,9 +14,5 @@ class Display extends Input
         parent::setup();
         $this->input->set('disabled', 'disabled');
         $this->input->type('text');
-    }
-
-    public function hydrate()
-    {
     }
 }

@@ -30,7 +30,7 @@ class HtmlDocument implements \Stringable
      * @return HtmlDocument
      * @throws \Exception
      */
-    public static function load($html): HtmlDocument
+    public static function load(string $html): HtmlDocument
     {
         $htmlDocument = new self();
         set_error_handler(function (int $errno, string $errstr) {

@@ -13,8 +13,6 @@ use Deform\Html\Html;
  */
 class Slider extends Input
 {
-    use Shadow\Slider;
-
     /**
      * @inheritDoc
      */
@@ -22,10 +20,6 @@ class Slider extends Input
     {
         parent::setup();
         $this->input->type('range');
-    }
-
-    public function hydrate()
-    {
     }
 
     /**

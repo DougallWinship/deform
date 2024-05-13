@@ -16,7 +16,7 @@ class Button extends BaseComponent
 {
     use Shadow\Button;
 
-    public const VALID_BUTTON_TYPES = ['submit', 'reset', 'button'];
+    public const array VALID_BUTTON_TYPES = ['submit', 'reset', 'button'];
 
     /** @var string */
     public string $buttonHtml;
@@ -27,7 +27,7 @@ class Button extends BaseComponent
     /**
      * @var IHtml input of type button
      */
-    public $button;
+    public IHtml $button;
 
     /**
      * @inheritDoc

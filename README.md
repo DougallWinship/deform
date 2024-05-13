@@ -99,7 +99,7 @@ $htmlString = <<<HTML
     <hr style='border:10px solid green' class='innerhr'>
 </div>
 HTML;
-$htmlTag = \Deform\Html\HtmlDocument::loadHtmlString($htmlString)->getHtmlRootTag();
+$htmlTag = \Deform\Html\HtmlDocument::load($htmlString)->getHtmlRootTag();
 ```
 
 > **_NOTE:_** There is no checking of the generated HTML for correctness. It's up to you to get it correct!

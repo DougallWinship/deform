@@ -14,6 +14,7 @@ class CheckboxMulti extends BaseComponent
 {
     use Shadow\CheckboxMulti;
 
+    /** @var array  */
     public array $checkboxes = [];
     public ?array $checkboxValues = null;
 

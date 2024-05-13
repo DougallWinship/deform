@@ -6,8 +6,6 @@ namespace Deform\Component;
 
 class Hidden extends Input
 {
-    use Shadow\Hidden;
-
     /**
      * @inheritDoc
      */
@@ -17,9 +15,5 @@ class Hidden extends Input
         $this->autolabel(false);
         $this->type('hidden');
         $this->componentContainer->controlOnly = true;
-    }
-
-    public function hydrate()
-    {
     }
 }

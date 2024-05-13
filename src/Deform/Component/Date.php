@@ -10,8 +10,6 @@ namespace Deform\Component;
  */
 class Date extends Input
 {
-    use Shadow\Input;
-
     /**
      * @inheritDoc
      */
@@ -19,9 +17,5 @@ class Date extends Input
     {
         parent::setup();
         $this->type('date');
-    }
-
-    public function hydrate()
-    {
     }
 }

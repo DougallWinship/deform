@@ -19,7 +19,7 @@ class SubmitTest extends \Codeception\Test\Unit
     public function testSetup()
     {
         $namespace = 'ns';
-        $name = 'dp';
+        $name = 'sb';
         $submit = ComponentFactory::Submit($namespace ,$name, ['foo'=>'bar']);
 
         $autolabel = $this->tester->getAttributeValue($submit, 'autoLabel');
@@ -42,9 +42,23 @@ class SubmitTest extends \Codeception\Test\Unit
 
     public function testHydrate() {
         $namespace = 'ns';
-        $name = 'dp';
+        $name = 'sb';
         $submit = ComponentFactory::Submit($namespace ,$name, ['foo'=>'bar']);
-        // @todo: check hydration properly
-        $this->assertNull($submit->hydrate());
+        $submit->hydrate();
+        $expectedId = 'submit-'.$namespace.'-'.$name;
+        $this->tester->assertIsHtmlTag($submit->input,'input',[
+            'id' => $expectedId,
+            'name' => $namespace.'['.$name.']',
+            'type' => 'submit',
+        ]);
+    }
+
+    public function testShadowJavascript()
+    {
+        $submit = ComponentFactory::Submit('ns', 'sb', ['foo'=>'bar']);
+        $shadowJs = $submit->shadowJavascript();
+        $this->assertCount(2, $shadowJs);
+        $this->assertArrayHasKey('.control-container input', $shadowJs);
+        $this->assertArrayHasKey("#component-submit input", $shadowJs);
     }
 }

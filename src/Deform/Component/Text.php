@@ -17,8 +17,6 @@ use Deform\Html\Html;
  */
 class Text extends Input
 {
-    use Shadow\Input;
-
     private array $datalist = [];
     private ?string $datalistId = null;
 

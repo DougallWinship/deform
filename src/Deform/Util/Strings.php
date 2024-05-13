@@ -13,7 +13,7 @@ class Strings
      * @return string
      * @throws \Exception
      */
-    public static function getClassWithoutNamespace($object): string
+    public static function getClassWithoutNamespace(mixed $object): string
     {
         if (is_object($object)) {
             $className = get_class($object);
@@ -77,7 +77,7 @@ class Strings
     public static function extractStaticMethodSignature(string $comment): ?array
     {
         $trimmed = self::trimInternal($comment);
-        if (strpos($trimmed, '* ') !== 0) {
+        if (!str_starts_with($trimmed, '* ')) {
             return null;
         }
         $trimmed = substr($trimmed, 2);

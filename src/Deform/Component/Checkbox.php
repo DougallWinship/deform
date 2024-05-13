@@ -13,12 +13,10 @@ use Deform\Html\HtmlTag;
  */
 class Checkbox extends Input
 {
-    use Shadow\Checkbox;
-
     public ?string $inputLabelText = null;
 
     /** @var HtmlTag $inputLabel */
-    public $inputLabel;
+    public HtmlTag $inputLabel;
 
     /**
      * @inheritDoc

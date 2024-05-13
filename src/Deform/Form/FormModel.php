@@ -381,7 +381,7 @@ class FormModel
             if ($name === self::CSRF_TOKEN_FIELD) {
                 continue;
             }
-            if (strpos($name, self::HTML_KEY) === 0) {
+            if (str_starts_with($name, self::HTML_KEY)) {
                 $sectionsArray[] = [
                     'html' => (string)$section
                 ];
@@ -506,7 +506,7 @@ class FormModel
      * @return void
      * @throws \Exception
      */
-    public function ensureSessionStarted()
+    public function ensureSessionStarted(): void
     {
         $sessionStatus = session_status();
         if ($sessionStatus === PHP_SESSION_DISABLED) {

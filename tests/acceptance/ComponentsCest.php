@@ -76,6 +76,12 @@ class ComponentsCest
         $I->seeElement(['css'=>'input#hidden-form1-myhidden[type=hidden][value="hidden value"]']);
     }
 
+    public function image(AcceptanceTester $I)
+    {
+        $I->seeElement(['css'=>'div#form1-myimage-container.component-container.container-type-image>div.label-container>label']);
+        $I->seeElement(['css'=>'div#form1-myimage-container.component-container.container-type-image>div.control-container>img#preview-image-form1-myimage']);
+    }
+
     public function multipleemail(AcceptanceTester $I)
     {
         $I->seeElement(['css'=>'div#form1-mymultiple-email-container.component-container.container-type-multiple-email>div.label-container>label']);

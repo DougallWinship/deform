@@ -18,10 +18,6 @@ class Submit extends Input
         $this->componentContainer->controlOnly = true;
     }
 
-    public function hydrate()
-    {
-    }
-
     public function shadowJavascript(): array
     {
         return [

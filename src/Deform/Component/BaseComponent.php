@@ -137,7 +137,7 @@ abstract class BaseComponent implements \Stringable
      * add an expected field (used for controls which do not submit data if they are unset such as checkboxes)
      * @param string $fieldName
      */
-    public function addExpectedField(string $fieldName)
+    public function addExpectedField(string $fieldName): void
     {
         $this->componentContainer->addExpectedInput($fieldName, $this->getExpectedDataName());
     }
@@ -159,7 +159,7 @@ abstract class BaseComponent implements \Stringable
      * @return self
      * @throws \Exception
      */
-    public function setValue($value): self
+    public function setValue(mixed $value): self
     {
         if ($value === null) {
             $value = '';
@@ -274,7 +274,7 @@ abstract class BaseComponent implements \Stringable
     /**
      * @return bool
      */
-    public function requiresMultiformEncoding()
+    public function requiresMultiformEncoding(): bool
     {
         return $this->requiresMultiformEncoding;
     }
@@ -363,7 +363,8 @@ abstract class BaseComponent implements \Stringable
      * from an array definition
      * @throws \Exception
      */
-    abstract public function hydrate();
+    public function hydrate() {
+    }
 
     // static methods
 

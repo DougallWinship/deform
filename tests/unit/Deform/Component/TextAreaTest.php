@@ -52,14 +52,4 @@ class TextAreaTest extends \Codeception\Test\Unit
         $this->assertCount(1, $textareaTagChildren);
         $this->assertEquals($value, $textareaTagChildren[0]);
     }
-
-    public function testHydrate()
-    {
-        $namespace = 'ns';
-        $name = 'ta';
-        $textarea = ComponentFactory::TextArea($namespace ,$name, ['foo'=>'bar']);
-        // @todo: check hydration properly
-        $this->assertNull($textarea->hydrate());
-
-    }
 }

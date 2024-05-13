@@ -1,8 +1,10 @@
-<?php if (isset($_POST) && count($_POST)>0) { ?>
-    <pre data-method="post"><?= serialize($_POST); ?></pre>
-<?php } elseif (isset($_GET) && count($_GET)>0) { ?>
-    <pre data-method="get"><?= serialize($_GET); ?></pre>
-<?php } ?>
+<?php
+$exampleForm = new \App\ExampleFormModel();
+if ($exampleForm->isSubmitted()) {
+    $data = $exampleForm->getFormData();
+    echo "<pre>".print_r($data, true)."</pre>";
+}
+?>
 
 <?php
 $exampleForm = new \App\ExampleFormModel();
@@ -55,7 +57,7 @@ $htmlDocument = \Deform\Html\HtmlDocument::load($rebuildForm2->getFormHtml());
 $htmlDocument->selectCss("form",function(\DOMNode $domNode) {
     $domNode->setAttribute('id','loaded-deformed-form');
 })->selectCss('input',function(\DOMNode $domNode) {
-    $domNode->setAttribute('style','background-color:green');
+    $domNode->setAttribute('style','background-color:green;color:white');
 });
 echo $htmlDocument;
 
