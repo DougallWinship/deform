@@ -2,7 +2,7 @@
     "name": "dougallwinship/deform",
     "description": "deform form library",
     "type": "library",
-    "version": "0.1",
+    "license": "Unlicense",
     "autoload": {
         "psr-4": {"Deform\\": "src/Deform"}
     },
