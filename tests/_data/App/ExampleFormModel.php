@@ -33,7 +33,7 @@ class ExampleFormModel extends FormModel
         $this->addSubmit('submit');
     }
 
-    public function processFormData(array $formData): bool|array
+    protected function validateFormData(array $formData): true|array
     {
         return true;
     }

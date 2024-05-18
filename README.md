@@ -1,14 +1,17 @@
 # Deform
 Easily define consistent forms in PHP, which can be subsequently manipulated before rendering.
 
+> Beware : although this library has had quite a bit of work put into it, currently
+> it's only been used for a single public facing project & hence should not be considered battle hardened!
+
 ## Why?
 Form coding is highly repetitive & IDE auto-completion is your friend.
 
 ## Installation
-Not yet released, so unavailable via composer etc.
+Usage requires a PSR-4 compatible autoloader.
 
 ### With composer
-The repo is currently private and, as mentioned, not yet available via composer.
+ToDo - update with suitable instruction once release.
 
 ### Manual
 Move to a suitable dir such as '/libs' then
@@ -21,8 +24,8 @@ Make the /deform/src dir available to autoload.
 > You may not be using composer, but you will need to use a PSR-4 autoloader to ```/src``` to load the library with
 > the root namespace ```\Deform```
 >
-> If you were to manually do so for now you'll have to figure it, but the [composer.json](./composer.json) definition is something
-> like:
+> If you were to manually do so for now you'll have to figure it out on your own, but the [composer.json](./composer.json)
+> definition is something like:
 > ```
 >    "autoload": {
 >        "psr-4": {"Deform": "libs/deform/src/Deform"}
@@ -31,9 +34,24 @@ Make the /deform/src dir available to autoload.
 
 ___
 
-## Features & Plans
+# Features
+* consistent generation of components (as regards the HTML structure)
+* strong IDE auto-completion support & chaining wherever appropriate
+* generate forms in a controller action which can subsequently be tailored in a view
+* export a form to an array & build a form from an array definition (so you can persist them via json etc.)
+* custom HTML element creation using shadow DOM
 
-[Here](FEATURES.md) 
+## Layers
+There are 3 principal layers:
+1. Deform\Html - generate an HTML tree which can be manipulated
+2. Deform\Component - generate various components using Deform\Html
+3. Deform\Form - generate forms using Deform\Component
+
+### ToDo:
+* change acceptance tests to use a real browser (via selenium) & test custom components (etc)
+* add instructions/examples on styling
+* add instructions/examples on making your own components
+* add instructions/examples on the form layer
 
 ## Examples
 
@@ -102,7 +120,7 @@ HTML;
 $htmlTag = \Deform\Html\HtmlDocument::load($htmlString)->getHtmlRootTag();
 ```
 
-> **_NOTE:_** There is no checking of the generated HTML for correctness. It's up to you to get it correct!
+> **_NOTE:_** There is no checking of the generated HTML for correctness. It's up to you to get it right!
 
 ### Deform\Component
 Components are built using Deform\Html. Where appropriate they are provided with a wrapper and a label by default.
@@ -141,7 +159,8 @@ echo Component::RadioButtonSet('form1', 'myradiobuttonset')
 > [ComponentFactory](src/Deform/Component/ComponentFactory.php).
 
 #### Custom element definitions
-The components can also generate a set of customElements via javascript.
+The components can also generate a set of [Custom Elements](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements)
+via javascript which can then in turn be used in javascript frameworks which support custom elements (such as Vue/React).
 ```php
 <script>
 <?php echo \Deform\Component\ComponentFactory::getCustomElementDefinitionsJavascript() ?>
@@ -176,7 +195,10 @@ Which can then be used like this:
 ```
 
 ### Deform\Form
-Still under construction!
+There is a [FormModel](src/Deform/Form/FormModel.php) that can be used to build form definitions, 
+[here](tests/_data/App/ExampleFormModel.php) is an example used in the tests.
+
+
 
 ## Dependencies
 As previously noted, if you want to use CSS selectors (rather than XPath) you should install https://github.com/bkdotcom/CssXpath.

@@ -62,9 +62,6 @@ class FormModel
     /** @var BaseComponent[] */
     private array $fieldComponents = [];
 
-    /** @var array */
-    private array $formData;
-
     /** @var string */
     private string $formAction;
 
@@ -230,13 +227,15 @@ class FormModel
                 $this->handleCSRFTokenFailure();
             }
             if ($this->populateFormData($formData)) {
-                if ($this->validateFormData()) {
-                    $result = $this->processFormData($this->formData);
-                    if (is_array($result)) {
-                        $this->setErrors($result);
-                    } elseif ($result !== true) {
-                        throw new \Exception("processFormData must return either true or an array of errors");
-                    }
+                $validationResult = $this->validateFormData($formData);
+                if ($validationResult === true) {
+                    $this->processFormData($formData);
+                }
+                elseif (is_array($validationResult)) {
+                   $this->setErrors($validationResult);
+                }
+                else {
+                    throw new \Exception("Unexpected validation result must be true or an array");
                 }
             }
         }
@@ -295,8 +294,7 @@ class FormModel
         if (isset($formData[self::CSRF_TOKEN_FIELD])) {
             unset($formData[self::CSRF_TOKEN_FIELD]);
         }
-        $this->formData = $formData;
-        foreach ($this->formData as $field => $value) {
+        foreach ($formData as $field => $value) {
             if (!isset($this->sections[$field])) {
                 if ($exceptionIfMissing) {
                     throw new \Exception("No component found for '" . $field . "'");
@@ -306,15 +304,23 @@ class FormModel
                 $fieldComponent->setValue($value);
             }
         }
-        return $this->formData;
+        return $formData;
     }
 
     /**
-     * @return bool
+     * @return true|array
      */
-    protected function validateFormData(): bool
+    protected function validateFormData(array $formData): true|array
     {
         return true;
+    }
+
+    /**
+     * @param array $formData
+     * @return void
+     */
+    public function processFormData(array $formData): void
+    {
     }
 
     /**
@@ -329,28 +335,6 @@ class FormModel
             }
             $fieldComponent = $this->fieldComponents[$field];
             $fieldComponent->setError($error);
-        }
-    }
-
-    /**
-     * @param callable $formProcessor
-     */
-    public function setFormProcessor(callable $formProcessor): void
-    {
-        $this->formProcessor = $formProcessor;
-    }
-
-    /**
-     * @param array $formData
-     * @return bool|array true for success or an array of errors (by field)
-     * @throws \Exception
-     */
-    public function processFormData(array $formData): bool|array
-    {
-        if (is_callable($this->formProcessor)) {
-            return ($this->formProcessor)($formData);
-        } else {
-            throw new \Exception("No form processor defined!");
         }
     }
 
