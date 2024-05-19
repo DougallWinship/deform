@@ -135,7 +135,8 @@ Then pass $loginForm to your view:
 ```
 
 The reason this library is called deform is that you can manipulate the form in the view (or action) prior to displaying
-it using selectors. Please see the build.php and 
+it using selectors. Please see [build.php](tests/_data/public/form/build.php) 
+and [document.php](tests/_data/public/html/document.php) for example usage.
 
 You can also convert the form to an array definition, or build a form from an array definition.
 ```php
