@@ -363,7 +363,8 @@ abstract class BaseComponent implements \Stringable
      * from an array definition
      * @throws \Exception
      */
-    public function hydrate() {
+    public function hydrate()
+    {
     }
 
     // static methods

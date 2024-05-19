@@ -230,11 +230,9 @@ class FormModel
                 $validationResult = $this->validateFormData($formData);
                 if ($validationResult === true) {
                     $this->processFormData($formData);
-                }
-                elseif (is_array($validationResult)) {
-                   $this->setErrors($validationResult);
-                }
-                else {
+                } elseif (is_array($validationResult)) {
+                    $this->setErrors($validationResult);
+                } else {
                     throw new \Exception("Unexpected validation result must be true or an array");
                 }
             }
