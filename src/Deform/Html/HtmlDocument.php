@@ -26,7 +26,7 @@ class HtmlDocument implements \Stringable
     }
 
     /**
-     * @param string|IHtml $html
+     * @param string $html
      * @return HtmlDocument
      * @throws \Exception
      */

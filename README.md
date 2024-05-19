@@ -11,7 +11,10 @@ Form coding is highly repetitive & IDE auto-completion is your friend.
 Usage requires a PSR-4 compatible autoloader.
 
 ### With composer
-ToDo - update with suitable instruction once release.
+As there is not yet a stable release install like this
+```
+composer require dougallwinship/deform:dev-master
+```
 
 ### Manual
 Move to a suitable dir such as '/libs' then
@@ -53,9 +56,96 @@ There are 3 principal layers:
 * add instructions/examples on making your own components
 * add instructions/examples on the form layer
 
+## Getting started
+
+### Raw components
+Components can be used directly in a view file like this
+```php
+<?php use \Deform\Component\ComponentFactory as Component; ?>
+<?= Component::Text('namespace','text-field')
+    ->label('Text Field Label')
+    ->value('initial value')
+    ->hint('text field hint');
+?>
+```
+Your IDE should help with auto-completion lists to see what components are currently
+available. The authority is the annotations listed in [ComponentFactory](src/Deform/Component/ComponentFactory.php).
+
+### Form Model
+While it's possible to use the components manually, it's recommended to make a FormModel to represent a set of 
+components & specify what you wish to do with them.
+```php
+<?php
+
+namespace App/Form;
+
+class LoginForm extends \Deform\Form\FormModel
+{
+    public function __construct() 
+    {
+        parent::__construct('login-form');
+        $this->addHtml("<h1>Login</h1>");
+        $this->addText('email')->label('Email');
+        $this->addPassword('password')->label('Password');
+        $this->addDisplay('login-failed-message');
+        $this->addSubmit('Login');
+    }
+    
+    public function validateFormData(array $formData) {
+        if (!isset($formData['email']) || !isset($formData['password'])) {
+            throw new \Exception('Unexpected missing form data');
+        }
+        $errors = [];
+        if (!$formData['email']) {
+            $errors['email']='Missing email';
+        }
+        elseif (!filter_var($email_a, FILTER_VALIDATE_EMAIL)) {
+            $errors['email']='Invalid email';
+        }
+        if (!$formData['password']) {
+            $errors['password']='Missing password';
+        }
+        return count($errors)===0 
+            ? true 
+            : $errors;
+    }
+    
+    public function processFormData(array $formData) 
+    {
+        // obviously this assumes you have an Auth class!
+        if (Auth::checkCredentials()) {
+            Auth::login($formData['email'], $formData['password']);
+            Auth::redirectAfterLogin()
+        }
+        else {
+            $this->getFieldComponent('login-error-message')->value("Email or password was incorrect");
+        }
+    }
+}
+```
+
+Typically, you would instantiate this in a controller action as follows:
+```php
+$loginForm = new LoginForm();// $loginForm is now an HtmlTag containing the form
+$loginForm->run();
+```
+Then pass $loginForm to your view:
+```php
+<?= $loginForm ?>
+```
+
+The reason this library is called deform is that you can manipulate the form in the view (or action) prior to displaying
+it using selectors. Please see the build.php and 
+
+You can also convert the form to an array definition, or build a form from an array definition.
+```php
+$loginFormDefinition = $loginForm->toArray();
+$rebuiltLoginForm = FormModel::buildForm($loginFormDefinition);
+```
+
 ## Examples
 
-Here are some very simple examples of each layer: 
+Here are some simple examples of each layer: 
 
 > **_NOTE:_** If you set up /tests/_data/public/ as a doc root on a local webserver you can view what the 
 > codeception acceptance tests see (you'll want to rewrite all urls to the index.php).
@@ -155,8 +245,8 @@ echo Component::RadioButtonSet('form1', 'myradiobuttonset')
 </div>
 ```
 
-> **_NOTE:_** You can see all the available components by looking at the annotations of the
-> [ComponentFactory](src/Deform/Component/ComponentFactory.php).
+> **_NOTE:_** Since components are defined as HtmlTag instances you can perform any manipulations on them outlined in 
+> the previous section, they are only rendered as actual HTML when cast to a string.
 
 #### Custom element definitions
 The components can also generate a set of [Custom Elements](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements)
@@ -198,7 +288,7 @@ Which can then be used like this:
 There is a [FormModel](src/Deform/Form/FormModel.php) that can be used to build form definitions, 
 [here](tests/_data/App/ExampleFormModel.php) is an example used in the tests.
 
-
+TODO: - make this section useful!
 
 ## Dependencies
 As previously noted, if you want to use CSS selectors (rather than XPath) you should install https://github.com/bkdotcom/CssXpath.

@@ -12,9 +12,9 @@ PHP;
 echo "<div class='source'>".$htmlString."</div>";
 
 $HtmlDocument = \Deform\Html\HtmlDocument::load($htmlString);
-echo "<br><br>The is from HtmlDocument:<br><br>";
+echo "<br><br>This is rebuilt from HtmlDocument:<br><br>";
 echo "<div class='html-document'>".$HtmlDocument."</div>";
 
 $htmlTag = $HtmlDocument->getHtmlRootTag();
-echo "<br><br>The is from HtmlTag:<br><br>";
+echo "<br><br>This is rebuilt from HtmlTag:<br><br>";
 echo "<div class='html-tag'>".$htmlTag."</div>";

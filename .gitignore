@@ -2,3 +2,5 @@ codecept
 .idea
 /vendor/
 **/.DS_Store
+docs/api/
+.phpdoc

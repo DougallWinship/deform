@@ -32,9 +32,4 @@ class ExampleFormModel extends FormModel
         $this->addTextArea('ta')->label("lots of text");
         $this->addSubmit('submit');
     }
-
-    protected function validateFormData(array $formData): true|array
-    {
-        return true;
-    }
 }

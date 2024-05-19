@@ -400,7 +400,8 @@ class FormModel
         if ($definitionParts['tag'] !== 'form') {
             throw new \InvalidArgumentException("Definition only supports the tag 'form'");
         }
-        $formModel = new self(
+        $class = get_called_class();
+        $formModel = new $class(
             $definitionParts['namespace'],
             $definitionParts['method'],
             $definitionParts['action']

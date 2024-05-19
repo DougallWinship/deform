@@ -54,9 +54,9 @@ echo $formHtml;
 $formArray['namespace'] = 'rebuilt-login-form-2';
 $rebuildForm2 = \Deform\Form\FormModel::buildForm($formArray);
 $htmlDocument = \Deform\Html\HtmlDocument::load($rebuildForm2->getFormHtml());
-$htmlDocument->selectCss("form",function(\DOMNode $domNode) {
+$htmlDocument->selectXPath(".//form",function(\DOMNode $domNode) {
     $domNode->setAttribute('id','loaded-deformed-form');
-})->selectCss('input',function(\DOMNode $domNode) {
+})->selectXPath('.//input',function(\DOMNode $domNode) {
     $domNode->setAttribute('style','background-color:green;color:white');
 });
 echo $htmlDocument;

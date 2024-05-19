@@ -18,8 +18,7 @@
     },
     "require": {
         "ext-dom": "*",
-        "ext-libxml": "*",
-        "bdk/css-xpath": "^1.0"
+        "ext-libxml": "*"
     },
     "require-dev": {
         "codeception/codeception": "^4.1",
