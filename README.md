@@ -1,13 +1,35 @@
 # Deform
-Easily define consistent forms in PHP, which can be subsequently manipulated before rendering.
+Generate consistent PHP form components and forms which can be subsequently manipulated before rendering.
 
-> Beware : although this library has had quite a bit of work put into it, currently
-> it's only been used for a single public facing project & hence should not be considered battle hardened!
+[Installation](#installation)  
+[Features](#features)  
+[Getting Started](#getting-started)  
+[Examples](#layer-examples)  
+[Project Info](#project)  
+[Contact](#contact)  
 
-## Why?
-Form coding is highly repetitive & IDE auto-completion is your friend.
+
+
+## Quick Demo
+<img src='./docs/output.gif'></img>
+which generates, with whitespace added for readability, the following:
+```html
+<form action="" method="post">
+    <div id='login-email-container' class='component-container container-type-text'>
+        <div class='label-container'><label style='margin-bottom:0' for='text-login-email'>Email <span class="required">*</span></label></div>
+        <div class='control-container'><input id='text-login-email' name='login[email]' type='text'></div>
+    </div>
+    <div id='login-password-container' class='component-container container-type-password'>
+        <div class='label-container'><label style='margin-bottom:0' for='password-login-password'>Password <span class="required">*</span></label></div>
+        <div class='control-container'><input id='password-login-password' name='login[password]' type='password'></div>
+    </div>
+    <div class="center"><input id='submit-login-Login' name='login[Login]' type='submit' value='Login'></div>
+</form>
+```
 
 ## Installation
+<a name='installation'></a>
+
 Usage requires a PSR-4 compatible autoloader.
 
 ### With composer
@@ -37,14 +59,15 @@ Make the /deform/src dir available to autoload.
 
 ___
 
-# Features
+## Features
+<a name="features"></a>
 * consistent generation of components (as regards the HTML structure)
 * strong IDE auto-completion support & chaining wherever appropriate
 * generate forms in a controller action which can subsequently be tailored in a view
 * export a form to an array & build a form from an array definition (so you can persist them via json etc.)
 * custom HTML element creation using shadow DOM
 
-## Layers
+### Layers
 There are 3 principal layers:
 1. Deform\Html - generate an HTML tree which can be manipulated
 2. Deform\Component - generate various components using Deform\Html
@@ -57,6 +80,7 @@ There are 3 principal layers:
 * add instructions/examples on the form layer
 
 ## Getting started
+<a name="getting-started"></a>
 
 ### Raw components
 Components can be used directly in a view file like this
@@ -144,7 +168,8 @@ $loginFormDefinition = $loginForm->toArray();
 $rebuiltLoginForm = FormModel::buildForm($loginFormDefinition);
 ```
 
-## Examples
+## Layer Examples
+<a name="layer-examples"></a>
 
 Here are some simple examples of each layer: 
 
@@ -245,9 +270,30 @@ echo Component::RadioButtonSet('form1', 'myradiobuttonset')
     </div>
 </div>
 ```
+Which looks like this:
+<div id="form1-myradiobuttonset-container" class="component-container container-type-radio-button-set">
+    <div class="label-container">
+        <label>My Radio Button Set</label>
+    </div>
+    <div class="control-container">
+        <div class="radio-button-container">
+            <input type="radio" value="one" id="radiobuttonset-form1-myradiobuttonset-One" name="form1[myradiobuttonset]">
+            <label for="radiobuttonset-form1-myradiobuttonset-One">One</label>
+        </div>
+        <div class="radio-button-container">
+            <input type="radio" value="two" id="radiobuttonset-form1-myradiobuttonset-Two" name="form1[myradiobuttonset]">
+            <label for="radiobuttonset-form1-myradiobuttonset-Two">Two</label>
+        </div>
+        <div class="radio-button-container">
+            <input type="radio" value="three" id="radiobuttonset-form1-myradiobuttonset-Three" name="form1[myradiobuttonset]">
+            <label for="radiobuttonset-form1-myradiobuttonset-Three">Three</label>
+        </div>
+        <input type="hidden" name="form1[expected_data][]" value="myradiobuttonset">
+    </div>
+</div>
 
 > **_NOTE:_** Since components are defined as HtmlTag instances you can perform any manipulations on them outlined in 
-> the previous section, they are only rendered as actual HTML when cast to a string.
+> the previous section, they are only rendered as actual HTML when finally cast to a string.
 
 #### Custom element definitions
 The components can also generate a set of [Custom Elements](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements)
@@ -286,21 +332,24 @@ Which can then be used like this:
 ```
 
 ### Deform\Form
-There is a [FormModel](src/Deform/Form/FormModel.php) that can be used to build form definitions, 
-[here](tests/_data/App/ExampleFormModel.php) is an example used in the tests.
+There is a [FormModel](src/Deform/Form/FormModel.php) that can be used to build form definitions 
+[here](tests/_data/App/ExampleFormModel.php) which is used in the acceptance tests, and serves as an example.
 
 TODO: - make this section useful!
 
-## Dependencies
+## Project Info
+<a name="project"></a>
+
+### Dependencies
+<a name="dependencies"></a>
 As previously noted, if you want to use CSS selectors (rather than XPath) you should install https://github.com/bkdotcom/CssXpath.
 
 That's it!
 
-## Tests
-
+### Tests
 See [tests/README.md](tests/README.md)
 
-## Code style - PSR-12
+### Code style - PSR-12
 The code is meant to conform to the PSR-12 standard as far as is sensible. 
 
 This is the tool that is used to check : https://github.com/PHPCSStandards/PHP_CodeSniffer/
@@ -309,4 +358,8 @@ Once installed and available globally (presumably via PATH settings), something 
 ```
 phpcs --standard=PSR12 ./src/Deform/
 ```
+
+## Contact
+<a name="contact"></a>
+You can contact me here : [dougall.winship@gmail.com](mailto:dougall.winship@gmail.com)
 

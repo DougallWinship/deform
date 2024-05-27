@@ -92,9 +92,9 @@ abstract class BaseComponent implements \Stringable
      * @return self
      * @throws \Exception
      */
-    public function label(string $label): BaseComponent
+    public function label(string $label, $required=false): BaseComponent
     {
-        $this->componentContainer->setLabel($label);
+        $this->componentContainer->setLabel($label, $required);
         return $this;
     }
 

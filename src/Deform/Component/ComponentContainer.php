@@ -33,7 +33,7 @@ class ComponentContainer
     /** @var null|string  */
     public ?string $label = null;
     /** @var bool|IHtml */
-    public $labelTag = false;
+    public bool|IHtml $labelTag = false;
     /** @var bool  */
     public bool $disableLabel = false;
 
@@ -85,12 +85,16 @@ class ComponentContainer
 
     /**
      * @param string $label
+     * @param bool $required
      * @throws \Exception
      */
-    public function setLabel(string $label): void
+    public function setLabel(string $label, bool $required=false): void
     {
         $this->label = $label;
         $this->labelTag = Html::label(['style' => 'margin-bottom:0'])->add($label);
+        if ($required) {
+            $this->labelTag->add(' <span class="required">*</span>');
+        }
     }
 
     /**

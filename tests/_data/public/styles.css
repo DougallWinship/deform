@@ -1,9 +1,21 @@
 body {
     padding:4px;
 }
-.component-container,*::part(component-container) {
+form {
     padding:6px;
     background-color:#eee;
+    border-radius:6px;
+    display:inline-block;
+}
+.center {
+    text-align:center
+}
+.required {
+    color:red;
+}
+.component-container,*::part(component-container) {
+    padding:6px;
+    background-color:#ddd;
     border-radius:6px;
     margin-top:4px;
     margin-bottom:4px;
