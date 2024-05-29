@@ -5,13 +5,11 @@ Generate consistent PHP form components and forms which can be subsequently mani
 [Features](#features)  
 [Getting Started](#getting-started)  
 [Examples](#layer-examples)  
-[Project Info](#project)  
-[Contact](#contact)  
-
-
+[Project Info](#project-info)  
+[Contact](#contact)
 
 ## Quick Demo
-<img src='./docs/output.gif'></img>
+![output](./docs/example.gif)
 which generates, with whitespace added for readability, the following:
 ```html
 <form action="" method="post">
@@ -338,7 +336,7 @@ There is a [FormModel](src/Deform/Form/FormModel.php) that can be used to build 
 TODO: - make this section useful!
 
 ## Project Info
-<a name="project"></a>
+<a name="project-info"></a>
 
 ### Dependencies
 <a name="dependencies"></a>
