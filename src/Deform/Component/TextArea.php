@@ -29,7 +29,7 @@ class TextArea extends BaseComponent
     /**
      * @inheritDoc
      */
-    public function setValue($value): self
+    public function setValue($value): static
     {
         $this->textarea->reset($value);
         return $this;

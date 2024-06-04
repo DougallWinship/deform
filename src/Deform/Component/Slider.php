@@ -25,9 +25,9 @@ class Slider extends Input
     /**
      * whether to add an output tag showing the current value
      * @param bool $showOutput
-     * @return self|void
+     * @return void|static
      */
-    public function showOutput(bool $showOutput = true): mixed
+    public function showOutput(bool $showOutput = true): ?static
     {
         if ($showOutput) {
             $this->componentContainer->control->addHtmlTag(Html::output(['class' => 'slider-output']));

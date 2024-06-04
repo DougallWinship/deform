@@ -41,10 +41,10 @@ class Currency extends Input
     /**
      * @templateMethod
      * @param string $currency
-     * @return self
+     * @return static
      * @throws \Exception
      */
-    public function currency(string $currency): self
+    public function currency(string $currency): static
     {
         $this->currencyLabelValue = $currency;
         $this->currencyLabel->add($currency);

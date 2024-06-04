@@ -45,14 +45,19 @@ class HtmlDocumentTest extends \Codeception\Test\Unit
     public function testSelectCss()
     {
         $htmlDocument = HtmlDocument::load("<div><ul><li class='noinput'>one</li><li class='noinput'>two</li><li><input name='name' value='three' /></li></ul></div>");
-        $htmlDocument->selectCss('input[name=name][value=three]', function(\DOMNode $node) {
-           $node->setAttribute('value','foo');
-        });
-        $htmlDocument->selectCss('.noinput', function(\DOMNode $node) {
-            $node->setAttribute('class', 'bar');
-        });
-        $html = (string)$htmlDocument;
-        $this->assertEquals('<div><ul><li class="bar">one</li><li class="bar">two</li><li><input name="name" value="foo"></li></ul></div>', $html);
+        if ($htmlDocument->canConvertCssSelectorToXpath()) {
+            $htmlDocument->selectCss('input[name=name][value=three]', function(\DOMNode $node) {
+                $node->setAttribute('value','foo');
+            });
+            $htmlDocument->selectCss('.noinput', function(\DOMNode $node) {
+                $node->setAttribute('class', 'bar');
+            });
+            $html = (string)$htmlDocument;
+            $this->assertEquals('<div><ul><li class="bar">one</li><li class="bar">two</li><li><input name="name" value="foo"></li></ul></div>', $html);
+        }
+        else {
+            $this->markTestSkipped('Automatic Css to XPath conversion is unavailable. Install https://github.com/bkdotcom/CssXpath to enable it.');
+        }
     }
 
     public function testSelectXpath()

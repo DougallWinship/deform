@@ -21,14 +21,19 @@ class File extends Input
         $this->requiresMultiformEncoding = true;
     }
 
-    public function accept(string $acceptType)
+    /**
+     * @param string $acceptType
+     * @return static
+     * @throws \Exception
+     */
+    public function accept(string $acceptType): static
     {
         $this->acceptType = $acceptType;
         $this->input->set('accept', $this->acceptType);
         return $this;
     }
 
-    public function hydrate()
+    public function hydrate(): void
     {
         if ($this->acceptType != null) {
             $this->accept($this->acceptType);

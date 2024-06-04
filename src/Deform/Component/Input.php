@@ -41,10 +41,10 @@ abstract class Input extends BaseComponent
 
     /**
      * @param string $type
-     * @return self
+     * @return static
      * @throws \Exception
      */
-    public function type(string $type): self
+    public function type(string $type): static
     {
         $this->input->set('type', $type);
         return $this;

@@ -27,7 +27,7 @@ $formHtml
     ->css('display','inline-block')
     ->css('border-radius','8px')
     ->css('padding','14px')
-    ->css('background-color','#ccc')
+    ->css('background-color','#ccd')
     ->css('margin','8px');
 $formHtml->deform('.container-type-email',function($node) {
     $node->css('background-color','green')

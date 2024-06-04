@@ -180,6 +180,7 @@ class BaseComponentTest extends \Codeception\Test\Unit
 
     public function testToStringException()
     {
+        $this->expectException(\Exception::class);
         $namespace = 'ns';
         $field = 'field';
         $input = ComponentFactory::Text($namespace, $field);
@@ -188,7 +189,6 @@ class BaseComponentTest extends \Codeception\Test\Unit
         // force __toString to throw an exception by emptying the component's control tags!
         $this->tester->setAttributeValue($control, 'controlTags', []);
         $input->__toString();
-        $this->assertInstanceOf(\Exception::class,$input->getLastToStringException());
     }
 
     public function testFindNodesTag()

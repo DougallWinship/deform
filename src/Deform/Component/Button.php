@@ -44,10 +44,10 @@ class Button extends BaseComponent
 
     /**
      * @param string $html
-     * @return self
+     * @return static
      * @throws \Exception
      */
-    public function html(string $html): self
+    public function html(string $html): static
     {
         $this->buttonHtml = $html;
         $this->button->reset($html);
@@ -56,10 +56,10 @@ class Button extends BaseComponent
 
     /**
      * @param string $type
-     * @return self
+     * @return static
      * @throws \Exception
      */
-    public function type(string $type): self
+    public function type(string $type): static
     {
         $type = strtolower($type);
         if (!in_array($type, self::VALID_BUTTON_TYPES)) {
@@ -73,7 +73,7 @@ class Button extends BaseComponent
         return $this;
     }
 
-    public function hydrate()
+    public function hydrate(): void
     {
         if ($this->buttonType) {
             $this->type($this->buttonType);

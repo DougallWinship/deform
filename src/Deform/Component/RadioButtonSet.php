@@ -29,10 +29,10 @@ class RadioButtonSet extends BaseComponent
     /**
      * @templateMethod
      * @param array $radioButtons
-     * @return RadioButtonSet
+     * @return static
      * @throws \Exception
      */
-    public function radioButtons(array $radioButtons): self
+    public function radioButtons(array $radioButtons): static
     {
         $isAssoc = \Deform\Util\Arrays::isAssoc($radioButtons);
         $this->radioButtons = $radioButtons;
@@ -58,9 +58,9 @@ class RadioButtonSet extends BaseComponent
     }
 
     /**
-     * @return RadioButtonSet
+     * @return static
      */
-    public function clearSelected(): self
+    public function clearSelected(): static
     {
         foreach ($this->radioButtonInputsByValue as $html) {
             $html->unset('checked');
@@ -71,7 +71,7 @@ class RadioButtonSet extends BaseComponent
     /**
      * @inheritDoc
      */
-    public function setValue($value): self
+    public function setValue($value): static
     {
         foreach ($this->radioButtonInputsByValue as $tagValue => $htmlTag) {
             if ($tagValue === $value) {
@@ -86,7 +86,7 @@ class RadioButtonSet extends BaseComponent
     /**
      * @inheritDoc
      */
-    public function hydrate()
+    public function hydrate(): void
     {
         if (count($this->radioButtons) > 0) {
             $this->radioButtons($this->radioButtons);

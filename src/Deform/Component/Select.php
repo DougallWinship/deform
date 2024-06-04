@@ -38,10 +38,10 @@ class Select extends BaseComponent
     /**
      * @templateMethod
      * @param array $optionsValues
-     * @return self
+     * @return static
      * @throws \Exception
      */
-    public function options(array $optionsValues): self
+    public function options(array $optionsValues): static
     {
         if ($this->optionsValues !== $optionsValues) {
             $this->optionsValues = $optionsValues;
@@ -60,10 +60,10 @@ class Select extends BaseComponent
 
     /**
      * @param array $optgroupOptions
-     * @return self
+     * @return static
      * @throws \Exception
      */
-    public function optgroupOptions(array $optgroupOptions): self
+    public function optgroupOptions(array $optgroupOptions): static
     {
         if ($this->optionsValues != $optgroupOptions) {
             $this->optionsValues = $optgroupOptions;
@@ -87,7 +87,7 @@ class Select extends BaseComponent
     /**
      * @inheritDoc
      */
-    public function setValue($value): self
+    public function setValue($value): static
     {
         if (is_array($value)) {
             throw new \Exception("Select component can only set a single value");
@@ -113,7 +113,7 @@ class Select extends BaseComponent
     /**
      * @inheritDoc
      */
-    public function hydrate()
+    public function hydrate(): void
     {
         if ($this->hasOptGroups) {
             $this->optgroupOptions($this->optionsValues);

@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Deform\Component;
 
 use Deform\Html\Html;
-use Deform\Html\HtmlTag;
+use Deform\Html\HtmlTag;;
 use Deform\Util\Strings;
 
 /**
@@ -48,8 +48,7 @@ abstract class BaseComponent implements \Stringable
     /** @var bool */
     protected bool $requiresMultiformEncoding = false;
 
-    /** @var ?\Exception */
-    private ?\Exception $toStringException = null;
+    private array $wrapStack = [];
 
     /**
      * protected to prevent direct instantiation
@@ -79,8 +78,8 @@ abstract class BaseComponent implements \Stringable
      * set a tooltip for the component
      * @param string $tooltip
      * @return self
- */
-    public function tooltip(string $tooltip): BaseComponent
+    */
+    public function tooltip(string $tooltip): static
     {
         $this->componentContainer->setTooltip($tooltip);
         return $this;
@@ -89,10 +88,11 @@ abstract class BaseComponent implements \Stringable
     /**
      * set the component's label
      * @param string $label
+     * @param bool $required
      * @return self
      * @throws \Exception
      */
-    public function label(string $label, $required=false): BaseComponent
+    public function label(string $label,  bool$required=false): static
     {
         $this->componentContainer->setLabel($label, $required);
         return $this;
@@ -103,7 +103,7 @@ abstract class BaseComponent implements \Stringable
      * @param $hint string
      * @return self
      */
-    public function hint(string $hint): BaseComponent
+    public function hint(string $hint): static
     {
         $this->componentContainer->setHint($hint);
         return $this;
@@ -114,7 +114,7 @@ abstract class BaseComponent implements \Stringable
      * @param bool $autoLabel
      * @return self
      */
-    public function autolabel(bool $autoLabel): BaseComponent
+    public function autolabel(bool $autoLabel): static
     {
         $this->autoLabel = $autoLabel;
         return $this;
@@ -127,7 +127,7 @@ abstract class BaseComponent implements \Stringable
      * @return self
      * @throws \Exception
      */
-    public function addControl(HtmlTag $control, mixed $controlTagDecorator = null): BaseComponent
+    public function addControl(HtmlTag $control, mixed $controlTagDecorator = null): static
     {
         $this->componentContainer->control->addControl($control, $controlTagDecorator);
         return $this;
@@ -147,7 +147,7 @@ abstract class BaseComponent implements \Stringable
      * @param $error string
      * @return self
      */
-    public function setError(string $error): BaseComponent
+    public function setError(string $error): static
     {
         $this->componentContainer->setError($error);
         return $this;
@@ -156,10 +156,10 @@ abstract class BaseComponent implements \Stringable
     /**
      * sets the components value
      * @param mixed $value
-     * @return self
+     * @return static
      * @throws \Exception
      */
-    public function setValue(mixed $value): self
+    public function setValue(mixed $value): static
     {
         if ($value === null) {
             $value = '';
@@ -171,10 +171,10 @@ abstract class BaseComponent implements \Stringable
     /**
      * sets the component's form namespace
      * @param string $namespace
-     * @return BaseComponent
+     * @return static
      * @throws \Exception
      */
-    public function setNamespace(string $namespace): BaseComponent
+    public function setNamespace(string $namespace): static
     {
         if ($this->namespace != $namespace) {
             $this->namespace = $namespace;
@@ -198,30 +198,36 @@ abstract class BaseComponent implements \Stringable
         $containerId = $this->namespace !== null
             ? $this->namespace . '-' . $this->fieldName . '-container'
             : $this->fieldName . '-container';
-        return $this->componentContainer->generateHtmlTag($containerId, $this->attributes);
+        $componentHtmlTag = $this->componentContainer->generateHtmlTag($containerId, $this->attributes);
+        if (!$this->wrapStack) {
+            return $componentHtmlTag;
+        }
+        $reversedWrapStack = array_reverse($this->wrapStack);
+        $wrapTag = null;
+        $lastWrapTag = null;
+        $topWrapTag = null;
+        foreach ($reversedWrapStack as $wrap) {
+            $wrapTag = new HtmlTag($wrap[0], $wrap[1]);
+            if (!$topWrapTag) {
+                $topWrapTag = $wrapTag;
+            }
+            if ($lastWrapTag) {
+                $lastWrapTag->add($wrapTag);
+            }
+            $lastWrapTag = $wrapTag;
+        }
+        $wrapTag->add($componentHtmlTag);
+        return $topWrapTag;
     }
 
     /**
      * convert this component to a string
      * @return string
+     * @throws \Exception
      */
     public function __toString(): string
     {
-        try {
-            return (string) $this->getHtmlTag();
-        } catch (\Exception $exc) {
-            // https://wiki.php.net/rfc/tostring_exceptions
-            $this->toStringException = $exc;
-            return "";
-        }
-    }
-
-    /**
-     * @return null|\Exception
-     */
-    public function getLastToStringException(): ?\Exception
-    {
-        return $this->toStringException;
+        return (string) $this->getHtmlTag();
     }
 
 
@@ -308,6 +314,7 @@ abstract class BaseComponent implements \Stringable
             'properties' => $this->getRegisteredPropertyValues(),
             'container' => $this->componentContainer->toArray(),
             'attributes' => $this->attributes,
+            'wrapStack' => $this->wrapStack,
         ]);
     }
 
@@ -338,7 +345,9 @@ abstract class BaseComponent implements \Stringable
         $propertyValues = [];
         $reflectionProperties = self::getRegisteredReflectionProperties();
         foreach ($reflectionProperties as $propertyName => $reflectionProperty) {
-            $propertyValues[$propertyName] = $reflectionProperty->getValue($this);
+            if ($value =  $reflectionProperty->getValue($this)) {
+                $propertyValues[$propertyName] = $value;
+            }
         }
         return $propertyValues;
     }
@@ -359,11 +368,33 @@ abstract class BaseComponent implements \Stringable
     }
 
     /**
+     * wrap this component with a tag
+     * @param string $tag
+     * @param array $attributes
+     * @return $this
+     */
+    public function wrap(string $tag, array $attributes=[]): static
+    {
+        $this->wrapStack[] = [$tag, $attributes];
+        return $this;
+    }
+
+    /**
+     * set the wrapped tag stack
+     * @param array $wrapStack
+     * @return void
+     */
+    public function setWrapStack(array $wrapStack): void
+    {
+        $this->wrapStack = $wrapStack;
+    }
+
+    /**
      * hydrate the component using its properties (those annotated as @persistAttribute) when it's being rebuilt
      * from an array definition
      * @throws \Exception
      */
-    public function hydrate()
+    public function hydrate(): void
     {
     }
 

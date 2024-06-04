@@ -28,10 +28,10 @@ class CheckboxMulti extends BaseComponent
     /**
      * @templateMethod
      * @param array $checkboxValues
-     * @return self
+     * @return static
      * @throws \Exception
      */
-    public function checkboxes(array $checkboxValues): self
+    public function checkboxes(array $checkboxValues): static
     {
         $this->checkboxValues = $checkboxValues;
         $this->checkboxes = [];
@@ -66,7 +66,7 @@ class CheckboxMulti extends BaseComponent
     /**
      * @inheritDoc
      */
-    public function hydrate()
+    public function hydrate(): void
     {
         if ($this->checkboxValues != null && count($this->checkboxValues) > 0) {
             $this->checkboxes($this->checkboxValues);
@@ -76,7 +76,7 @@ class CheckboxMulti extends BaseComponent
     /**
      * @inheritDoc
      */
-    public function setValue($value): self
+    public function setValue($value): static
     {
         foreach ($this->checkboxes as $checkbox) {
             $checkboxValue = $checkbox->get('value');

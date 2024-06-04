@@ -38,10 +38,10 @@ class Checkbox extends Input
 
     /**
      * @param string $text
-     * @return self
+     * @return static
      * @throws \Exception
      */
-    public function text(string $text): self
+    public function text(string $text): static
     {
         $this->inputLabelText = $text;
         $this->inputLabel->reset($text);
@@ -51,7 +51,7 @@ class Checkbox extends Input
     /**
      * @inheritDoc
      */
-    public function hydrate()
+    public function hydrate(): void
     {
         if (is_string($this->inputLabelText)) {
             $this->text($this->inputLabelText);
@@ -61,7 +61,7 @@ class Checkbox extends Input
     /**
      * @inheritDoc
      */
-    public function setValue($value): self
+    public function setValue($value): static
     {
         if ($value) {
             $this->input->set('checked', 'checked');

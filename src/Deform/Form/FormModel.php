@@ -388,15 +388,18 @@ class FormModel
                 'namespace',
                 'action',
                 'method',
-                'sections'
+                'sections',
             ], true);
         } catch (\Exception $exc) {
             throw new \InvalidArgumentException(
                 "Definition must contain the keys 'tag','namespace','action','method','sections'"
             );
         }
+        if (array_key_exists('wrapStack', $definition)) {
+            $definitionParts['wrapStack'] = $definition['wrapStack'];
+        }
         if ($definitionParts['tag'] !== 'form') {
-            throw new \InvalidArgumentException("Definition only supports the tag 'form'");
+            throw new \InvalidArgumentException("Form definition only supports the tag 'form'");
         }
         $class = get_called_class();
         $formModel = new $class(
@@ -414,12 +417,16 @@ class FormModel
                 $properties = $section['properties'] ?? [];
                 $attributes = $section['attributes'] ?? [];
                 $container = $section['container'] ?? null;
+                $wrapStack = $section['wrapStack'] ?? null;
                 unset($section['class'], $section['name']);
                 $component = ComponentFactory::build($class, $formModel->namespace, $name, $attributes);
                 $component->setAttributes($attributes);
                 $component->setRegisteredPropertyValues($properties);
                 if ($container) {
                     $component->setContainerAttributes($container);
+                }
+                if ($wrapStack) {
+                    $component->setWrapStack($wrapStack);
                 }
                 $component->hydrate();
                 $formModel->sections[$name] = $component;

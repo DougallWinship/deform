@@ -38,8 +38,8 @@ if ($htmlDocument->canConvertCssSelectorToXpath()) {
     echo $htmlDocument . "<br><br>";
 }
 else {
-    echo "<br><div>selectCss(...) is unavailable, if you wish to use them then please install "
+    echo "<br><div>selectCss(...) is unavailable, if you wish to use css selectors them then please install "
         ."<a href='https://github.com/bkdotcom/CssXpath'>https://github.com/bkdotcom/CssXpath</a>"
-        ."or use a css->xpath translation tool such as "
+        ." or use a css->xpath translation tool such as "
         ."<a href='https://css2xpath.github.io/'>https://css2xpath.github.io</a></div><br><br>";
 }

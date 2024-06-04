@@ -57,10 +57,10 @@ class Image extends File
 
     /**
      * @param mixed $value
-     * @return self
+     * @return static
      * @throws \Exception
      */
-    public function setValue($value): self
+    public function setValue(mixed $value): static
     {
         if (!$this->previewImageTag) {
             $this->addSupportTags($value ?: '');
@@ -72,10 +72,10 @@ class Image extends File
 
     /**
      * @param string $src
-     * @return self
+     * @return static
      * @throws \Exception
      */
-    private function addSupportTags(string $src = ''): self
+    private function addSupportTags(string $src = ''): static
     {
         $this->hiddenUrlInput = Html::input([
             'id' => 'hidden-' . $this->getId(),
@@ -114,10 +114,10 @@ class Image extends File
      * the default behaviour will just open the component's hidden input
      *
      * @param string $js
-     * @return self
+     * @return static
      * @throws \Exception
      */
-    public function setJavascriptSelectFunction(string $js): self
+    public function setJavascriptSelectFunction(string $js): static
     {
         $id = $this->getId();
         $previewId = 'preview-' . $id;

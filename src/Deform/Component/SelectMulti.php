@@ -32,7 +32,7 @@ class SelectMulti extends Select
     /**
      * @inheritDoc
      */
-    public function setValue($value): self
+    public function setValue($value): static
     {
         if (is_string($value)) {
             return parent::setValue($value);

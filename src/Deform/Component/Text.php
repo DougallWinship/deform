@@ -32,10 +32,10 @@ class Text extends Input
     /**
      * @param array $datalist
      * @param string|null $datalistId
-     * @return self
+     * @return static
      * @throws \Exception
      */
-    public function datalist(array $datalist, string $datalistId = null): Text
+    public function datalist(array $datalist, string $datalistId = null): static
     {
         if (!$datalistId) {
             $datalistId = $this->input->get('name') . '-datalist';
@@ -55,7 +55,7 @@ class Text extends Input
     /**
      * @inheritDoc
      */
-    public function hydrate()
+    public function hydrate(): void
     {
         if (is_array($this->datalist) && count($this->datalist) > 0) {
             $this->datalist($this->datalist, $this->datalistId);

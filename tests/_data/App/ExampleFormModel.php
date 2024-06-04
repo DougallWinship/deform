@@ -22,14 +22,14 @@ class ExampleFormModel extends FormModel
         $this->addDate('dt')->label("when?");
         $this->addDateTime('ddt')->label("when?");
         $this->addEmail('eml')->label("email")->autocomplete('off');
-        $this->addFile('fl')->label("File");
-        $this->addPassword('password')->autocomplete("off");
+        $this->addFile('fl')->accept("txt")->label("File");
+        $this->addPassword('password')->autocomplete("off")->minlength(8)->maxlength(16);
         $this->addRadioButtonSet('rbs')->radioButtons(['four','five','six']);
         $this->addSelect('sl')->options(['one','two','three'])->hint('whatevs');
         $this->addSelectMulti('slm')->options(['seven', 'eight', 'nine'])->label('multi');
-        $this->addSlider('sd')->label('slides');
-        $this->addText('tx')->label('Text');
+        $this->addSlider('sd')->label('slides')->min(1)->max(101)->step(2);
+        $this->addText('tx')->label('Text')->minlength(8)->maxlength(16);
         $this->addTextArea('ta')->label("lots of text");
-        $this->addSubmit('submit');
+        $this->addSubmit('submit')->wrap('div',['class' => 'center']);
     }
 }
