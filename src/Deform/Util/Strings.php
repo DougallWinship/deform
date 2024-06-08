@@ -105,4 +105,19 @@ class Strings
         }
         return null;
     }
+
+    /**
+     * @param string $str
+     * @param string $prependStr
+     * @return string
+     */
+    public static function prependPerLine(string $str, string $prependStr)
+    {
+        $rebuild = [];
+        $parts = explode(PHP_EOL, $str);
+        foreach ($parts as $part) {
+            $rebuild[] = $prependStr.$part;
+        }
+        return implode(PHP_EOL, $rebuild);
+    }
 }

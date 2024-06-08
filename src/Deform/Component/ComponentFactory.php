@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Deform\Component;
 
+use Deform\Component\Shadow\Generator;
 use Deform\Html\Html;
 use Deform\Html\HtmlTag;
 use Deform\Util\Strings;
@@ -147,15 +148,22 @@ class ComponentFactory
 
     /**
      * generate javascript definitions for the components
+     * @param bool $compress
      * @return false|string
-     * @throws \Exception
+     * @throws \ReflectionException|\Exception
      */
-    public static function getCustomElementDefinitionsJavascript(): false|string
+    public static function getCustomElementDefinitionsJavascript($compress=false): false|string
     {
         $componentNames = self::getRegisteredComponents();
-        ob_start();
-        require(__DIR__ . DIRECTORY_SEPARATOR . '/Shadow/custom-element-definitions.php');
-        return ob_get_clean();
+        $js = [];
+        foreach ($componentNames as $componentName) {
+            $generator = new Generator($componentName);
+            $componentJs = $generator->generateCustomComponentJavascript();
+            $js[] = $compress
+                ? Strings::trimInternal($componentJs)
+                : $componentJs;
+        }
+        return implode(PHP_EOL, $js);
     }
 
     /**

@@ -6,7 +6,7 @@ if (isset($_POST) && count($_POST)) { ?>
 
 <script>
 <?php
-echo \Deform\Component\ComponentFactory::getCustomElementDefinitionsJavascript();
+echo \Deform\Component\ComponentFactory::getCustomElementDefinitionsJavascript(true);
 ?>
 </script>
 <form name="potatoes" data-namespace="potatoes" method="post" action="">

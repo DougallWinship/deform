@@ -483,6 +483,7 @@ abstract class BaseComponent implements \Stringable
     }
 
     /**
+     * obtain methods names which have the @templateMethod annotation
      * @return \ReflectionMethod[]
      * @throws \ReflectionException
      */
@@ -510,6 +511,7 @@ abstract class BaseComponent implements \Stringable
     }
 
     /**
+     * override to add component specific dom tag setup
      * @return string[]|null
      */
     public function shadowJavascript(): ?array
@@ -517,6 +519,10 @@ abstract class BaseComponent implements \Stringable
         return [];
     }
 
+    /**
+     * shadow dom tag setup
+     * @return string[] setup javascript indexed by selector
+     */
     public function getShadowJavascript(): array
     {
         $shadowJavascript = $this->shadowJavascript();
@@ -562,6 +568,7 @@ JS
     }
 
     /**
+     * provides the tag decorated with 'part' attributes to permit shadow dom styling
      * @return string
      * @throws \Exception
      */

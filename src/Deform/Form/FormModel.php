@@ -71,9 +71,6 @@ class FormModel
     /** @var string */
     private string $autoComplete;
 
-    /** @var callable */
-    private $formProcessor;
-
     /** @var string */
     private string $csrfStrategy = self::CSRF_STRATEGY_SESSION;
 
