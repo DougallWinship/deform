@@ -90,4 +90,19 @@ class StringsTest extends \Codeception\Test\Unit
             'comment_parts' => ['method','comment']
         ],Strings::extractStaticMethodSignature(' * @method static HtmlTag a(array $attributes=[]) method comment'));
     }
+
+    public function testPrependPerLine()
+    {
+        $arr = <<<TEST
+this is simple some text to test
+it's pretty dull to be fair
+  this is slightly indented already
+TEST;
+        $prepend = "1234";
+        $result  = Strings::prependPerLine($arr,$prepend);
+        $resultParts = explode(PHP_EOL, $result);
+        foreach ($resultParts as $part) {
+            $this->assertStringStartsWith($prepend, $part);
+        }
+    }
 }

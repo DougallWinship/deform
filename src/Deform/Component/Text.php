@@ -48,6 +48,8 @@ class Text extends Input
             $datalistHtml->add(Html::option()->value($value));
         }
         $this->input->set('list', $this->datalistId);
+        $this->input->set('onmouseover', 'focus()');
+
         $this->addControl($datalistHtml);
         return $this;
     }

@@ -28,7 +28,8 @@ class ExampleFormModel extends FormModel
         $this->addSelect('sl')->options(['one','two','three'])->hint('whatevs');
         $this->addSelectMulti('slm')->options(['seven', 'eight', 'nine'])->label('multi');
         $this->addSlider('sd')->label('slides')->min(1)->max(101)->step(2);
-        $this->addText('tx')->label('Text')->minlength(8)->maxlength(16);
+        $this->addText('tx')->label('text')->minlength(8)->maxlength(16);
+        $this->addText('txdl')->label('text with datalist')->datalist(['one','two','three','four','five','six']);
         $this->addTextArea('ta')->label("lots of text");
         $this->addSubmit('submit')->wrap('div',['class' => 'center']);
     }

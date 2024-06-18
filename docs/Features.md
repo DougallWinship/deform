@@ -1,9 +1,9 @@
 [&laquo; back](../README.md)
 ## Features
-* consistent generation of components (as regards the HTML structure)
+* consistent generation of form components (as regards the HTML structure)
 * strong IDE auto-completion support & chaining wherever appropriate
 * generate forms in a controller action which can subsequently be tailored in a view
-* export a form to an array & build a form from an array definition (so you can persist them via json etc.)
+* export a form definition to an array & build a form from an array definition
 * custom HTML element creation using shadow DOM
 
 ### Layers
@@ -16,4 +16,4 @@ There are 3 principal layers:
 * change acceptance tests to use a real browser (via selenium) & test custom components (etc.)
 * add instructions/examples on styling
 * add instructions/examples on making your own components
-* add instructions/examples on the form layer
+* improve instructions/examples on the form layer

@@ -66,16 +66,16 @@ class Image extends File
             $this->addSupportTags($value ?: '');
         } else {
             $this->previewImageTag->set('src', $value);
+            $this->hiddenUrlInput->set('value', $value);
         }
         return parent::setValue($value);
     }
 
     /**
      * @param string $src
-     * @return static
      * @throws \Exception
      */
-    private function addSupportTags(string $src = ''): static
+    private function addSupportTags(string $src = ''): void
     {
         $this->hiddenUrlInput = Html::input([
             'id' => 'hidden-' . $this->getId(),
@@ -96,7 +96,6 @@ class Image extends File
                 . 'new MouseEvent("click",{bubbles: false,cancelable: true,view: window})'
                 . ');'
         ]);
-        return $this;
     }
 
     /**

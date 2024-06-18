@@ -122,8 +122,11 @@ function(event) {
 }
 JS;
 
+        $expectedJs = 'if (typeof function(event) { }!=="function") { alert("\'function(event) { }\' is not a valid javascript function"); } else { function(event) { }(event).then(function(url) { if (url) { document.getElementById("preview-image-ns-dp").src=url; document.getElementById("hidden-image-ns-dp").value=url } }, function(error) { console.log(error); }) }';
+
         $image->setJavascriptSelectFunction($js);
-        $js = $this->tester->getAttributeValue($image, 'javascriptSelectFunction');
+        $getJs = $this->tester->getAttributeValue($image, 'javascriptSelectFunction');
+        $this->assertEquals($expectedJs, $getJs);
     }
 
     public function testShadowJavascript()
@@ -131,10 +134,47 @@ JS;
         $namespace = 'ns';
         $name = 'dp';
         $accept = 'image/*';
-        $file = ComponentFactory::Image($namespace ,$name, ['foo'=>'bar']);
-        $this->tester->setAttributeValue($file, 'acceptType', $accept);
-        $shadowJs = $file->shadowJavascript();
+        $image = ComponentFactory::Image($namespace ,$name, ['foo'=>'bar']);
+        $this->tester->setAttributeValue($image, 'acceptType', $accept);
+        $shadowJs = $image->shadowJavascript();
         $this->assertArrayHasKey('.control-container input#hidden-image-namespace-name', $shadowJs);
         $this->assertArrayHasKey('.control-container input', $shadowJs);
+    }
+
+    public function testSetValue()
+    {
+        $namespace = 'ns';
+        $name = 'dp';
+        $image = ComponentFactory::Image($namespace ,$name, ['foo'=>'bar']);
+        // the first time setValue is called then the image preview tag is generated
+        $image->setValue('test-image-1');
+        $hiddenUrlInput = $this->tester->getAttributeValue($image, "hiddenUrlInput");
+        $this->tester->assertIsHtmlTag($hiddenUrlInput,'input', [
+            'id' => 'hidden-image-ns-dp',
+            'type' => 'hidden',
+            'name' => 'ns[dp]',
+            'value' => 'test-image-1',
+        ]);
+
+        $previewImageTag = $this->tester->getAttributeValue($image, "previewImageTag");
+        $this->tester->assertIsHtmlTag($previewImageTag,'img', [
+            "id" => "preview-image-ns-dp",
+            "src" => 'test-image-1',
+        ]);
+
+        $image->setValue('test-image-2');
+        $hiddenUrlInput = $this->tester->getAttributeValue($image, "hiddenUrlInput");
+        $this->tester->assertIsHtmlTag($hiddenUrlInput,'input', [
+            'id' => 'hidden-image-ns-dp',
+            'type' => 'hidden',
+            'name' => 'ns[dp]',
+            'value' => 'test-image-2',
+        ]);
+
+        $previewImageTag = $this->tester->getAttributeValue($image, "previewImageTag");
+        $this->tester->assertIsHtmlTag($previewImageTag,'img', [
+            "id" => "preview-image-ns-dp",
+            "src" => 'test-image-2',
+        ]);
     }
 }

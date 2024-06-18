@@ -8,6 +8,9 @@ use Deform\Component\BaseComponent;
 use Deform\Component\ComponentFactory;
 use Deform\Util\Strings;
 
+/**
+ * generate javascript for custom HTML elements representing the components
+ */
 class Generator
 {
     private string $componentName;

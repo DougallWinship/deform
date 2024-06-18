@@ -20,8 +20,25 @@ class HtmlDocumentTest extends \Codeception\Test\Unit
 
     public function testLoadBad()
     {
-        $this->expectException(\Exception::class);
-        HtmlDocument::load(">><<<>aaaagh!>><><<>>");
+        $htmlDocument = HtmlDocument::load(">><<<>aaaagh!>><><<>>");
+        $this->assertTrue($htmlDocument->hasErrors());
+    }
+
+    public function testLoadHtml5Tag()
+    {
+        $html = <<<HTML
+<div id='rebuilt-login-form-txdl-container' class='component-container container-type-text'>
+    <div class='label-container'>
+        <label for="text-rebuilt-login-form-txdl" style='margin-bottom:0'>text datalist</label>
+    </div>
+    <div class='control-container'>
+        <input id='text-rebuilt-login-form-txdl' name='rebuilt-login-form[txdl]' type='text' list='example[txdl]-datalist' onmouseover='focus()'>
+        <datalist id='example[txdl]-datalist'><option value='one'></option><option value='two'></option><option value='three'></option><option value='four'></option><option value='five'></option><option value='six'></option></datalist>
+    </div>
+</div>
+HTML;
+        $htmlDocument = HtmlDocument::load($html);
+        $this->assertFalse($htmlDocument->hasErrors());
     }
 
     public function testLoad()
