@@ -14,15 +14,28 @@ namespace Deform\Html;
  */
 class HtmlDocument implements \Stringable
 {
-    private \DOMDocument $domDocument;
-    private ?\DOMXPath $domXPath = null;
-    private array $errors = [];
-
-    private static array $allowedTags = [
+    const HTML5_ALLOWED_TAGS = [
         'article', 'aside', 'details', 'figcaption', 'figure',
         'footer', 'header', 'main', 'mark', 'nav', 'section', 'summary',
         'time', 'datalist', 'canvas', 'svg', 'video', 'audio'
     ];
+
+    /** @var \DOMDocument  */
+    private \DOMDocument $domDocument;
+
+    /** @var \DOMXPath|null  */
+    private ?\DOMXPath $domXPath = null;
+
+    /** @var array  */
+    private array $errors = [];
+
+    /** @var null|callable  */
+    private static $cssToXpathConverter = null;
+
+    /**
+     * @var array|string[] whitelist of permitted tags
+     */
+    private static array $allowedTags = self::HTML5_ALLOWED_TAGS;
 
     /**
      * prevent instancing manually
@@ -37,10 +50,11 @@ class HtmlDocument implements \Stringable
      * @param bool $allowAllTags
      * @return HtmlDocument
      */
-    public static function load(mixed $html, $allowAllTags=false): HtmlDocument
+    public static function load(string|\Stringable $html, bool $allowAllTags=false): HtmlDocument
     {
         $htmlDocument = new self();;
         $internalErrors = libxml_use_internal_errors(true);
+
         $htmlString = is_string($html)
             ? $html
             : (string)$html;
@@ -50,12 +64,17 @@ class HtmlDocument implements \Stringable
         return $htmlDocument;
     }
 
-    private function processXmlErrors($allowAllTags): void
+    /**
+     * @param bool $allowAllTags
+     * @return void
+     */
+    private function processXmlErrors(bool $allowAllTags): void
     {
         $allErrors = libxml_get_errors();
         $allowedTags = self::$allowedTags;
         $this->errors = array_filter($allErrors, function ($error) use ($allowAllTags, $allowedTags) {
-            if (preg_match('/Tag (\w+) invalid/', $error->message, $matches)) {
+            $errorMessage = trim($error->message);
+            if (preg_match('/Tag ([\w-]+) invalid\n?/', $errorMessage, $matches)) {
                 if ($allowAllTags) {
                     return false;
                 }
@@ -68,24 +87,50 @@ class HtmlDocument implements \Stringable
         libxml_clear_errors();
     }
 
-    public static function addAllowedTags(array $allowedTags): void {
+    /**
+     * @param array $allowedTags
+     * @return void
+     */
+    public static function addAllowedTags(array $allowedTags): void
+    {
         self::$allowedTags = array_unique(array_merge(self::$allowedTags, $allowedTags));
     }
 
-    public static function setAllowedTags(array $allowedTags): void {
+    /**
+     * @param array $allowedTags
+     * @return void
+     */
+    public static function setAllowedTags(array $allowedTags): void
+    {
         self::$allowedTags = $allowedTags;
     }
 
+    /**
+     * @return array|string[]
+     */
     public static function getAllowedTags(): array
     {
         return self::$allowedTags;
     }
 
-    public function hasErrors(): bool {
+    public static function resetAllowedTags(): void
+    {
+        self::$allowedTags = self::HTML5_ALLOWED_TAGS;
+    }
+
+    /**
+     * @return bool
+     */
+    public function hasErrors(): bool
+    {
         return count($this->errors) > 0;
     }
 
-    public function getErrors(): array {
+    /**
+     * @return array
+     */
+    public function getErrors(): array
+    {
         return $this->errors;
     }
 
@@ -185,26 +230,32 @@ class HtmlDocument implements \Stringable
     }
 
     /**
-     * @codeCoverageIgnore
-     * @param $cssSelector
+     * @param string $cssSelector
      * @return string
      * @throws \Exception
      */
-    protected function convertCssSelectorToXpathQuery($cssSelector): string
+    private function convertCssSelectorToXpathQuery(string $cssSelector): string
     {
-        if (!class_exists('\bdk\CssXpath\CssXpath')) {
-            throw new \Exception("If you want to use css selectors then install https://github.com/bkdotcom/CssXpath");
-        }
-        return \bdk\CssXpath\CssXpath::cssToXpath($cssSelector);
+        if (!is_callable(self::$cssToXpathConverter)) {
+            throw new \Exception(
+                "If you want to use css selectors then please specify a converter via setCssToXpathConverter"
+            );
+       }
+       return call_user_func(self::$cssToXpathConverter, $cssSelector);
+    }
+
+    public static function canSelectCss(): bool
+    {
+        return is_callable(self::$cssToXpathConverter);
     }
 
     /**
-     * @codeCoverageIgnore
-     * @return bool
+     * @param callable $converter
+     * @return void
      */
-    public function canConvertCssSelectorToXpath(): bool
+    public static function setCssToXpathConverter(callable $converter): void
     {
-        return class_exists('\bdk\CssXpath\CssXpath');
+        self::$cssToXpathConverter = $converter;
     }
 
     /**
