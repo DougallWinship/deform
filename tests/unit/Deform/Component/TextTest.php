@@ -51,7 +51,6 @@ class TextTest extends \Codeception\Test\Unit
         $control = $this->tester->getAttributeValue($container, 'control');
         $this->assertInstanceOf(\Deform\Component\ComponentControls::class, $control);
 
-
         $expectedId = 'text-'.$namespace.'-'.$name;
         $expectedName =  $namespace.'['.$name.']';
         $this->tester->assertIsHtmlTag($text->input,'input',[

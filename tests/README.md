@@ -1,6 +1,13 @@
 # Codeception Tests
 You can mount /_data/public/ in a local webserver to see exactly what is being tested by the acceptance tests.
 
+For example, using PHP's built-in webserver:
+```
+cd tests/_data/public
+php -S localhost:8000
+```
+...then visit http://localhost:8000 in your browser.
+
 Run the unit & acceptance tests like this:
 ```
 ./codecept run

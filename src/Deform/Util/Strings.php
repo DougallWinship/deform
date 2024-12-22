@@ -37,7 +37,7 @@ class Strings
     /**
      * Returns the given lower_case_and_underscored_word as a CamelCased word.
      * @param string $lowerCaseAndUnderscoredWord Word to camelize
-     * @return string Camelised word : LikeThis.
+     * @return string word in camel case : LikeThis.
      */
     public static function camelise(string $lowerCaseAndUnderscoredWord): string
     {
@@ -111,7 +111,7 @@ class Strings
      * @param string $prependStr
      * @return string
      */
-    public static function prependPerLine(string $str, string $prependStr)
+    public static function prependPerLine(string $str, string $prependStr): string
     {
         $rebuild = [];
         $parts = explode(PHP_EOL, $str);

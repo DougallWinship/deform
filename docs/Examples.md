@@ -177,7 +177,7 @@ There is a [FormModel](../src/Deform/Form/FormModel.php) that can be used to bui
   ajax submission etc.)
 
 #### Out of scope
-* DB Model systems can easily be used but are not directly supported.
+* DB model systems can easily be used but are not directly supported.
 * Validation is the responsibility of the user, however there is a convenient setErrors(...) method to which any
   validation errors can be sent, this matches fields to their Component and displays any issues.
 
