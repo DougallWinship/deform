@@ -27,7 +27,7 @@ $htmlDocument->selectXPath('.//*[contains(concat(" ",normalize-space(@class)," "
 echo "<div>HtmlDocument altered by an xpath selector:</div>";
 echo $htmlDocument . "<br><br>";
 
-if ($htmlDocument->canConvertCssSelectorToXpath()) {
+if ($htmlDocument->canSelectCss()) {
     $htmlDocument->selectCss('#fromString', function (\DOMNode $domNode) {
         $domNode->setAttribute('id', 'fromStringAlteredCss');
     })->selectCss('.item:nth-child(2)', function (\DOMNode $domNode) {

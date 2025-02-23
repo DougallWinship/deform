@@ -64,9 +64,7 @@ class Generator
         $componentClass = "DeformComponent".$this->componentName;
         $classJavascript = $this->generateJavascriptClass($componentName, $componentClass);
         return <<<JS
-window.customElements.define('$componentName',
-$classJavascript
-);
+registerDeformComponent('$componentName', $classJavascript);
 JS;
     }
 
@@ -76,8 +74,9 @@ JS;
         foreach (array_keys($this->component->shadowJavascriptProperties()) as $property) {
             $propertyDeclarations.= "    ".$property."=null;".PHP_EOL;
         }
-        $constructor=$this->generateConstructor($componentName, $componentClass);
+        $constructor=$this->generateConstructor($componentName);
         $connectedCallback=$this->generateConnectedCallback($componentName);
+        $metadataMethod=$this->generateMetadataMethod($componentName);
         $classJs = <<<JS
 class $componentClass extends HTMLElement {
     static formAssociated = true;
@@ -85,7 +84,8 @@ class $componentClass extends HTMLElement {
     container = null;
 $propertyDeclarations
 $constructor
-$connectedCallback    
+$connectedCallback
+$metadataMethod 
 }
 JS;
         return Strings::prependPerLine($classJs, "    ");
@@ -218,5 +218,16 @@ JS;
         }
         $generatedComponentRules[] = "/* end : generated component rules */";
         return implode(PHP_EOL, $generatedComponentRules);
+    }
+
+    public function generateMetadataMethod(): string {
+        $metadata = json_encode($this->component->getShadowMetadata());
+        $js = <<<JS
+    static get metadata() {
+        return JSON.parse($metadata);
+    }
+    
+JS;
+        return $js;
     }
 }

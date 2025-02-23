@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Deform\Component;
 
+use Deform\Component\Shadow\Builder;
 use Deform\Component\Shadow\Generator;
 use Deform\Html\Html;
 use Deform\Html\HtmlTag;
@@ -44,6 +45,8 @@ class ComponentFactory
 
     /** @var string[]|null */
     public static ?array $components = null;
+
+    public static ?array $methodsByComponent = null;
 
     /**
      * @param string $method
@@ -152,10 +155,18 @@ class ComponentFactory
      * @return false|string
      * @throws \ReflectionException|\Exception
      */
-    public static function getCustomElementDefinitionsJavascript($compress=false): false|string
+    public static function getCustomElementDefinitionsJavascript(bool $compress=false): false|string
     {
+        $componentRegistryJs = <<<JS
+const DeformComponentRegistry = {};
+function registerDeformComponent(componentName, componentClass) {
+    DeformComponentRegistry[componentName] = componentClass;
+    customElements.define(componentName, componentClass);
+}
+JS;
         $componentNames = self::getRegisteredComponents();
         $js = [];
+        $js[] = $componentRegistryJs;
         foreach ($componentNames as $componentName) {
             $generator = new Generator($componentName);
             $componentJs = $generator->generateCustomComponentJavascript();
@@ -164,6 +175,21 @@ class ComponentFactory
                 : $componentJs;
         }
         return implode(PHP_EOL, $js);
+    }
+
+    /**
+     * @param bool $compress
+     * @return false|string
+     * @throws \ReflectionException
+     */
+    public static function getFormBuilderJavascript(bool $compress=false): false|string
+    {
+        $js = self::getCustomElementDefinitionsJavascript($compress).PHP_EOL;
+        $builderJs = Builder::javascriptDefinition();
+        $js.= $compress
+            ? Strings::trimInternal($builderJs)
+            : $builderJs;
+        return $js;
     }
 
     /**

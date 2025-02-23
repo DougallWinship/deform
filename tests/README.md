@@ -4,7 +4,7 @@ You can mount /_data/public/ in a local webserver to see exactly what is being t
 For example, using PHP's built-in webserver:
 ```
 cd tests/_data/public
-php -S localhost:8000
+php -S localhost:8000 router.php
 ```
 ...then visit http://localhost:8000 in your browser.
 

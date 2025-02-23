@@ -607,4 +607,24 @@ JS
     {
         return [];
     }
+
+    public function getShadowMetadata(): array
+    {
+        $metadata = [
+            'attributes' => [
+                'label' => 'string',
+                'hint' => 'string',
+                'error' => 'string'
+            ]
+        ];
+        $mergeMetadata = $this->mergeAttributeMetadata();
+        foreach ($mergeMetadata as $attribute=>$type) {
+            $metadata['attributes'][$attribute] = $type;
+        }
+        return $metadata;
+    }
+
+    public function mergeAttributeMetadata(): array {
+        return [];
+    }
 }

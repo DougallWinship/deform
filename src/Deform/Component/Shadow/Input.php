@@ -23,4 +23,11 @@ element.addEventListener('change',()=> {
 JS
             ] + parent::shadowJavascript();
     }
+
+    public function mergeAttributeMetadata(): array {
+        return [
+            'value' => 'string'
+        ];
+    }
+
 }

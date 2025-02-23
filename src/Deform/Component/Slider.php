@@ -13,6 +13,8 @@ use Deform\Html\Html;
  */
 class Slider extends Input
 {
+    use Shadow\Slider;
+
     /**
      * @inheritDoc
      */
@@ -30,7 +32,18 @@ class Slider extends Input
     public function showOutput(bool $showOutput = true): ?static
     {
         if ($showOutput) {
-            $this->componentContainer->control->addHtmlTag(Html::output(['class' => 'slider-output']));
+            $value = $this->attributes['value'] ?? "";
+            if (!$value) {
+                $min = $this->attributes['min'] ?? 0;
+                $max = $this->attributes['max'] ?? 100;
+                $step = $this->attributes['step'] ?? 1;
+                // calculate default
+                $mid = ($min + $max) / 2;
+                $steps = round(($mid - $min) / $step);
+                $default = $min + $steps * $step;
+                $value = $default;
+            }
+            $this->componentContainer->control->addHtmlTag(Html::output(['class' => 'slider-output', 'style' => 'width:100%;text-align:center;display:block'])->add($value));
             $input = $this->componentContainer->control->getControls()[0];
             $input->oninput("this.nextElementSibling.value=this.value");
             return $this;

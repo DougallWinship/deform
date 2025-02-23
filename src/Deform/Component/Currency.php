@@ -12,6 +12,8 @@ use Deform\Html\HtmlTag;
  */
 class Currency extends Input
 {
+    use Shadow\Currency;
+
     public ?string $currencyLabelValue = null;
     public HtmlTag $currencyLabel;
 
@@ -61,17 +63,5 @@ class Currency extends Input
         }
     }
 
-    public function shadowJavascript(): array
-    {
-        return [
-            '.currency-symbol' => <<<JS
-if (this.hasAttribute('currency')) {
-    element.innerHTML = this.getAttribute('currency')
-}
-else {
-    element.remove()
-}
-JS
-        ] + parent::shadowJavascript();
-    }
+
 }

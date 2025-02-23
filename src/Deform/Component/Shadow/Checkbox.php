@@ -53,4 +53,10 @@ element.parentElement.removeChild(element);
 JS
             ] + parent::shadowJavascript();
     }
+
+    public function mergeAttributeMetadata(): array {
+        return [
+            'checked' => 'boolean'
+        ];
+    }
 }

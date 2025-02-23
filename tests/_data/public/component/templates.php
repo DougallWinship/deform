@@ -6,7 +6,7 @@ if (isset($_POST) && count($_POST)) { ?>
 
 <script>
 <?php
-echo \Deform\Component\ComponentFactory::getCustomElementDefinitionsJavascript(true);
+echo \Deform\Component\ComponentFactory::getCustomElementDefinitionsJavascript(false);
 ?>
 </script>
 <form name="potatoes" data-namespace="potatoes" method="post" action="">
@@ -24,11 +24,11 @@ echo \Deform\Component\ComponentFactory::getCustomElementDefinitionsJavascript(t
     <deform-multiple-file name='multiplefile1' label='Component Multiple File'></deform-multiple-file>
     <deform-multiple-email name='multipleemail1' label='Component Multiple Email'>Button</deform-multiple-email>
     <deform-hidden name='hidden1' value='hiddenvalue'></deform-hidden> &laquo;Hidden Input<br>
-    <deform-input-button name='inputbutton1' label='Component Input Button' value='value1' label='Input Button Label'></deform-input-button>
-    <deform-password name='password1' label='Component Password' value='password1' label='Password Label'></deform-password>
-    <deform-radio-button-set name='radiobuttonset1' label='Component Radio Button Set' options='{"one":"One","two":"Two","three":"Three"}' checked='two' label='Radio Buton Set Label'></deform-radio-button-set>
-    <deform-select name='select1' label="Component Select" options='{"one":"One","two":"Two","three":"Three"}' selected='two' label='Select Label'></deform-select>
-    <deform-select-multi name='selectmulti1' options='{"one":"One","two":"Two","three":"Three"}' selected='["one","three"]' label='Select Multi'></deform-select-multi>
+    <deform-input-button name='inputbutton1' label='Component Input Button' value='value1'></deform-input-button>
+    <deform-password name='password1' label='Component Password' value='password1'></deform-password>
+    <deform-radio-button-set name='radiobuttonset1' label='Component Radio Button Set' options='{"one":"One","two":"Two","three":"Three"}' checked='two'></deform-radio-button-set>
+    <deform-select name='select1' label="Component Select" options='{"one":"One","two":"Two","three":"Three"}' selected='two'></deform-select>
+    <deform-select-multi name='selectmulti1' options='{"one":"One","two":"Two","three":"Three"}' selected='["one","three"]'></deform-select-multi>
     <deform-slider name='slider1' label='Slider Label' min="50" max="150" showOutput="true" value="100"></deform-slider>
     <deform-text name='text1' label='Text Label' value='text value'></deform-text>
     <deform-text-area name='textarea1' label='Component Text Area'>this is some text area value</deform-text-area>

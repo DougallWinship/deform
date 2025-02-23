@@ -6,12 +6,7 @@ error_reporting(E_ALL);
 ini_set('display_errors', TRUE);
 ini_set('display_startup_errors', TRUE);
 
-const REQUIRED_PHP_MIN_VERSION = '7.4.0.';
 const CLOUDFLARE_NORMALISE_URL = "https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css";
-
-if (version_compare(PHP_VERSION, REQUIRED_PHP_MIN_VERSION, '<')) {
-    die("Requires a minimum PHP version of '".REQUIRED_PHP_MIN_VERSION."', you are running '".PHP_VERSION."'");
-}
 
 set_error_handler(function(int $errNo, string $errStr, string $errFile, int $errLine) {
     throw new \ErrorException('ERROR : '.$errStr, $errNo,0, $errFile, $errLine);
@@ -28,7 +23,7 @@ set_exception_handler(function(\Throwable $exc) {
 $requestUri = trim($_SERVER['REQUEST_URI'],'/');
 $path = parse_url($requestUri, PHP_URL_PATH);
 
-include dirname(dirname(dirname(__DIR__)))."/vendor/autoload.php";
+include dirname(__DIR__, 3) ."/vendor/autoload.php";
 
 $contents = null;
 
@@ -41,7 +36,7 @@ if (!$path || $path==='index') {
         }
         if (
             $current->isFile()
-            && substr($current->getFilename(),-4)=='.php'
+            && str_ends_with($current->getFilename(), '.php')
             && $current->getFilename()!='index.php'
             && $current->getFilename()!='router.php'
         ) {
@@ -60,7 +55,7 @@ if (!$path || $path==='index') {
     foreach ($tree as $filename => $withPath) {
         $pos = strpos($withPath,__DIR__) + strlen(__DIR__);
         $filePath = substr($withPath, $pos, -strlen($filename));
-        if (substr($filename,-4)=='.php') {
+        if (str_ends_with($filename, '.php')) {
             $contents.= $tree->getPrefix()."<a href='".$filePath.substr($filename,0,-4)."'>".$filename. "</a>".PHP_EOL;
         }
         else {
@@ -96,6 +91,7 @@ function renderLayout($title, $contents, $defaultCss=null)
         Html::meta(['charset' => 'utf-8']),
         Html::link(['rel' => 'stylesheet', 'href' => CLOUDFLARE_NORMALISE_URL]),
         Html::link(['rel' => 'stylesheet', 'href' => '/styles.css']),
+        Html::link(['rel' => 'icon', 'type' => 'image/x-icon', 'href'=>'http://deform-tests.test/favicon.ico?a=1']),
         Html::style()->add("{text-decoration:none}")
     ];
     $html = Html::html(['lang' => 'en'])->add([

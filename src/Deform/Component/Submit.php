@@ -6,6 +6,8 @@ namespace Deform\Component;
 
 class Submit extends Input
 {
+    use Shadow\Submit;
+
     /**
      * @inheritDoc
      */
@@ -18,17 +20,4 @@ class Submit extends Input
         $this->componentContainer->controlOnly = true;
     }
 
-    public function shadowJavascript(): array
-    {
-        return [
-            '.control-container input' => null,
-            '#component-submit input' => <<<JS
-element.id = id;
-element.name = name;
-if (this.hasAttribute('value')) {
-    element.value = this.getAttribute('value');
-}
-JS
-        ];
-    }
 }
