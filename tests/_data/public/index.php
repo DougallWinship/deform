@@ -90,8 +90,8 @@ function renderLayout($title, $contents, $defaultCss=null)
         Html::title()->add($title),
         Html::meta(['charset' => 'utf-8']),
         Html::link(['rel' => 'stylesheet', 'href' => CLOUDFLARE_NORMALISE_URL]),
-        Html::link(['rel' => 'stylesheet', 'href' => '/styles.css']),
-        Html::link(['rel' => 'icon', 'type' => 'image/x-icon', 'href'=>'http://deform-tests.test/favicon.ico?a=1']),
+        Html::link(['rel' => 'stylesheet', 'href' => '/styles.css?version='.uniqid()]),
+        Html::link(['rel' => 'icon', 'type' => 'image/x-icon', 'href'=>'http://deform-tests.test/favicon.ico']),
         Html::style()->add("{text-decoration:none}")
     ];
     $html = Html::html(['lang' => 'en'])->add([

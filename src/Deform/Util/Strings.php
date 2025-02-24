@@ -154,4 +154,15 @@ class Strings
         }
         return implode(PHP_EOL, $rebuild);
     }
+
+    public static function ensureIndent(string $str, int $indent): string
+    {
+        $lines = explode(PHP_EOL, $str);
+        $padding = str_repeat(' ', $indent);
+        $rebuildLines = [];
+        foreach ($lines as $line) {
+            $rebuildLines[] = $padding . trim($line);
+        }
+        return implode(PHP_EOL, $rebuildLines);
+    }
 }

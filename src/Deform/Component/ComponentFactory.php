@@ -159,8 +159,8 @@ class ComponentFactory
     {
         $componentRegistryJs = <<<JS
 const DeformComponentRegistry = {};
-function registerDeformComponent(componentName, componentClass) {
-    DeformComponentRegistry[componentName] = componentClass;
+function registerDeformComponent(componentClassName, componentName, componentClass) {
+    DeformComponentRegistry[componentClassName] = componentClass;
     customElements.define(componentName, componentClass);
 }
 JS;

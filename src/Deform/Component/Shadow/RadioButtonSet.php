@@ -33,7 +33,7 @@ if (this.hasAttribute('checked')) {
         this.internals_.setFormValue(checkedValue);
     }
 }
-element.remove();
+element.style.display = 'none';
 JS,
                 '.component-container input[type=hidden]' => <<<JS
 element.name= (namespaceAttr ? namespaceAttr+'[expected_data][]' : 'expected_data');

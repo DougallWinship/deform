@@ -64,7 +64,7 @@ class Generator
         $componentClass = "DeformComponent".$this->componentName;
         $classJavascript = $this->generateJavascriptClass($componentName, $componentClass);
         return <<<JS
-registerDeformComponent('$componentName', $classJavascript);
+registerDeformComponent('$componentClass', '$componentName', $classJavascript);
 JS;
     }
 
@@ -76,7 +76,8 @@ JS;
         }
         $constructor=$this->generateConstructor($componentName);
         $connectedCallback=$this->generateConnectedCallback($componentName);
-        $metadataMethod=$this->generateMetadataMethod($componentName);
+        $getters=$this->generateGetters($componentName);
+        $dynamicCallbacks=$this->generateDynamicAttributes();
         $classJs = <<<JS
 class $componentClass extends HTMLElement {
     static formAssociated = true;
@@ -85,10 +86,11 @@ class $componentClass extends HTMLElement {
 $propertyDeclarations
 $constructor
 $connectedCallback
-$metadataMethod 
+$getters
+$dynamicCallbacks
 }
 JS;
-        return Strings::prependPerLine($classJs, "    ");
+        return $classJs;
     }
 
     private function generateConstructor(string $componentName): string
@@ -207,11 +209,11 @@ JS;
         $generatedComponentRules = ["/* start : generated component rules */"];
         foreach ($this->component->getShadowJavascript() as $selector => $javascript) {
             if ($javascript !== null) {
-                $trimmedJavascript = \Deform\Util\Strings::trimInternal($javascript);
+                //$trimmedJavascript = \Deform\Util\Strings::trimInternal($javascript);
                 $generatedComponentRules[] = <<<JS
 (()=>{
     let element = this.container.querySelector('$selector');
-    if (element!==null) { $trimmedJavascript }
+    if (element!==null) { $javascript }
 })();
 JS;
             }
@@ -220,13 +222,43 @@ JS;
         return implode(PHP_EOL, $generatedComponentRules);
     }
 
-    public function generateMetadataMethod(): string {
+    public function generateGetters($componentName): string {
         $metadata = json_encode($this->component->getShadowMetadata());
         $js = <<<JS
     static get metadata() {
-        return JSON.parse($metadata);
+        return $metadata;
+    }
+    static get name() {
+        return '$componentName';
     }
     
+JS;
+        return $js;
+    }
+
+    public function generateDynamicAttributes(): string {
+        $dynamicAttributes = $this->component->dynamicAttributes();
+        if (!$dynamicAttributes) { return ''; }
+        $observedArray = "['" . implode("','", array_keys($dynamicAttributes)) . "']";
+        $callbacks = '';
+        foreach ($dynamicAttributes as $attribute=>$dynamicAttributesJs) {
+            $callback = <<<JS
+
+if (name==='$attribute' && this.shadowRoot) {
+$dynamicAttributesJs
+}
+JS;
+            $callbacks .= Strings::ensureIndent($callback, 8);
+        }
+
+        $js = <<<JS
+    static get observedAttributes() {
+        return $observedArray;
+    }
+    
+    attributeChangedCallback(name, oldValue, newValue) {
+$callbacks
+    }
 JS;
         return $js;
     }

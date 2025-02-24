@@ -22,7 +22,7 @@ if (this.hasAttribute('options')) {
 else if (this.hasAttribute('optgroupOptions')) {
     console.log('not yet supported');
 }
-element.remove();
+element.style.display = 'none';
 JS,
                 '.control-container select' => <<<JS
     if (this.hasAttribute('selected')) {

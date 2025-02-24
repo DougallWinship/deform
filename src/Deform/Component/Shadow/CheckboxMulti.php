@@ -41,7 +41,7 @@ if (this.hasAttribute('value')) {
             this.internals_.setFormValue(JSON.stringify(exposeValue));
         })
     });
-    element.remove();
+    element.style.display = 'none';
     if (this.hasAttribute('checked')) {
         let data;
         try {
@@ -61,7 +61,7 @@ if (this.hasAttribute('value')) {
     }
 }
 else {
-    element.remove();
+    element.style.display = 'none';
 }
 
 JS,

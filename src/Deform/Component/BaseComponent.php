@@ -542,7 +542,7 @@ if (this.hasAttribute('hint')) {
     element.innerHTML = this.getAttribute('hint');
 }
 else {
-    element.remove();
+    element.style.display = 'none';
 }
 JS,
                 '.error-container' => <<<JS
@@ -556,7 +556,7 @@ else if (this.hasAttribute('errors')) {
     }
 }
 else {
-    element.remove();
+    element.style.display = "none";
 }
 JS
             ];
@@ -614,7 +614,8 @@ JS
             'attributes' => [
                 'label' => 'string',
                 'hint' => 'string',
-                'error' => 'string'
+                'error' => 'string',
+                'name' => 'string'
             ]
         ];
         $mergeMetadata = $this->mergeAttributeMetadata();
@@ -625,6 +626,26 @@ JS
     }
 
     public function mergeAttributeMetadata(): array {
+        return [];
+    }
+
+    public function dynamicAttributes(): array
+    {
+        $attrs = [
+            "label" => "const label = this.shadowRoot.querySelector('label'); console.log(label); if (label) { label.style.display='block'; label.innerHTML = newValue; }",
+            "hint" => "const hint = this.shadowRoot.querySelector('.hint-container'); if (hint) { hint.style.display='block'; hint.innerHTML = newValue; }",
+            "error" =>"const error = this.shadowRoot.querySelector('.error-container'); if (error) { error.style.display='block'; error.innerHTML = newValue; }",
+        ];
+        $mergeAttributes = $this->mergeDynamicAttributes();
+        if ($mergeAttributes) {
+            foreach ($mergeAttributes as $attribute=>$js) {
+                $attrs[$attribute] = $js;
+            }
+        }
+        return $attrs;
+    }
+
+    public function mergeDynamicAttributes(): array {
         return [];
     }
 }

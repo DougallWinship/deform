@@ -14,7 +14,7 @@ if (this.hasAttribute('currency')) {
     element.innerHTML = this.getAttribute('currency')
 }
 else {
-    element.remove()
+    element.style.display = 'none';
 }
 JS
             ] + parent::shadowJavascript();
