@@ -6,14 +6,26 @@ namespace Deform\Component\Shadow;
 
 trait Hidden
 {
-    public function shadowJavascript(): array
+    public function mergeShadowAttributes(): array
     {
-        return [
-            'input' => <<<JS
-if (this.hasAttribute('value')) {
-    this.internals_.setFormValue(this.getAttribute('value'));
-}
-JS
-        ];
+        $attributes = [];
+        $attributes['label'] = false;
+        $attributes['hint'] = false;
+        $attributes['error'] = false;
+        $attributes['name'] = new Attribute(
+            'name',
+            'input',
+            Attribute::TYPE_STRING,
+            "element.name = this.getAttribute('name');this.internals_.setFormValue(element.name);",
+            "element.name = newValue;",
+        );
+        $attributes['value'] = new Attribute(
+            'value',
+            'input',
+            Attribute::TYPE_STRING,
+            "element.value = this.getAttribute('value');",
+            "element.value = newValue;",
+        );
+        return $attributes;
     }
 }

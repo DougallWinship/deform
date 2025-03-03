@@ -18,8 +18,6 @@ use Deform\Html\HtmlTag;
  */
 abstract class Input extends BaseComponent
 {
-    use Shadow\Input;
-
     public bool $autoAddControl = true;
 
     /** @var HtmlTag */

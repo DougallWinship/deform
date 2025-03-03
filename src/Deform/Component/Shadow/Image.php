@@ -6,15 +6,8 @@ namespace Deform\Component\Shadow;
 
 trait Image
 {
-    public function shadowJavascript(): array
+    public function getShadowTemplate(): string
     {
-        return ['.control-container input#hidden-image-namespace-name' => <<<JS
-element.id = 'hidden-'+id;
-element.name = name;
-if (this.hasAttribute('value')) {
-    element.value = this.getAttribute('value');
-}
-JS
-            ] + parent::shadowJavascript();
+        return parent::getShadowTemplate()."<style>.label-container label { float:left } .label-container button { float:right }</style>";
     }
 }

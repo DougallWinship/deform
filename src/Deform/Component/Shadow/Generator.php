@@ -18,6 +18,11 @@ class Generator
     private BaseComponent $component;
 
     /**
+     * @var Attribute[] $attributes
+     */
+    private array $attributes;
+
+    /**
      * @param string $componentName
      * @throws \ReflectionException|\Exception
      */
@@ -28,6 +33,7 @@ class Generator
             ->label("{label}")
             ->hint("{hint}")
             ->setError('{error}');
+        $this->attributes = $this->component->getShadowAttributes();
         $this->prepareTemplateMethods();
     }
 
@@ -71,22 +77,20 @@ JS;
     private function generateJavascriptClass(string $componentName, string $componentClass): string
     {
         $propertyDeclarations = '';
-        foreach (array_keys($this->component->shadowJavascriptProperties()) as $property) {
-            $propertyDeclarations.= "    ".$property."=null;".PHP_EOL;
-        }
         $constructor=$this->generateConstructor($componentName);
         $connectedCallback=$this->generateConnectedCallback($componentName);
         $getters=$this->generateGetters($componentName);
-        $dynamicCallbacks=$this->generateDynamicAttributes();
+        $dynamicCallbacks=$this->getAttributeChangedCallbackRules();
         $classJs = <<<JS
 class $componentClass extends HTMLElement {
     static formAssociated = true;
     template = null;
     container = null;
+    form = null;
 $propertyDeclarations
 $constructor
-$connectedCallback
 $getters
+$connectedCallback
 $dynamicCallbacks
 }
 JS;
@@ -99,10 +103,6 @@ JS;
         $containerDefinition = $this->component->componentContainer->controlOnly
             ? "this.template"
             : "this.template.querySelector('#namespace-name-container')";
-        $shadowProperties =  '';
-        foreach ($this->component->shadowJavascriptProperties() as $property => $selector) {
-            $shadowProperties .= "    this.".$property." = ".$selector.";".PHP_EOL;
-        }
         $constructorJs = <<<JS
 constructor() {
     super();
@@ -111,7 +111,6 @@ constructor() {
     this.template.id='$componentName';
     this.template.innerHTML = `$shadowTemplate`;
     this.container = $containerDefinition;
-$shadowProperties
     const shadowRoot = this.attachShadow({mode:'open'});
     shadowRoot.appendChild(this.template)
 }
@@ -132,7 +131,8 @@ if (!this.hasAttribute('name')) {
 JS;
         $missingNameErrorCheckJs = Strings::prependPerLine($missingNameErrorCheck,"    ");
 
-        $attributeSetup = <<<JS
+        $attributeSetupJs = <<<JS
+this.form = this.closest('form');
 let namespaceAttr = null;
 if (this.hasAttribute('namespace')) {
     namespaceAttr=this.getAttribute('namespace').toLowerCase();
@@ -141,9 +141,8 @@ if (this.hasAttribute('namespace')) {
     }
 }
 else {
-    let parentForm = this.closest('form');
-    if (parentForm!==null && parentForm.hasAttribute('data-namespace')) {
-        namespaceAttr = parentForm.getAttribute('data-namespace');
+    if (this.form!==null && this.form.hasAttribute('data-namespace')) {
+        namespaceAttr = this.form.getAttribute('data-namespace');
     }
 }
 let nameAttr = this.getAttribute('name');
@@ -153,15 +152,19 @@ let id = idAttr ? idAttr : 'deform-button-'+ (namespaceAttr?namespaceAttr+'-':''
 this.setAttribute('name',name);
 
 JS;
-        $attributeSetupJs = Strings::prependPerLine($attributeSetup,"    ");
+
+        $attributeSetupJs = Strings::prependPerLine($attributeSetupJs,"    ");
 
         if ($this->component->componentContainer->controlOnly) {
+            $generatedComponentRulesJs = $this->getConnectedCallbackRules();
             $containerSetupJs = <<<JS
 this.container.firstElementChild.name = id;
+let element;
+$generatedComponentRulesJs
 JS;
         }
         else {
-            $generatedComponentRulesJs = $this->getGeneratedComponentRules();
+            $generatedComponentRulesJs = $this->getConnectedCallbackRules();
             $containerSetupJs = <<<JS
 this.container.removeAttribute('id');
 let controlContainer = this.container.querySelector('.control-container');
@@ -177,17 +180,17 @@ if (controlContainer!==null) {
         controlContainer.firstElementChild.name = name;
     }
 }
+let element;
 $generatedComponentRulesJs
 JS;
             $containerSetupJs = Strings::prependPerLine($containerSetupJs, "    ");
         }
-        $ifContainerSetup = <<<JS
+        $ifContainerSetupJs = <<<JS
 if (this.container!==null) {
 $containerSetupJs    
 }
 JS;
-        $ifContainerSetupJs = Strings::prependPerLine($ifContainerSetup, "    ");
-
+        $ifContainerSetupJs = Strings::prependPerLine($ifContainerSetupJs, "    ");
 
         $connectedCallback = <<<JS
 
@@ -204,26 +207,44 @@ JS;
      *
      * @return string
      */
-    private function getGeneratedComponentRules(): string
+    private function getConnectedCallbackRules(): string
     {
-        $generatedComponentRules = ["/* start : generated component rules */"];
-        foreach ($this->component->getShadowJavascript() as $selector => $javascript) {
-            if ($javascript !== null) {
-                //$trimmedJavascript = \Deform\Util\Strings::trimInternal($javascript);
+        $generatedComponentRules = ["/* start : connected callback rules */"];
+
+        foreach ($this->attributes as $attribute) {
+            if ($attribute->selector!==Attribute::SLOT_SELECTOR) {
+                $ifNotDynamic = $attribute->hideIfEmpty && $attribute->name!=='value'
+                    ? "else { element.style.display = 'none' }"
+                    : "";
                 $generatedComponentRules[] = <<<JS
-(()=>{
-    let element = this.container.querySelector('$selector');
-    if (element!==null) { $javascript }
-})();
+element = this.container.querySelector("{$attribute->selector}");
+if (element!==null) { 
+    if (this.hasAttribute('{$attribute->name}'))
+    {
+        {$attribute->initialiseJs}
+    }
+    $ifNotDynamic
+}
+else {
+    console.error("Failed to find '{$this->componentName}' attribute '{$attribute->name}' element using selector '{$attribute->selector}'");
+}
 JS;
             }
+            else if ($attribute->initialiseJs) {
+                // full control over content!
+                $generatedComponentRules[] = $attribute->initialiseJs;
+            }
         }
-        $generatedComponentRules[] = "/* end : generated component rules */";
-        return implode(PHP_EOL, $generatedComponentRules);
+        $generatedComponentRules[] = "/* end : connected callback rules */";
+        return implode("\n", $generatedComponentRules);
     }
 
     public function generateGetters($componentName): string {
-        $metadata = json_encode($this->component->getShadowMetadata());
+        $metadata = [];
+        foreach ($this->attributes as $attribute) {
+            $metadata[$attribute->name] = $attribute->metadata();
+        }
+        $metadata = json_encode($metadata);
         $js = <<<JS
     static get metadata() {
         return $metadata;
@@ -236,30 +257,44 @@ JS;
         return $js;
     }
 
-    public function generateDynamicAttributes(): string {
-        $dynamicAttributes = $this->component->dynamicAttributes();
-        if (!$dynamicAttributes) { return ''; }
-        $observedArray = "['" . implode("','", array_keys($dynamicAttributes)) . "']";
-        $callbacks = '';
-        foreach ($dynamicAttributes as $attribute=>$dynamicAttributesJs) {
+    public function getAttributeChangedCallbackRules(): string {
+        $observed = [];
+        $callbacks = ['/* start : attribute changed callback rules */'];
+        foreach ($this->attributes as $attribute) {
+            if ($attribute->dynamic) {
+                $observed[] = $attribute->name;
+            }
             $callback = <<<JS
-
-if (name==='$attribute' && this.shadowRoot) {
-$dynamicAttributesJs
+if (name==='{$attribute->name}' && this.shadowRoot) {
+    const element = this.container.querySelector("{$attribute->selector}");
+    if (element) {
+        //console.log('set dynamic : {$attribute->name}');
+        if (newValue) {
+            element.style.display='block';
+        }
+        else {
+            element.style.display='none';
+        }
+        {$attribute->updateJs}
+    }
 }
 JS;
-            $callbacks .= Strings::ensureIndent($callback, 8);
+            $callbacks[] = $callback;
         }
+        $callbacks[] = '/* end : attribute changed callback rules */';
+        $observedArray = "['".implode("','", $observed)."']";
 
+        $callbacksJs = implode("\n", $callbacks);
+        $callbacksJs = Strings::prependPerLine($callbacksJs,"    ");
         $js = <<<JS
-    static get observedAttributes() {
-        return $observedArray;
-    }
+static get observedAttributes() {
+    return $observedArray;
+}
     
-    attributeChangedCallback(name, oldValue, newValue) {
-$callbacks
-    }
+attributeChangedCallback(name, oldValue, newValue) {
+$callbacksJs
+}
 JS;
-        return $js;
+        return Strings::prependPerLine($js,'    ');
     }
 }

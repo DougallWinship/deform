@@ -6,30 +6,57 @@ namespace Deform\Component\Shadow;
 
 trait Select
 {
-    public function shadowJavascript(): ?array
+    public function mergeShadowAttributes(): array
     {
-        return [
-                '.control-container select option' => <<<JS
-if (this.hasAttribute('options')) {
-    let options = JSON.parse(this.getAttribute('options'));
-    Object.keys(options).forEach((key)=> {
-      let option = element.cloneNode(true);
-      option.value = key;
-      option.innerHTML = options[key];
-      element.parentNode.append(option);
-    })
-}
-else if (this.hasAttribute('optgroupOptions')) {
-    console.log('not yet supported');
-}
-element.style.display = 'none';
-JS,
-                '.control-container select' => <<<JS
-    if (this.hasAttribute('selected')) {
-        element.value = this.getAttribute('selected');
-        this.internals_.setFormValue(element.value);
+        $attributes = [];
+
+        $initJs = <<<JS
+const values = JSON.parse(this.getAttribute('options'));
+Object.keys(values).forEach((key, index) => {
+    const option = element.cloneNode(true);
+    option.value = key
+    option.innerText = values[key];
+    if (index===0) {
+        option.selected = true;
     }
-JS
-            ] + parent::shadowJavascript();
+    element.parentNode.appendChild(option);
+});
+element.style.display = 'none';
+JS;
+        $attributes['options'] = new Attribute(
+            'options',
+            '.component-container select option',
+            Attribute::TYPE_JSON_ARRAY,
+            $initJs,
+            ''
+        );
+
+        $initJs = <<<JS
+element.value = this.getAttribute('value'); 
+this.internals_.setFormValue(element.value);
+element.addEventListener('change', () => {
+    this.internals_.setFormValue(element.value);
+})
+JS;
+
+        $attributes['value'] = new Attribute(
+            'value',
+            '.component-container select',
+            Attribute::TYPE_STRING,
+            $initJs,
+            ''
+        );
+
+        $attributes['name'] = new Attribute(
+            'name',
+            '.component-container select',
+            Attribute::TYPE_STRING,
+            "element.name = this.getAttribute('name');",
+            ''
+        );
+
+        //$attributes['value'] = false;
+
+        return $attributes;
     }
 }

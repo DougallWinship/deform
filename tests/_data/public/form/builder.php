@@ -11,7 +11,7 @@
                     data-component="<?= $component ?>">
                 <?= $component ?>
             </div>
-        <?php break; } ?>
+        <?php } ?>
     </div>
 
     <form id="form-area">
@@ -128,28 +128,55 @@
         const elem = document.createElement('div');
         elem.className = 'builder-form-component-wrapper';
         elem.setAttribute('draggable', 'true');
+        elem.style.position = 'relative';
+        elem.style.minHeight = "40px";
+
+        let ignoreMainClick = false;
+        const closeElem = document.createElement('div')
+        closeElem.style.position = 'absolute';
+        closeElem.style.right = '6px';
+        closeElem.style.top = '6px';
+        closeElem.textContent = 'X';
+        closeElem.style.padding="2px 4px 0";
+        closeElem.style.fontFamily = "arial";
+        closeElem.style.borderRadius = "100%";
+        closeElem.style.border = "1px solid black"
+        closeElem.style.cursor = "pointer";
+        closeElem.addEventListener('click', (evt)=> {
+            ignoreMainClick=true;
+            removeFormInfo();
+            elem.remove();
+        })
+        elem.appendChild(closeElem);
+
+        const label = document.createElement("label");
+        label.textContent = componentType;
+        elem.appendChild(label);
 
         let definition = DeformComponentRegistry['DeformComponent'+componentType];
-        //console.log(definition.name);
-        const component = document.createElement(definition.name)
-
-        const attributes = definition.metadata.attributes;
+        //console.log(definition);
+        const component = document.createElement(definition.name);
+        component.setAttribute('name', definition.name);
+        const attributes = definition.metadata;
         Object.keys(attributes).forEach((key) => {
             if (key!=='slot' && key!=='error') {
-                let value = attributes[key];
-                if (value==='string') {
+                let attribute = attributes[key];
+                if (attribute.type==='string' || attribute.type==='int' || attribute.type==='float') {
                     component.setAttribute(key, key);
                 }
-                else if (value==='array') {
+                else if (attribute.type==='array') {
                     component.setAttribute(key, "['"+key+"']");
                 }
-                else if (value==='json') {
-                    component.setAttribute(key, JSON.stringify({key: key}));
+                else if (attribute.type==='json') {
+                    component.setAttribute(key, JSON.stringify([{key: key}]));
                 }
+            }
+            else if (key==='error') {
+                component.setAttribute('error','');
             }
         });
         if ('slot' in attributes) {
-            component.innerText = attributes.slot;
+            component.innerText = attributes.slot.type;
         }
         elem.appendChild(component);
 
@@ -170,18 +197,40 @@
             elem.classList.remove('dragging');
         });
         elem.addEventListener('click', event => {
+            if (ignoreMainClick) {
+                ignoreMainClick=false;
+                return;
+            }
             if (!event.target.classList.contains('dragging')) {
                 if (selectedComponent && selectedComponent !== event.target) {
                     selectedComponent.parentElement.classList.remove('selected');
                 }
-                selectedComponent = event.target;
-                selectedComponent.parentElement.classList.add('selected');
-                selectedComponentObject = definition;
-                updateFormInfo()
+                if (!event.target.classList.contains('removed')) {
+                    selectedComponent = event.target;
+                    selectedComponent.parentElement.classList.add('selected');
+                    selectedComponentObject = definition;
+                    console.log(event.target);
+                    updateFormInfo()
+                }
             }
         });
         return elem;
     }
+
+    function removeFormInfo() {
+        const componentInfo = document.getElementById("dynamic-component-info");
+        componentInfo.innerHTML = '';
+
+        document.querySelectorAll(".builder-form-component-wrapper.selected").forEach((node) => {
+            node.classList.remove('selected');
+        })
+        if (selectedComponent) {
+            selectedComponent.classList.remove('selected');
+            selectedComponent = null;
+            selectedComponentObject = null;
+        }
+    }
+
 
     function updateFormInfo()
     {
@@ -194,13 +243,16 @@
         elem.innerText = "Component : " + selectedComponentObject.name;
         componentInfo.appendChild(elem);
 
-        const attributes = selectedComponentObject.metadata.attributes;
+        const componentInfoForm = document.createElement('form');
+        componentInfo.appendChild(componentInfoForm);
+
+        const attributes = selectedComponentObject.metadata;
         Object.keys(attributes).forEach((key) => {
             const attrDiv = document.createElement("div");
             const label = document.createElement("label");
             label.innerText = key;
             attrDiv.appendChild(label);
-            componentInfo.appendChild(attrDiv);
+            componentInfoForm.appendChild(attrDiv);
             const input = document.createElement("input")
             input.setAttribute("name", key);
             attrDiv.appendChild(input);
@@ -230,23 +282,40 @@
                 try {
                     if (key === 'slot') {
                         selectedComponent.innerHTML = evt.target.value;
-                    } else if (attributes[key] === 'string') {
+                    }
+                    else if (attributes[key].type === 'string') {
                         selectedComponent.setAttribute(key, evt.target.value);
-                    } else if (attributes[key] === 'json') {
-                        JSON.parse(evt.target.value);
+                    } else if (attributes[key].type === 'json') {
+                        //JSON.parse(evt.target.value);
                         selectedComponent.setAttribute(key, evt.target.value);
-                    } else if (attributes[key] === 'array') {
-                        JSON.parse(evt.target.value);
+                    } else if (attributes[key].type === 'array') {
+                        //JSON.parse(evt.target.value);
                         selectedComponent.setAttribute(key, evt.target.value);
-                    } else if (attributes[key] === 'number') {
+                    } else if (attributes[key] === 'int') {
+                        selectedComponent.setAttribute(key, evt.target.value);
+                    } else if (attributes[key] === 'float') {
                         selectedComponent.setAttribute(key, evt.target.value);
                     }
                 }
                 catch(err) {
-                    console.log(err);
-                    alert(JSON.stringify(err));
+                    console.error(err);
                 }
             })
         })
     }
 </script>
+<style>
+    #dynamic-component-info form {
+        display:table
+    }
+    #dynamic-component-info form>div {
+        display:table-row;
+    }
+    #dynamic-component-info form>div>* {
+        display:table-cell;
+    }
+    #dynamic-component-info form>div>*:first-child {
+        text-align:right;
+        padding-right:4px;
+    }
+</style>

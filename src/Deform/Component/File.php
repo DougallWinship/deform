@@ -9,6 +9,8 @@ namespace Deform\Component;
  */
 class File extends Input
 {
+    use Shadow\File;
+
     public ?string $acceptType = null;
 
     /**

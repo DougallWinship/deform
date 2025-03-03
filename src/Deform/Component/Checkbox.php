@@ -13,6 +13,7 @@ use Deform\Html\HtmlTag;
  */
 class Checkbox extends Input
 {
+    use \Deform\Component\Shadow\Checkbox;
     public ?string $inputLabelText = null;
 
     /** @var HtmlTag $inputLabel */

@@ -6,24 +6,21 @@ namespace Deform\Component\Shadow;
 
 trait Currency
 {
-    public function shadowJavascript(): array
+    public function getShadowTemplate(): string
     {
-        return [
-                '.currency-symbol' => <<<JS
-if (this.hasAttribute('currency')) {
-    element.innerHTML = this.getAttribute('currency')
-}
-else {
-    element.style.display = 'none';
-}
-JS
-            ] + parent::shadowJavascript();
+        return parent::getShadowTemplate()."<style>.control-container {display:flex;flex-direction: row}</style>";
     }
 
-    public function mergeAttributeMetadata(): array
+    public function mergeShadowAttributes(): array
     {
-        return [
-            'currency' => 'string'
-        ];
+        $attributes = [];
+        $attributes['currency'] = new Attribute(
+            'currency',
+            '.currency-symbol',
+            Attribute::TYPE_STRING,
+                "element.innerHTML=this.getAttribute('currency');",
+            "element.innerHTML=newValue;"
+        );
+        return $attributes;
     }
 }

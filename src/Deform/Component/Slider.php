@@ -9,7 +9,7 @@ use Deform\Html\Html;
 /**
  * @method $this min(int $min)
  * @method $this max(int $max)
- * @method $this step(mixed $step) usually an int a float or 'any'
+ * @method $this step(mixed $step) int or 'any'
  */
 class Slider extends Input
 {
@@ -28,6 +28,7 @@ class Slider extends Input
      * whether to add an output tag showing the current value
      * @param bool $showOutput
      * @return void|static
+     * @throws \Exception
      */
     public function showOutput(bool $showOutput = true): ?static
     {

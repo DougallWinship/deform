@@ -9,6 +9,8 @@ namespace Deform\Component;
  */
 class ColorSelector extends Input
 {
+    use Shadow\ColorSelector;
+
     /**
      * @inheritDoc
      */

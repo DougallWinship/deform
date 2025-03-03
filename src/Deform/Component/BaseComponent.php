@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Deform\Component;
 
+use Deform\Component\Shadow\Attribute;
 use Deform\Html\Html;
 use Deform\Html\HtmlTag;;
 use Deform\Util\Strings;
@@ -13,6 +14,8 @@ use Deform\Util\Strings;
  */
 abstract class BaseComponent implements \Stringable
 {
+    use Shadow\BaseShadow;
+
     public const string EXPECTED_DATA_FIELD = "expected_data";
 
     /** @var bool whether to use auto labelling by default */
@@ -511,63 +514,6 @@ abstract class BaseComponent implements \Stringable
     }
 
     /**
-     * override to add component specific dom tag setup
-     * @return string[]|null
-     */
-    public function shadowJavascript(): ?array
-    {
-        return [];
-    }
-
-    /**
-     * shadow dom tag setup
-     * @return string[] setup javascript indexed by selector
-     */
-    public function getShadowJavascript(): array
-    {
-        $shadowJavascript = $this->shadowJavascript();
-        if (!$this->componentContainer->controlOnly) {
-            $shadowJavascript += [
-                '.label-container label' => <<<JS
-if (this.hasAttribute('label')) {
-    element.innerHTML = this.getAttribute('label');
-} 
-else {
-    element.style.display = 'none';
-}
-element.setAttribute('for', id);
-JS,
-                '.hint-container' => <<<JS
-if (this.hasAttribute('hint')) {
-    element.innerHTML = this.getAttribute('hint');
-}
-else {
-    element.style.display = 'none';
-}
-JS,
-                '.error-container' => <<<JS
-if (this.hasAttribute('error')) {
-    element.innerHTML = this.getAttribute('error');
-}
-else if (this.hasAttribute('errors')) {
-    let errors = JSON.parse(this.getAttribute('errors'));
-    if (nameAttr in errors) {
-        element.innerHTML = errors[nameAttr]
-    }
-}
-else {
-    element.style.display = "none";
-}
-JS
-            ];
-        }
-        foreach ($shadowJavascript as $selector => $js) {
-            $shadowJavascript[$selector] = $js;
-        }
-        return $shadowJavascript;
-    }
-
-    /**
      * provides the tag decorated with 'part' attributes to permit shadow dom styling
      * @return string
      * @throws \Exception
@@ -600,52 +546,4 @@ JS
         }
     }
 
-    /**
-     * @return array which (if any) auto-generated properties to make available for customisation
-     */
-    public function shadowJavascriptProperties(): array
-    {
-        return [];
-    }
-
-    public function getShadowMetadata(): array
-    {
-        $metadata = [
-            'attributes' => [
-                'label' => 'string',
-                'hint' => 'string',
-                'error' => 'string',
-                'name' => 'string'
-            ]
-        ];
-        $mergeMetadata = $this->mergeAttributeMetadata();
-        foreach ($mergeMetadata as $attribute=>$type) {
-            $metadata['attributes'][$attribute] = $type;
-        }
-        return $metadata;
-    }
-
-    public function mergeAttributeMetadata(): array {
-        return [];
-    }
-
-    public function dynamicAttributes(): array
-    {
-        $attrs = [
-            "label" => "const label = this.shadowRoot.querySelector('label'); console.log(label); if (label) { label.style.display='block'; label.innerHTML = newValue; }",
-            "hint" => "const hint = this.shadowRoot.querySelector('.hint-container'); if (hint) { hint.style.display='block'; hint.innerHTML = newValue; }",
-            "error" =>"const error = this.shadowRoot.querySelector('.error-container'); if (error) { error.style.display='block'; error.innerHTML = newValue; }",
-        ];
-        $mergeAttributes = $this->mergeDynamicAttributes();
-        if ($mergeAttributes) {
-            foreach ($mergeAttributes as $attribute=>$js) {
-                $attrs[$attribute] = $js;
-            }
-        }
-        return $attrs;
-    }
-
-    public function mergeDynamicAttributes(): array {
-        return [];
-    }
 }
