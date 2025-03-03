@@ -11,7 +11,7 @@ class Attribute
     public const TYPE_FLOAT = 'float';
     public const TYPE_BOOLEAN = 'boolean';
     public const TYPE_ARRAY = 'array';
-    public const TYPE_JSON_ARRAY = 'json';
+    public const TYPE_KEYVALUE_ARRAY = 'keyvalue-array';
     public const TYPE_FILE = 'file';
     public const SLOT_SELECTOR = 'slot';
     public const NAME_SELECTOR = 'name';

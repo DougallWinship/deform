@@ -77,9 +77,13 @@ JS;
     private function generateJavascriptClass(string $componentName, string $componentClass): string
     {
         $propertyDeclarations = '';
-        $constructor=$this->generateConstructor($componentName);
+        $constructor = $this->generateConstructor($componentName);
+        $shadowMethods = $this->component->getShadowMethods();
+        if ($shadowMethods) {
+            $shadowMethods = Strings::prependPerLine($shadowMethods,"    ");
+        }
         $connectedCallback=$this->generateConnectedCallback($componentName);
-        $getters=$this->generateGetters($componentName);
+        $additionalMethods=$this->getAdditionalMethods($componentName);
         $dynamicCallbacks=$this->getAttributeChangedCallbackRules();
         $classJs = <<<JS
 class $componentClass extends HTMLElement {
@@ -87,9 +91,12 @@ class $componentClass extends HTMLElement {
     template = null;
     container = null;
     form = null;
+    namespace = null;
+    isConnected = false;
 $propertyDeclarations
 $constructor
-$getters
+$shadowMethods
+$additionalMethods
 $connectedCallback
 $dynamicCallbacks
 }
@@ -111,6 +118,7 @@ constructor() {
     this.template.id='$componentName';
     this.template.innerHTML = `$shadowTemplate`;
     this.container = $containerDefinition;
+    this.isConnected = false;
     const shadowRoot = this.attachShadow({mode:'open'});
     shadowRoot.appendChild(this.template)
 }
@@ -120,87 +128,37 @@ JS;
 
     private function generateConnectedCallback($componentName): string
     {
-
-        $missingNameErrorCheck = <<<JS
+        $connectedCallbackSetup = <<<JS
 if (!this.hasAttribute('name')) {
-    console.error('"$componentName is missing the required attribute \'name\'');
-    let e = "<div style='color:red'>'$componentName' is missing the required attribute 'name'</div>";
-    this.container.innerHTML = e;
+    let errorMessage = "'$componentName' is missing the required attribute 'name'";
+    console.error(errorMessage);
+    this.container.innerHTML = "<div style='color:red'>"+errorMessage+"</div>";
     return;
 }
-JS;
-        $missingNameErrorCheckJs = Strings::prependPerLine($missingNameErrorCheck,"    ");
-
-        $attributeSetupJs = <<<JS
 this.form = this.closest('form');
-let namespaceAttr = null;
-if (this.hasAttribute('namespace')) {
-    namespaceAttr=this.getAttribute('namespace').toLowerCase();
-    if (namespaceAttr.toLowerCase()==='none') {
-        namespaceAttr = null;
+if (this.form) {
+    this.namespace = this.form.dataset.namespace;
+    if (this.namespace) {
+        this.setAttribute('name', this.namespace+"["+this.getAttribute('name')+"]");
     }
 }
 else {
-    if (this.form!==null && this.form.hasAttribute('data-namespace')) {
-        namespaceAttr = this.form.getAttribute('data-namespace');
-    }
+    console.warn("this element has no parent form!");
 }
-let nameAttr = this.getAttribute('name');
-let idAttr = this.hasAttribute('id') ? this.getAttribute('id') : nameAttr;
-let name = namespaceAttr ? namespaceAttr+"["+nameAttr+"]" : nameAttr;
-let id = idAttr ? idAttr : 'deform-button-'+ (namespaceAttr?namespaceAttr+'-':'')+nameAttr;
-this.setAttribute('name',name);
-
-JS;
-
-        $attributeSetupJs = Strings::prependPerLine($attributeSetupJs,"    ");
-
-        if ($this->component->componentContainer->controlOnly) {
-            $generatedComponentRulesJs = $this->getConnectedCallbackRules();
-            $containerSetupJs = <<<JS
-this.container.firstElementChild.name = id;
-let element;
-$generatedComponentRulesJs
-JS;
-        }
-        else {
-            $generatedComponentRulesJs = $this->getConnectedCallbackRules();
-            $containerSetupJs = <<<JS
-this.container.removeAttribute('id');
-let controlContainer = this.container.querySelector('.control-container');
-if (controlContainer!==null) {
-    if (controlContainer.children.length>1) {
-        for (let idx=0; idx<controlContainer.children.length; idx++) {
-            controlContainer.children[idx].id = id + "-" + idx;
-            controlContainer.children[idx].name=name+"[]";
-        }
-    }
-    else if (controlContainer.children.length===1) {
-        controlContainer.id = id;
-        controlContainer.firstElementChild.name = name;
-    }
-}
-let element;
-$generatedComponentRulesJs
-JS;
-            $containerSetupJs = Strings::prependPerLine($containerSetupJs, "    ");
-        }
-        $ifContainerSetupJs = <<<JS
-if (this.container!==null) {
-$containerSetupJs    
+const container = this.template.querySelector('.component-container');
+if (container) {
+    container.removeAttribute('id');
 }
 JS;
-        $ifContainerSetupJs = Strings::prependPerLine($ifContainerSetupJs, "    ");
-
-        $connectedCallback = <<<JS
-
+        $connectedCallbackSetup = Strings::prependPerLine($connectedCallbackSetup,"    ");
+        $connectedCallbackRulesJs = Strings::prependPerLine($this->getConnectedCallbackRules(), "    ");
+        return <<<JS
 connectedCallback() {
-$missingNameErrorCheckJs
-$attributeSetupJs
-$ifContainerSetupJs
+$connectedCallbackSetup
+$connectedCallbackRulesJs
+    this.isConnected=true;
 }
 JS;
-        return Strings::prependPerLine($connectedCallback, "    ");
     }
 
     /**
@@ -209,7 +167,10 @@ JS;
      */
     private function getConnectedCallbackRules(): string
     {
-        $generatedComponentRules = ["/* start : connected callback rules */"];
+        $generatedComponentRules = [
+            "/* start : connected callback rules */",
+            "let element;"
+        ];
 
         foreach ($this->attributes as $attribute) {
             if ($attribute->selector!==Attribute::SLOT_SELECTOR) {
@@ -239,7 +200,7 @@ JS;
         return implode("\n", $generatedComponentRules);
     }
 
-    public function generateGetters($componentName): string {
+    public function getAdditionalMethods($componentName): string {
         $metadata = [];
         foreach ($this->attributes as $attribute) {
             $metadata[$attribute->name] = $attribute->metadata();
@@ -251,6 +212,22 @@ JS;
     }
     static get name() {
         return '$componentName';
+    }
+    static get namespace() {
+        return this.namespace;
+    }
+    setExpectedField(name) {
+        if (!this.form) {
+            return false;
+        }
+        let expectedValues = this.form.querySelector("input[name='expected_data']");
+        if (!expectedValues) {
+            expectedValues = document.createElement('input');
+            expectedValues.type = 'hidden';
+            expectedValues.name = 'expected-values';
+            this.form.appendChild(expectedValues);
+        }
+        let jsonValues = document.createElement('input');
     }
     
 JS;
@@ -268,12 +245,14 @@ JS;
 if (name==='{$attribute->name}' && this.shadowRoot) {
     const element = this.container.querySelector("{$attribute->selector}");
     if (element) {
-        //console.log('set dynamic : {$attribute->name}');
-        if (newValue) {
-            element.style.display='block';
-        }
-        else {
-            element.style.display='none';
+        if ('{$attribute->name}'!=='value') {
+            if (newValue) {
+                element.style.display='reset';
+            }
+            else {
+                alert('hide');
+                element.style.display='none';
+            }
         }
         {$attribute->updateJs}
     }
@@ -292,6 +271,9 @@ static get observedAttributes() {
 }
     
 attributeChangedCallback(name, oldValue, newValue) {
+    if (!this.isConnected) {
+        return;
+    }
 $callbacksJs
 }
 JS;

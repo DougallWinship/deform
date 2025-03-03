@@ -6,68 +6,55 @@ namespace Deform\Component\Shadow;
 
 trait RadioButtonSet
 {
-    public function mergeShadowAttributes(): array
+    public function getShadowMethods(): string
     {
-        $attributes = [];
-
-        $initJs = <<<JS
-let values = JSON.parse(this.getAttribute('options'));
-Object.keys(values).forEach((key) => {
-    let radiobuttonWrapper = element.cloneNode(true);
-    let radiobuttonInput = radiobuttonWrapper.querySelector('input');
-    radiobuttonInput.id = 'radiobutton-'+key;
-    radiobuttonInput.value = key;
-    radiobuttonInput.name = name+"[]";
-    radiobuttonInput.style.display = 'inline-block';
-    let radiobuttonLabel = radiobuttonWrapper.querySelector('label');
-    radiobuttonLabel.innerHTML = values[key];
-    radiobuttonLabel.setAttribute('for','radiobutton-'+key);
-    radiobuttonLabel.style.display = 'inline-block';
-    element.parentNode.append(radiobuttonWrapper);
-});
-JS;
-        $optionsJs = <<<JS
-if (oldValue && newValue!==oldValue) {
+        return <<<JS
+setOptions(element, value, removeExisting=false)
+{
     let values;
     try {
-        values = JSON.parse(newValue);
+        values = JSON.parse(value);
     }
     catch (err) {
-        console.error("invalid options json : "+newValue);
+        console.error("invalid RadioButtonSet options json : "+value);
         return;
     }
-    element.parentElement.querySelectorAll('.radiobuttonset-radio-container').forEach((radiobutton, index) => {
-        if (index>0) {
-            radiobutton.remove();
-        }
-        else {
-            radiobutton.style.display="none";
-        }
-    })
-   Object.keys(values).forEach((key) => {
-        let radiobuttonWrapper = element.cloneNode(true);
+    if (removeExisting) {
+        element.parentElement.querySelectorAll('.radiobuttonset-radio-container').forEach((radiobutton, index) => {
+            if (index>0) {
+                radiobutton.remove();
+            }
+        });
+    }
+    values.forEach((keyValue) => {
+        const key = keyValue[0];
+        const value = keyValue[1];
+        const radiobuttonWrapper = element.cloneNode(true);
         let radiobuttonInput = radiobuttonWrapper.querySelector('input');
         radiobuttonInput.id = 'radiobutton-'+key;
         radiobuttonInput.value = key;
         radiobuttonInput.name = name+"[]";
         radiobuttonInput.style.display = 'inline-block';
         let radiobuttonLabel = radiobuttonWrapper.querySelector('label');
-        radiobuttonLabel.innerHTML = values[key];
+        radiobuttonLabel.innerHTML = value;
         radiobuttonLabel.setAttribute('for','radiobutton-'+key);
         radiobuttonLabel.style.display = 'inline-block';
-        radiobuttonWrapper.style.display = 'block';
         element.parentNode.append(radiobuttonWrapper);
     });
-    
 }
 JS;
+    }
+    public function mergeShadowAttributes(): array
+    {
+        $attributes = [];
 
         $attributes['options'] = new Attribute(
             'options',
             '.control-container .radiobuttonset-radio-container',
-            Attribute::TYPE_JSON_ARRAY,
-            $initJs,
-            $optionsJs,
+            Attribute::TYPE_KEYVALUE_ARRAY,
+            "this.setOptions(element, this.getAttribute('options'));",
+            "this.setOptions(element, newValue, true)",
+            false
         );
 
         $initJs = <<<JS

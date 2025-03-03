@@ -433,7 +433,6 @@ abstract class BaseComponent implements \Stringable
      */
     protected static function generateExpectedDataName(?string $namespace): string
     {
-
         return $namespace !== null
             ? $namespace . "[" . self::EXPECTED_DATA_FIELD . "][]"
             : self::EXPECTED_DATA_FIELD . "[]";

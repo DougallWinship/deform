@@ -35,13 +35,13 @@ trait BaseShadow
             ".control-container input",
             Attribute::TYPE_STRING,
             "element.name = this.getAttribute('name');",
-            "element.name = newValue; if (name==='name' && oldValue!==newValue) { this.internals_.setFormValue(null, oldValue); this.internals_.setFormValue(element.value || '',newValue); };"
+            "element.name = newValue;"
         );
         $attributes["value"] = new Attribute(
             "value",
             ".control-container input",
             Attribute::TYPE_STRING,
-            "element.value = this.getAttribute('value'); element.addEventListener('change', ()=> { this.internals_.setFormValue(element.value); });",
+            "element.value = this.getAttribute('value'); this.internals_.setFormValue(element.value); element.addEventListener('change', ()=> { this.internals_.setFormValue(element.value); });",
             "element.value = newValue; this.internals_.setFormValue(element.value);",
             false
         );
@@ -67,5 +67,9 @@ trait BaseShadow
 
     public function mergeShadowAttributes(): array {
         return [];
+    }
+
+    public function getShadowMethods(): string {
+        return "";
     }
 }

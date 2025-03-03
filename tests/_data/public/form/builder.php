@@ -14,9 +14,10 @@
         <?php } ?>
     </div>
 
-    <form id="form-area">
+    <form id="form-area" data-namespace="builder" method="post">
         <h3>Form Area</h3>
         <p>Drag components here</p>
+        <input type="submit" value="Submit"/>
     </form>
 
     <div id="form-info" style="">
@@ -30,6 +31,14 @@
 </div>
 
 <script>
+    document.addEventListener("formdata", (event) => {
+        const entries = event.formData.entries();
+        console.log("FormData:");
+        for (var pair of entries) {
+            console.log("  "+pair[0]+"="+pair[1]);
+        }
+    });
+
     // Create a placeholder element to show drop target indicator
     const placeholder = document.createElement('div');
     placeholder.className = 'drop-placeholder';
@@ -165,10 +174,10 @@
                     component.setAttribute(key, key);
                 }
                 else if (attribute.type==='array') {
-                    component.setAttribute(key, "['"+key+"']");
+                    component.setAttribute(key, '["'+key+'"]');
                 }
-                else if (attribute.type==='json') {
-                    component.setAttribute(key, JSON.stringify([{key: key}]));
+                else if (attribute.type==='keyvalue-array') {
+                    component.setAttribute(key, JSON.stringify([[key+"1", key+"1"],[key+"2",key+"2"]]));
                 }
             }
             else if (key==='error') {
@@ -209,7 +218,6 @@
                     selectedComponent = event.target;
                     selectedComponent.parentElement.classList.add('selected');
                     selectedComponentObject = definition;
-                    console.log(event.target);
                     updateFormInfo()
                 }
             }
@@ -285,16 +293,18 @@
                     }
                     else if (attributes[key].type === 'string') {
                         selectedComponent.setAttribute(key, evt.target.value);
-                    } else if (attributes[key].type === 'json') {
-                        //JSON.parse(evt.target.value);
+                    } else if (attributes[key].type === 'keyvalue-array') {
                         selectedComponent.setAttribute(key, evt.target.value);
                     } else if (attributes[key].type === 'array') {
-                        //JSON.parse(evt.target.value);
                         selectedComponent.setAttribute(key, evt.target.value);
-                    } else if (attributes[key] === 'int') {
+                    } else if (attributes[key].type === 'int') {
                         selectedComponent.setAttribute(key, evt.target.value);
-                    } else if (attributes[key] === 'float') {
+                    } else if (attributes[key].type === 'float') {
                         selectedComponent.setAttribute(key, evt.target.value);
+                    } else if (attributes[key].type === 'boolean') {
+                        selectedComponent.setAttribute(key, evt.target.value);
+                    } else {
+                        console.error("Unrecognised attribute type '"+attributes[key].type+"'");
                     }
                 }
                 catch(err) {

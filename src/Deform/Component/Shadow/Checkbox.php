@@ -11,28 +11,45 @@ trait Checkbox
         return parent::getShadowTemplate()."<style>.control-container {display:flex;flex-direction: row}</style>";
     }
 
+    public function getShadowMethods(): string
+    {
+        return <<<JS
+isChecked(element) 
+{
+    if (!this.hasAttribute('value')) return false;
+    const checked = this.getAttribute('value').toLowerCase();
+    return !(!checked || checked.toLowerCase()==='false' || checked.toLowerCase()==='off' || parseInt(checked)===0);
+}
+
+setChecked(element, addEventListener=false) 
+{
+    if (this.isChecked(element)) {
+        this.internals_.setFormValue(this.getAttribute('option') || "on");
+        element.checked = true;
+    }
+    else {
+        element.checked = false;
+        this.internals_.setFormValue(null);
+    }
+    if (addEventListener) {
+        element.addEventListener('input', ()=> {
+            this.setChecked(element, false);
+        });
+    }
+}
+JS;
+    }
+
     public function mergeShadowAttributes(): array
     {
         $attributes = [];
-        $initialiseJs = <<<JS
-let checked = this.getAttribute('value');
-if (!checked || checked.toLowerCase()==='false' || parseInt(checked)===0) {
-    element.checked = false;
-} 
-else {
-    element.checked = true;
-}
-this.internals_.setFormValue(element.value, element.checked ? 'checked':'')
-element.addEventListener('input',()=>{
-    this.internals_.setFormValue(element.value, element.checked ? 'checked' : ''); 
-})
-JS;
+
         $attributes['value'] = new Attribute(
             'value',
             ".control-container input",
             Attribute::TYPE_BOOLEAN,
-            $initialiseJs,
-            '',
+            "this.setChecked(element,true)",
+            "this.setChecked(element,false)",
             false
         );
 
@@ -40,8 +57,8 @@ JS;
             "option",
             ".control-container input",
             Attribute::TYPE_STRING,
-            "element.value = this.getAttribute('option'); element.addEventListener('click',()=> { this.internals_.setFormValue(element.value); });",
-            "element.setAttribute('value', newValue);"
+            "element.value = this.getAttribute('option');",
+            "element.value = newValue",
         );
 
         $attributes['text'] = new Attribute(
@@ -51,8 +68,6 @@ JS;
             "element.textContent=this.getAttribute('text');",
             "element.textContent=newValue;"
         );
-
-        $attributes['value'] = false;
 
         return $attributes;
     }

@@ -12,13 +12,13 @@ trait Select
 
         $initJs = <<<JS
 const values = JSON.parse(this.getAttribute('options'));
-Object.keys(values).forEach((key, index) => {
+
+values.forEach((keyValue) => {
+    const key = keyValue[0];
+    const value = keyValue[1];
     const option = element.cloneNode(true);
     option.value = key
-    option.innerText = values[key];
-    if (index===0) {
-        option.selected = true;
-    }
+    option.innerText = value;
     element.parentNode.appendChild(option);
 });
 element.style.display = 'none';
@@ -26,7 +26,7 @@ JS;
         $attributes['options'] = new Attribute(
             'options',
             '.component-container select option',
-            Attribute::TYPE_JSON_ARRAY,
+            Attribute::TYPE_KEYVALUE_ARRAY,
             $initJs,
             ''
         );
