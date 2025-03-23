@@ -164,7 +164,7 @@
         label.textContent = componentType;
         elem.appendChild(label);
 
-        let definition = DeformComponentRegistry['DeformComponent'+componentType];
+        let definition = Deform.getComponent('DeformComponent'+componentType);
         const component = document.createElement(definition.name);
         component.setAttribute('name', definition.name);
         const attributes = definition.metadata;
@@ -383,6 +383,80 @@
     })
 </script>
 <style>
+
+
+    #form-builder {
+        display:flex;
+        flex-direction:row;
+        width:100%
+    }
+    #form-builder #available-components {
+        flex: 1;
+        margin-right: 20px;
+        border: 1px solid #ccc;
+        padding: 10px;
+        user-select: none;
+    }
+    #form-builder #available-components h3 {
+        margin-top: 0;
+    }
+    #form-builder .component {
+        padding: 5px;
+        margin: 5px 0;
+        background: #eee;
+        border: 1px solid #aaa;
+        cursor: pointer;
+    }
+    /* Middle column: form area */
+    #form-builder #form-area {
+        flex: 2;
+        border: 1px solid #ccc;
+        padding: 10px;
+        min-height: 300px;
+        position: relative;
+        user-select: none;
+    }
+    #form-builder #form-area h3 {
+        margin-top: 0;
+    }
+    /* Components dropped into the form area */
+    #form-builder .builder-form-component-wrapper {
+        padding: 5px;
+        margin: 5px 0;
+        background: #d0ffd0;
+        border: 1px solid #aaa;
+        cursor: move;
+    }
+    #form-builder .builder-form-component-wrapper.selected {
+        background: #d0d0ff;
+    }
+    /* Visual feedback for dragging */
+    #form-builder .dragging {
+        opacity: 0.5;
+    }
+    /* Visual feedback for drop target */
+    #form-builder .dragover {
+        background: #f0f0f0;
+    }
+    /* Placeholder style */
+    #form-builder .drop-placeholder {
+        pointer-events:none;
+        height: 40px;
+        background: #fffae6;
+        border: 2px dashed #ccc;
+        margin: 5px 0;
+    }
+
+    #form-builder #form-info
+    {
+        flex:1;
+        margin-left:20px;
+        border:1px solid #ccc;
+        padding:10px;
+        min-height:300px;
+    }
+
+
     #dynamic-component-info form {
         display:table
     }

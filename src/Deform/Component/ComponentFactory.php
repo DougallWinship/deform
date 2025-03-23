@@ -155,24 +155,16 @@ class ComponentFactory
      * @return false|string
      * @throws \ReflectionException|\Exception
      */
-    public static function getCustomElementDefinitionsJavascript(bool $compress=false): false|string
+    public static function getCustomElementDefinitionsJavascript(bool $compress = false): false|string
     {
-        $componentRegistryJs = <<<JS
-const DeformComponentRegistry = {};
-function registerDeformComponent(componentClassName, componentName, componentClass) {
-    DeformComponentRegistry[componentClassName] = componentClass;
-    customElements.define(componentName, componentClass);
-}
-JS;
+        $setupJs = Generator::setupDeformObject();
         $componentNames = self::getRegisteredComponents();
         $js = [];
-        $js[] = $componentRegistryJs;
+        $js[] = $compress ? Strings::trimInternal($setupJs) : $setupJs;
         foreach ($componentNames as $componentName) {
             $generator = new Generator($componentName);
             $componentJs = $generator->generateCustomComponentJavascript();
-            $js[] = $compress
-                ? Strings::trimInternal($componentJs)
-                : $componentJs;
+            $js[] = $compress ? Strings::trimInternal($componentJs) : $componentJs;
         }
         return implode(PHP_EOL, $js);
     }

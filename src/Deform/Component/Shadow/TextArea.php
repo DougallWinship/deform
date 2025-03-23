@@ -42,13 +42,20 @@ JS;
             $initJs,
             ""
         );
+        $updateJs = <<<JS
+element.name = newValue;
+if (name==='name' && oldValue!==newValue) {
+    this.internals_.setFormValue(null, oldValue); 
+    this.internals_.setFormValue(element.value || '',newValue);
+}
+JS;
 
         $attributes["name"] = new Attribute(
             "name",
             ".component-container textarea",
             Attribute::TYPE_STRING,
             "element.name = this.getAttribute('name')",
-            "element.name = newValue; if (name==='name' && oldValue!==newValue) { this.internals_.setFormValue(null, oldValue); this.internals_.setFormValue(element.value || '',newValue); };"
+            $updateJs
         );
         return $attributes;
     }

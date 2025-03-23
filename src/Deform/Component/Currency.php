@@ -62,6 +62,4 @@ class Currency extends Input
             $this->currency($this->currencyLabelValue);
         }
     }
-
-
 }

@@ -14,7 +14,7 @@ namespace Deform\Html;
  */
 class HtmlDocument implements \Stringable
 {
-    const HTML5_ALLOWED_TAGS = [
+    public const HTML5_ALLOWED_TAGS = [
         'article', 'aside', 'details', 'figcaption', 'figure',
         'footer', 'header', 'main', 'mark', 'nav', 'section', 'summary',
         'time', 'datalist', 'canvas', 'svg', 'video', 'audio'
@@ -50,9 +50,10 @@ class HtmlDocument implements \Stringable
      * @param bool $allowAllTags
      * @return HtmlDocument
      */
-    public static function load(string|\Stringable $html, bool $allowAllTags=false): HtmlDocument
+    public static function load(string|\Stringable $html, bool $allowAllTags = false): HtmlDocument
     {
-        $htmlDocument = new self();;
+        $htmlDocument = new self();
+
         $internalErrors = libxml_use_internal_errors(true);
 
         $htmlString = is_string($html)
@@ -79,8 +80,7 @@ class HtmlDocument implements \Stringable
                     return false;
                 }
                 return !in_array($matches[1], $allowedTags);
-            }
-            else {
+            } else {
                 return true;
             }
         });
@@ -240,8 +240,8 @@ class HtmlDocument implements \Stringable
             throw new \Exception(
                 "If you want to use css selectors then please specify a converter via setCssToXpathConverter"
             );
-       }
-       return call_user_func(self::$cssToXpathConverter, $cssSelector);
+        }
+        return call_user_func(self::$cssToXpathConverter, $cssSelector);
     }
 
     public static function canSelectCss(): bool

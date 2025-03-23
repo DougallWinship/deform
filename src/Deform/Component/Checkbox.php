@@ -14,6 +14,7 @@ use Deform\Html\HtmlTag;
 class Checkbox extends Input
 {
     use \Deform\Component\Shadow\Checkbox;
+
     public ?string $inputLabelText = null;
 
     /** @var HtmlTag $inputLabel */
@@ -70,5 +71,14 @@ class Checkbox extends Input
             $this->input->unset('checked');
         }
         return $this;
+    }
+
+    public function getHtmlTag(): HtmlTag
+    {
+        $tag = parent::getHtmlTag();
+        $labelDiv = $tag->getChildren()[0];
+        $label = $labelDiv->getChildren()[0];
+        $label->unset('for');
+        return $tag;
     }
 }

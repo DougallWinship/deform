@@ -52,7 +52,7 @@ class RadioButtonSet extends BaseComponent
             $this->radioButtonInputsByValue[$radioValue] = $radioButtonInput;
             $radioButtonContainer->add($radioButtonInput);
             $radioButtonContainer->add(" ");
-            $radioButtonContainer->add(Html::label(['for' => $id])->add($radioLabel));
+            $radioButtonContainer->add(Html::label(['for' => $id, 'class' => 'multi-label'])->add($radioLabel));
             $this->addControl($radioButtonInput, $radioButtonContainer);
         }
         $this->addExpectedField($this->fieldName);
@@ -94,5 +94,4 @@ class RadioButtonSet extends BaseComponent
             $this->radioButtons($this->radioButtons);
         }
     }
-
 }

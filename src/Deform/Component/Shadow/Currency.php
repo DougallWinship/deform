@@ -8,7 +8,7 @@ trait Currency
 {
     public function getShadowTemplate(): string
     {
-        return parent::getShadowTemplate()."<style>.control-container {display:flex;flex-direction: row}</style>";
+        return parent::getShadowTemplate() . "<style>.control-container {display:flex;flex-direction: row}</style>";
     }
 
     public function mergeShadowAttributes(): array
@@ -18,7 +18,7 @@ trait Currency
             'currency',
             '.currency-symbol',
             Attribute::TYPE_STRING,
-                "element.innerHTML=this.getAttribute('currency');",
+            "element.innerHTML=this.getAttribute('currency');",
             "element.innerHTML=newValue;"
         );
         return $attributes;

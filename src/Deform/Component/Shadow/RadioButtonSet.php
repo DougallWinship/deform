@@ -33,7 +33,7 @@ setOptions(element, value, removeExisting=false)
         let radiobuttonInput = radiobuttonWrapper.querySelector('input');
         radiobuttonInput.id = 'radiobutton-'+key;
         radiobuttonInput.value = key;
-        radiobuttonInput.name = name+"[]";
+        radiobuttonInput.name = radiobuttonInput.name+"[]";
         radiobuttonInput.style.display = 'inline-block';
         let radiobuttonLabel = radiobuttonWrapper.querySelector('label');
         radiobuttonLabel.innerHTML = value;
@@ -54,7 +54,7 @@ JS;
             Attribute::TYPE_KEYVALUE_ARRAY,
             "this.setOptions(element, this.getAttribute('options'));",
             "this.setOptions(element, newValue, true)",
-            false
+            Attribute::BEHAVIOUR_VISIBLE_IF_EMPTY
         );
 
         $initJs = <<<JS

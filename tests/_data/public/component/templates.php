@@ -15,7 +15,7 @@ echo \Deform\Component\ComponentFactory::getCustomElementDefinitionsJavascript(f
 </script>
 <form id='form' name="potatoes" data-namespace="potatoes" method="post" action="" enctype="multipart/form-data">
     <deform-button name='button1' value='buttonvalue' label="Button Label">Button</deform-button>
-    <deform-checkbox name='checkbox1' option="checkboxvalue" label="Checkbox Label" text="Check me?" value="true"></deform-checkbox>
+    <deform-checkbox name='checkbox1' option="checkboxvalue" label="Checkbox Label" text="Check me?" value="true" required></deform-checkbox>
     <deform-checkbox-multi name='checkbox-multi1' options='[["one","One"],["two","Two"],["three","Three"]]' value='["one","two"]' label='CheckboxMulti Label'></deform-checkbox-multi>
     <deform-color-selector name='color-selector1' label='Colour Selector Label' value="#ccddff"></deform-color-selector>
     <deform-currency name='currency1' currency="&pound;" label='Currency Label' value="12.50"></deform-currency>

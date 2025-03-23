@@ -4,9 +4,8 @@ declare(strict_types=1);
 
 namespace Deform\Component;
 
-use Deform\Component\Shadow\Attribute;
 use Deform\Html\Html;
-use Deform\Html\HtmlTag;;
+use Deform\Html\HtmlTag;
 use Deform\Util\Strings;
 
 /**
@@ -17,6 +16,8 @@ abstract class BaseComponent implements \Stringable
     use Shadow\BaseShadow;
 
     public const string EXPECTED_DATA_FIELD = "expected_data";
+
+    public const string PART_PREFIX = "deform";
 
     /** @var bool whether to use auto labelling by default */
     public static bool $useAutoLabelling = true;
@@ -95,7 +96,7 @@ abstract class BaseComponent implements \Stringable
      * @return self
      * @throws \Exception
      */
-    public function label(string $label,  bool $required=false): static
+    public function label(string $label, bool $required = false): static
     {
         $this->componentContainer->setLabel($label, $required);
         return $this;
@@ -376,7 +377,7 @@ abstract class BaseComponent implements \Stringable
      * @param array $attributes
      * @return $this
      */
-    public function wrap(string $tag, array $attributes=[]): static
+    public function wrap(string $tag, array $attributes = []): static
     {
         $this->wrapStack[] = [$tag, $attributes];
         return $this;
@@ -532,12 +533,22 @@ abstract class BaseComponent implements \Stringable
     public function addPartAttributesRecursive(HtmlTag $tag): void
     {
         if ($tag->has('class')) {
-            $tag->set('part', $tag->get('class'));
+            $classes = array_filter(explode(" ", trim($tag->get('class'))));
+            $prependedClasses = array_map(function ($class) {
+                return self::PART_PREFIX . '-' . $class;
+            }, $classes);
+            $tag->set('part', implode(" ", $prependedClasses));
         } else {
-            $tag->set('part', $tag->getTagType());
+            if ($tag->has('type')) {
+                $tag->set('part', self::PART_PREFIX . "-" . $tag->getTagType() . ' ' .
+                    self::PART_PREFIX . "-" . $tag->getTagType() . "-" . $tag->get('type'));
+            } else {
+                $tag->set('part', self::PART_PREFIX . "-" . $tag->getTagType());
+            }
         }
         if ($tag->hasChildren()) {
-            foreach ($tag->getChildren() as $child) {
+            $children = $tag->getChildren();
+            foreach ($children as $child) {
                 if ($child instanceof HtmlTag) {
                     $this->addPartAttributesRecursive($child);
                 }
@@ -545,4 +556,16 @@ abstract class BaseComponent implements \Stringable
         }
     }
 
+    public static function getGitVersions(): array
+    {
+        static $versions = null;
+        if ($versions !== null) {
+            return $versions;
+        }
+        $full = trim(shell_exec('git describe --tags --always 2>/dev/null')) ?: '?';
+        // Extract the "short" version by removing commit count and hash
+        $short = preg_replace('/^v?([0-9]+\.[0-9]+\.[0-9]+).*$/', '$1', $full);
+        $versions = [$short,$full];
+        return $versions;
+    }
 }

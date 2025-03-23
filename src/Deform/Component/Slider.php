@@ -44,7 +44,10 @@ class Slider extends Input
                 $default = $min + $steps * $step;
                 $value = $default;
             }
-            $this->componentContainer->control->addHtmlTag(Html::output(['class' => 'slider-output', 'style' => 'width:100%;text-align:center;display:block'])->add($value));
+            $this->componentContainer->control->addHtmlTag(
+                Html::output(['class' => 'slider-output', 'style' => 'width:100%;text-align:center;display:block'])
+                    ->add($value)
+            );
             $input = $this->componentContainer->control->getControls()[0];
             $input->oninput("this.nextElementSibling.value=this.value");
             return $this;

@@ -141,6 +141,4 @@ JS;
         $this->javascriptSelectFunction = Strings::trimInternal($javascriptSelectFunction);
         return $this;
     }
-
-
 }

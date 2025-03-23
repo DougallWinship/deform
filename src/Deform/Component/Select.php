@@ -51,7 +51,10 @@ class Select extends BaseComponent
         $this->select->clear();
         $isAssoc = \Deform\Util\Arrays::isAssoc($optionsValues);
         foreach ($this->optionsValues as $key => $value) {
-            $option = Html::option(['value' => $isAssoc ? $key : $value])->add($value);
+            $option = Html::option([
+                'class' => 'select-option',
+                'value' => $isAssoc ? $key : $value
+            ])->add($value);
             $this->select->add($option);
             $this->options[] = $option;
         }

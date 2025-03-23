@@ -13,11 +13,6 @@
             "App\\": "tests/_data/App"
         }
     },
-    "config": {
-        "platform": {
-            "php": "8.3.0"
-        }
-    },
     "require": {
         "php": ">=8.3",
         "ext-dom": "*",

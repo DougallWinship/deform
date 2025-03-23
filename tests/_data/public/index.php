@@ -6,8 +6,6 @@ error_reporting(E_ALL);
 ini_set('display_errors', TRUE);
 ini_set('display_startup_errors', TRUE);
 
-const CLOUDFLARE_NORMALISE_URL = "https://cdnjs.cloudflare.com/ajax/libs/normalize/8.0.1/normalize.min.css";
-
 set_error_handler(function(int $errNo, string $errStr, string $errFile, int $errLine) {
     throw new \ErrorException('ERROR : '.$errStr, $errNo,0, $errFile, $errLine);
 });
@@ -89,8 +87,7 @@ function renderLayout($title, $contents, $defaultCss=null)
     $head = [
         Html::title()->add($title),
         Html::meta(['charset' => 'utf-8']),
-        Html::link(['rel' => 'stylesheet', 'href' => CLOUDFLARE_NORMALISE_URL]),
-        Html::link(['rel' => 'stylesheet', 'href' => '/styles.css?version='.uniqid()]),
+        Html::link(['rel' => 'stylesheet', 'href' => '/deform.css?version='.uniqid()]),
         Html::link(['rel' => 'icon', 'type' => 'image/x-icon', 'href'=>'http://deform-tests.test/favicon.ico']),
         Html::style()->add("{text-decoration:none}")
     ];

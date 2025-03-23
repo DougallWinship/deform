@@ -88,12 +88,13 @@ class ComponentContainer
      * @param bool $required
      * @throws \Exception
      */
-    public function setLabel(string $label, bool $required=false): void
+    public function setLabel(string $label, bool $required = false): void
     {
         $this->label = $label;
         $this->labelTag = Html::label(['style' => 'margin-bottom:0'])->add($label);
         if ($required) {
-            $this->labelTag->add(' <span class="required">*</span>');
+            $requiredTag = Html::span(['class' => 'required'])->add("*");
+            $this->labelTag->add($requiredTag);
         }
     }
 

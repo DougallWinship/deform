@@ -7,9 +7,9 @@ if (isset($_POST) && count($_POST)) { ?>
 
 <h2>Components with Namespace 'form1'</h2>
 <form method="post" enctype="multipart/form-data">
-    <?= Component::Button('form1','mybutton')->value('buttonvalue')->html('press me!')->autofocus(true) ?>
+    <?= Component::Button('form1','mybutton')->value('buttonvalue')->html('press me!') ?>
 
-    <?= Component::Checkbox('form1','mycheckbox')->text('check me!')->label('Check it out!') ?>
+    <?= Component::Checkbox('form1','mycheckbox')->text('check me!')->label('Check it out!', true) ?>
 
     <?= Component::CheckboxMulti('form1','mymulticheckbox')->checkboxes(['true'=>'True','false'=>"False",'File Not Found'])->label('New Booleans'); ?>
 
@@ -45,7 +45,7 @@ if (isset($_POST) && count($_POST)) { ?>
 
     <?= Component::Select( 'form1','myselect2')->optgroupOptions(['group 1'=>['one'=>'One','two'=>'Two','three'=>'Three'],'group 2'=>['four'=>'Four','five'=>'Five']])->label('My Select (optgroups)')->setValue('four') ?>
 
-    <?= Component::SelectMulti('form1', 'myselectmulti')->options(['one'=>'One','two'=>'Two','three'=>'Three'])->label('My Select Multui')->setValue(['two','three'])?>
+    <?= Component::SelectMulti('form1', 'myselectmulti')->options(['one'=>'One','two'=>'Two','three'=>'Three'])->label('My Select Multi')->setValue(['two','three'])?>
 
     <?= Component::SelectMulti( 'form1','myselectmulti2')->optgroupOptions(['group 1'=>['one'=>'One','two'=>'Two','three'=>'Three'],'group 2'=>['four'=>'Four','five'=>'Five']])->label('My Select Multi (optgroups)')->setValue(['two','five']) ?>
 

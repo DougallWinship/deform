@@ -16,6 +16,10 @@ class Attribute
     public const SLOT_SELECTOR = 'slot';
     public const NAME_SELECTOR = 'name';
 
+    public const BEHAVIOUR_VISIBLE_IF_EMPTY = 'visible-if-empty';
+    public const BEHAVIOUR_HIDE_IF_EMPTY = 'hide-if-empty';
+    public const BEHAVIOUR_CUSTOM = 'custom';
+
     public bool $dynamic = false;
 
     public function __construct(
@@ -24,8 +28,8 @@ class Attribute
         public string $type,
         public string $initialiseJs = '',
         public string $updateJs = '',
-        public bool $hideIfEmpty = true
-    ){
+        public string $behaviour = self::BEHAVIOUR_HIDE_IF_EMPTY,
+    ) {
         if ($updateJs) {
             $this->dynamic = true;
         }

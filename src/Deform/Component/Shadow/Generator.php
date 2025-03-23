@@ -22,6 +22,50 @@ class Generator
      */
     private array $attributes;
 
+
+    public static function setupDeformObject()
+    {
+        list($short, $full) = BaseComponent::getGitVersions();
+        return <<<JS
+if (window.Deform !== undefined) {
+  throw new Error("Deform is already defined. Possible duplicate inclusion?");
+}
+window.Deform = {
+    version: '{$short}',
+    fullVersion: '{$full}',
+    components: {},
+    registerComponent(componentClassName, componentName, definition) {
+        this.components[componentClassName] = definition;
+        customElements.define(componentName, definition);
+    },
+    getComponent(componentClassName) {
+        return this.components[componentClassName];
+    },
+    isValidNamespace(ns) {
+        return /^[a-zA-Z0-9_-]+$/.test(ns);
+    },
+    isValidBaseName(name) {
+        return /^[a-zA-Z0-9_-]+$/.test(name);
+    },
+    isValidName(name) {
+        return /^[a-zA-Z0-9_-]+$/.test(name) || /^[a-zA-Z0-9_-]+\\[[a-zA-Z0-9_-]+\\]$/.test(name);
+    },
+    extractBaseName(namespacedName) {
+        const match = namespacedName.match(/\\[([^\\]]+)\\]$/);
+        return match ? match[1] : null;
+    },
+    extractNamespace(namespacedName) {
+        const match = namespacedName.match(/^([^\\[\\]]+)\\[[^\\[\\]]+\\]$/);
+        return match ? match[1] : null;
+    },
+    isTruthy(value) {
+        const falsy = ["false","0","no","off"];
+        return !falsy.includes(value);
+    }
+};
+JS;
+    }
+
     /**
      * @param string $componentName
      * @throws \ReflectionException|\Exception
@@ -30,7 +74,7 @@ class Generator
     {
         $this->componentName = $componentName;
         $this->component = ComponentFactory::build($componentName, 'namespace', "name")
-            ->label("{label}")
+            ->label("{label}", true)
             ->hint("{hint}")
             ->setError('{error}');
         $this->attributes = $this->component->getShadowAttributes();
@@ -41,7 +85,8 @@ class Generator
      * @return void
      * @throws \ReflectionException
      */
-    private function prepareTemplateMethods(): void {
+    private function prepareTemplateMethods(): void
+    {
         $templateMethods = $this->component->getTemplateMethods();
         if (count($templateMethods) > 0) {
             foreach ($templateMethods as $templateMethod) {
@@ -67,24 +112,24 @@ class Generator
     public function generateCustomComponentJavascript(): string
     {
         $componentName = "deform-" . \Deform\Util\Strings::separateCased($this->componentName, "-");
-        $componentClass = "DeformComponent".$this->componentName;
+        $componentClass = "DeformComponent" . $this->componentName;
         $classJavascript = $this->generateJavascriptClass($componentName, $componentClass);
         return <<<JS
-registerDeformComponent('$componentClass', '$componentName', $classJavascript);
+Deform.registerComponent('$componentClass', '$componentName', $classJavascript);
 JS;
     }
 
     private function generateJavascriptClass(string $componentName, string $componentClass): string
     {
         $propertyDeclarations = '';
-        $constructor = Strings::prependPerLine($this->generateConstructor($componentName),"    ");
+        $constructor = Strings::prependPerLine($this->generateConstructor($componentName), "    ");
         $shadowMethods = $this->component->getShadowMethods();
         if ($shadowMethods) {
-            $shadowMethods = Strings::prependPerLine($shadowMethods,"    ");
+            $shadowMethods = Strings::prependPerLine($shadowMethods, "    ");
         }
-        $connectedCallback = Strings::prependPerLine($this->generateConnectedCallback($componentName),"    ");
-        $additionalMethods = Strings::prependPerLine($this->getAdditionalMethods($componentName),"    ");
-        $dynamicCallbacks = Strings::prependPerLine($this->getAttributeChangedCallbackRules(),"    ");
+        $connectedCallback = Strings::prependPerLine($this->generateConnectedCallback($componentName), "    ");
+        $additionalMethods = Strings::prependPerLine($this->getAdditionalMethods($componentName), "    ");
+        $dynamicCallbacks = Strings::prependPerLine($this->getAttributeChangedCallbackRules(), "    ");
         $classJs = <<<JS
 class $componentClass extends HTMLElement {
     static formAssociated = true;
@@ -102,38 +147,21 @@ $shadowMethods
 $additionalMethods
 $connectedCallback
 $dynamicCallbacks
-    isValidNamespace(namespace) {
-        return /^[a-zA-Z0-9_-]+$/.test(namespace);
-    }
-    isValidBaseName(baseName) {
-        return /^[a-zA-Z0-9_-]+$/.test(baseName);
-    }
-    isValidName(name) {
-        return /^[a-zA-Z0-9_-]+$/.test(name) || /^[a-zA-Z0-9_-]+\[[a-zA-Z0-9_-]+\]$/.test(name);
-    }
-    extractBaseName(namespacedName) {
-        const match = namespacedName.match(/\[([^\]]+)\]$/);
-        return match ? match[1] : null; 
-    }
-    extractNamespace(namespacedName) {
-        const match = namespacedName.match(/^([^\[\]]+)\[[^\[\]]+\]$/);
-        return match ? match[1] : null;
-    }
     setComponentName(componentFullName) {
-        if (!this.isValidName(componentFullName)) {
+        if (!Deform.isValidName(componentFullName)) {
             this.hasInvalidName = true;
             this.baseName = null;
             return false;
         }
         else {
-            this.namespace = this.extractNamespace(componentFullName);
-            this.baseName = this.extractBaseName(componentFullName);
+            this.namespace = Deform.extractNamespace(componentFullName);
+            this.baseName = Deform.extractBaseName(componentFullName);
             this.hasInvalidName = false;
             return true;
         }
     }
     setComponentBaseName(componentBaseName) {
-        if (!this.isValidBaseName(componentBaseName)) {
+        if (!Deform.isValidBaseName(componentBaseName)) {
             this.hasInvalidName = true;
             this.baseName = null;
             return false;
@@ -145,7 +173,7 @@ $dynamicCallbacks
         }
     }
     setComponentNamespace(componentNamespace) {
-        if (!this.isValidNamespace(componentNamespace)) {
+        if (!Deform.isValidNamespace(componentNamespace)) {
             this.hasInvalidName = true;
             this.namespace = componentNamespace
             return false;
@@ -185,7 +213,7 @@ constructor() {
     this.container = $containerDefinition;
     this.isConnected = false;
     this.namespaceChecked = false;
-    const shadowRoot = this.attachShadow({mode:'open'});
+    const shadowRoot = this.attachShadow({mode:'open', delegatesFocus: true});
     shadowRoot.appendChild(this.template)
 }
 JS;
@@ -220,6 +248,7 @@ if (this.namespaceChecked === false) {
     if (this.form) {
         this.namespace = this.form.dataset.namespace;
         if (this.namespace) {
+            console.log('name', this.namespace+"["+this.getAttribute('name')+"]");
             this.setAttribute('name', this.namespace+"["+this.getAttribute('name')+"]");
             const formObserver = new MutationObserver((mutations) => {
                 mutations.forEach((mutation) => {
@@ -247,7 +276,7 @@ if (container) {
     container.removeAttribute('id');
 }
 JS;
-        $connectedCallbackSetup = Strings::prependPerLine($connectedCallbackSetup,"    ");
+        $connectedCallbackSetup = Strings::prependPerLine($connectedCallbackSetup, "    ");
         $connectedCallbackRulesJs = Strings::prependPerLine($this->getConnectedCallbackRules(), "    ");
         return <<<JS
 connectedCallback() {
@@ -270,34 +299,68 @@ JS;
         ];
 
         foreach ($this->attributes as $attribute) {
-            if ($attribute->selector!==Attribute::SLOT_SELECTOR) {
-                $ifNotDynamic = $attribute->hideIfEmpty && $attribute->name!=='value'
-                    ? "else { element.style.display = 'none' }"
-                    : "";
+            $failedToFind =
+                "Failed to find '{$this->componentName}' attribute '{$attribute->name}' " .
+                "using selector '{$attribute->selector}'";
+            if ($attribute->selector === Attribute::SLOT_SELECTOR) {
+                if ($attribute->initialiseJs) {
+                    // full control over content!
+                    $generatedComponentRules[] = $attribute->initialiseJs;
+                }
+            } elseif ($attribute->behaviour === Attribute::BEHAVIOUR_CUSTOM) {
+                $generatedComponentRules[] = <<<JS
+element = this.container.querySelector("{$attribute->selector}");
+if (element!==null) {
+    {$attribute->initialiseJs}
+}
+else {
+    console.error("{$failedToFind}");
+}
+JS;
+            } elseif ($attribute->behaviour === Attribute::BEHAVIOUR_HIDE_IF_EMPTY) {
                 $generatedComponentRules[] = <<<JS
 element = this.container.querySelector("{$attribute->selector}");
 if (element!==null) { 
     if (this.hasAttribute('{$attribute->name}'))
     {
         {$attribute->initialiseJs}
+        element.part.remove('deform-hidden');
     }
-    $ifNotDynamic
+    else {
+        element.part.add('deform-hidden');
+    }
 }
 else {
-    console.error("Failed to find '{$this->componentName}' attribute '{$attribute->name}' element using selector '{$attribute->selector}'");
+    console.error("{$failedToFind}");
 }
 JS;
-            }
-            else if ($attribute->initialiseJs) {
-                // full control over content!
-                $generatedComponentRules[] = $attribute->initialiseJs;
+            } elseif ($attribute->behaviour === Attribute::BEHAVIOUR_VISIBLE_IF_EMPTY) {
+                $generatedComponentRules[] = <<<JS
+element = this.container.querySelector("{$attribute->selector}");
+if (element!==null) { 
+    if (this.hasAttribute('{$attribute->name}'))
+    {
+        {$attribute->initialiseJs}
+        element.part.remove('deform-hidden');
+    }
+    else {
+        element.part.add('deform-hidden');
+    }
+}
+else {
+    console.error("{$failedToFind}");
+}
+JS;
+            } else {
+                throw new \Exception("Invalid behaviour : " . $attribute->behaviour);
             }
         }
         $generatedComponentRules[] = "/* end : connected callback rules */";
         return implode("\n", $generatedComponentRules);
     }
 
-    public function getAdditionalMethods($componentName): string {
+    public function getAdditionalMethods($componentName): string
+    {
         $metadata = [];
         foreach ($this->attributes as $attribute) {
             $metadata[$attribute->name] = $attribute->metadata();
@@ -338,7 +401,8 @@ JS;
         return $js;
     }
 
-    public function getAttributeChangedCallbackRules(): string {
+    public function getAttributeChangedCallbackRules(): string
+    {
         $observed = [];
         $callbacks = ['/* start : attribute changed callback rules */'];
         foreach ($this->attributes as $attribute) {
@@ -351,10 +415,10 @@ if (name==='{$attribute->name}' && this.shadowRoot) {
     if (element) {
         if ('{$attribute->name}'!=='value' && '{$attribute->name}'!=='name') {
             if (newValue) {
-                element.style.display='reset';
+                element.part.remove('deform-hidden');
             }
             else {
-                element.style.display='none';
+                element.part.add('deform-hidden');
             }
         }
         {$attribute->updateJs}
@@ -364,10 +428,10 @@ JS;
             $callbacks[] = $callback;
         }
         $callbacks[] = '/* end : attribute changed callback rules */';
-        $observedArray = "['".implode("','", $observed)."']";
+        $observedArray = "['" . implode("','", $observed) . "']";
 
         $callbacksJs = implode("\n", $callbacks);
-        $callbacksJs = Strings::prependPerLine($callbacksJs,"    ");
+        $callbacksJs = Strings::prependPerLine($callbacksJs, "    ");
         $js = <<<JS
 static get observedAttributes() {
     return $observedArray;

@@ -52,7 +52,7 @@ class CheckboxMulti extends BaseComponent
             $this->checkboxes[] = $checkbox;
             $wrapper->add($checkbox)
                     ->add(" ")
-                    ->add(Html::label(['for' => $checkboxId])->add($value));
+                    ->add(Html::label(['for' => $checkboxId, 'class' => 'multi-label'])->add($value));
             $this->addControl($checkbox, $wrapper);
         }
         // labels are already generated for each of the checkboxes

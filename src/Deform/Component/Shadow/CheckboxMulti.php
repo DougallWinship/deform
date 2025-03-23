@@ -8,10 +8,12 @@ trait CheckboxMulti
 {
     public function getShadowTemplate(): string
     {
-        return parent::getShadowTemplate()."<style>.checkboxmulti-checkbox-wrapper { display:flex; flex-direction: row; }</style>";
+        return parent::getShadowTemplate() .
+            "<style>.checkboxmulti-checkbox-wrapper { display:flex; flex-direction: row; }</style>";
     }
 
-    public function getShadowMethods(): string {
+    public function getShadowMethods(): string
+    {
         return <<<JS
 setOptions(element, clearFirst=false) 
 {
@@ -39,7 +41,7 @@ setOptions(element, clearFirst=false)
         const checkBoxInput = checkBoxWrapper.querySelector('input');
         checkBoxInput.id = id;
         checkBoxInput.value = key;
-        checkBoxInput.name = name+"[]";
+        checkBoxInput.name = checkBoxInput.name+"[]";
         const checkBoxLabel = checkBoxWrapper.querySelector('label');
         checkBoxLabel.innerHTML = value;
         checkBoxLabel.setAttribute('for',id);

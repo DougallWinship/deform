@@ -150,7 +150,7 @@ class Strings
         $rebuild = [];
         $parts = explode(PHP_EOL, $str);
         foreach ($parts as $part) {
-            $rebuild[] = $prependStr.$part;
+            $rebuild[] = $prependStr . $part;
         }
         return implode(PHP_EOL, $rebuild);
     }

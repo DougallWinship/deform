@@ -8,7 +8,7 @@ trait Checkbox
 {
     public function getShadowTemplate(): string
     {
-        return parent::getShadowTemplate()."<style>.control-container {display:flex;flex-direction: row}</style>";
+        return parent::getShadowTemplate() . "<style>.control-container {display:flex;flex-direction: row}</style>";
     }
 
     public function getShadowMethods(): string
@@ -49,7 +49,7 @@ JS;
             Attribute::TYPE_BOOLEAN,
             "this.setChecked(element,true)",
             "this.setChecked(element,false)",
-            false
+            Attribute::BEHAVIOUR_VISIBLE_IF_EMPTY,
         );
 
         $attributes['option'] = new Attribute(

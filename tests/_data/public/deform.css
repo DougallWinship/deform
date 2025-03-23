@@ -1,0 +1,215 @@
+/* deform.css */
+
+/* Vars */
+:root {
+    --deform-form-bg: #eee;
+    --deform-font-family: Arial, sans-serif;
+    --deform-background: #f7f7f7;
+    --deform-background-hover: #f0f0f0;
+    --deform-border-color:#ccc;
+    --deform-border-color-focus:#ddd;
+    --deform-border-radius: 6px;
+    --deform-padding: 0.75rem;
+    --deform-accent: green;
+    --deform-accent-alt: white;
+    --deform-accent-hover: green;
+    --deform-accent-hover-opacity: 0.8;
+    --deform-accent-soft: rgba(63, 248, 131, 0.2);
+    --deform-control-background-color: white;
+    --deform-control-border-color: #ccc;
+    --deform-error-color: #e63946;
+    --deform-background-error: #fff0f0;
+    --deform-required-color: red;
+}
+
+/* Minimal Reset */
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+html, body {
+    margin: 0;
+    padding: 0;
+}
+button, input, textarea, select {
+    font: inherit;
+}
+
+/* Core Defaults */
+
+form {
+    padding: 1rem;
+    background-color: var(--deform-form-bg);
+    border-radius: var(--deform-border-radius);
+    display: block;
+    width: fit-content;
+    max-width: 100%;
+    box-sizing: border-box;
+    font-family: var(--deform-font-family), sans-serif;
+}
+.center {
+    text-align: center;
+}
+
+
+/* === Component Container === */
+
+.component-container,
+*::part(deform-component-container) {
+    padding: var(--deform-padding);
+    background-color: var(--deform-background);
+    border-radius: var(--deform-border-radius);
+    margin-top: 0.5rem;
+    margin-bottom: 0.5rem;
+    display: block;
+    max-width: 100%;
+    width:fit-content;
+    box-sizing: border-box;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
+    transition: background-color 0.2s ease;
+}
+
+*::part(deform-component-container):focus-within {
+    outline: 1px solid var(--deform-border-color-focus);
+    outline-offset: 2px;
+}
+
+/* === Component Sections === */
+
+.container-type-text label,
+*::part(deform-label) {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.3rem;
+    color: #333;
+}
+
+.container-type-text .hint,
+*::part(deform-hint) {
+    display: block;
+    font-weight: 500;
+    margin-bottom: 0.3rem;
+    color: #333;
+}
+
+.error-container,
+*::part(deform-error-container) {
+    display: block;
+    color: var(--deform-error-color);
+    font-size: 0.85em;
+    margin-top: 0.3em;
+}
+
+*::part(deform-input) {
+    outline: none;
+}
+
+.component-container .required,
+*::part(deform-required){
+    margin-left:0.4em;
+    color: var(--deform-required-color);
+}
+
+.deform-hidden,
+*::part(deform-hidden) {
+    display: none !important;
+}
+
+/* === Components === */
+
+.container-type-button button,
+.container-type-submit input,
+input[type=submit],
+*::part(deform-button),
+*::part(deform-input-submit)
+{
+    padding: 0.5rem 1rem;
+    border-radius: 9999px;
+    cursor: pointer;
+    background-color: var(--deform-accent);
+    color: var(--deform-accent-alt);
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background-color 0.2s ease, opacity 0.2s ease;
+    width: auto;
+}
+
+.container-type-button button:hover,
+input[type=submit]:hover,
+*::part(deform-button):hover,
+*::part(deform-input-submit):hover
+{
+    background-color: var(--deform-accent-hover);
+    opacity: var(--deform-accent-hover-opacity);
+}
+
+.container-type-button button:active,
+*::part(deform-button):active {
+    background-color: var(--deform-accent);
+    opacity: 1;
+}
+
+.component-container input:not([type=color]),
+.component-container textarea,
+.component-container select,
+*::part(deform-input-text),
+*::part(deform-input-number),
+*::part(deform-input-date),
+*::part(deform-input-datetime-local),
+*::part(deform-input-email),
+*::part(deform-input-password),
+*::part(deform-textarea),
+*::part(deform-input-file) {
+    width: fit-content;
+    padding: 0.5rem;
+    font-size: 1rem;
+    border-radius: 4px;
+    border: 1px solid var(--deform-control-border-color);
+    background-color: var(--deform-control-background-color);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+*::part(deform-img) {
+    border: 1px solid var(--deform-control-border-color);
+}
+
+*::part(deform-currency-symbol) {
+    padding: 0.5rem 0.1rem;
+    font-size: 1rem;
+}
+
+.component-container input:focus,
+*::part(deform-input):focus,
+*::part(deform-textarea):focus,
+*::part(deform-select):focus
+{
+    border-color: var(--deform-accent);
+    box-shadow: 0 0 0 2px var(--deform-accent-soft);
+    outline: none;
+}
+
+.component-container input[type=checkbox],
+.component-container input[type=radio],
+.component-container input[type=range],
+*::part(deform-input-checkbox),
+*::part(deform-input-radio),
+*::part(deform-input-range) {
+    accent-color: var(--deform-accent);
+}
+
+*::part(deform-clear-image) {
+    width: fit-content;
+    padding: 0.2rem;
+    font-size: 0.8rem;
+    border-radius: 4px;
+    border: 1px solid var(--deform-control-border-color);
+    background-color: var(--deform-control-background-color);
+}
+
+.container-type-select-multi select[multiple]:focus option:checked,
+*::part(deform-select-option):checked
+{
+    background: var(--deform-accent) linear-gradient(0deg, var(--deform-accent) 0%, var(--deform-accent) 100%);
+    color: var(--deform-accent-alt);
+}
