@@ -178,21 +178,6 @@ JS;
     }
 
     /**
-     * @param bool $compress
-     * @return false|string
-     * @throws \ReflectionException
-     */
-    public static function getFormBuilderJavascript(bool $compress=false): false|string
-    {
-        $js = self::getCustomElementDefinitionsJavascript($compress).PHP_EOL;
-        $builderJs = Builder::javascriptDefinition();
-        $js.= $compress
-            ? Strings::trimInternal($builderJs)
-            : $builderJs;
-        return $js;
-    }
-
-    /**
      * analyses the phpdoc element from this class
      * @throws \Exception
      */

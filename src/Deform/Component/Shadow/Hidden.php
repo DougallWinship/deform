@@ -6,6 +6,7 @@ namespace Deform\Component\Shadow;
 
 trait Hidden
 {
+
     public function mergeShadowAttributes(): array
     {
         $attributes = [];

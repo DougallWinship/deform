@@ -165,7 +165,7 @@ Which can then be used like this:
 
 ### Deform\Form
 There is a [FormModel](../src/Deform/Form/FormModel.php) that can be used to build form definitions.
-[here](../tests/_data/App/ExampleFormModel.php) which is used in the acceptance tests, and serves as an example.
+There is an exmaple [here](../tests/_data/App/ExampleFormModel.php) which is used in the acceptance tests.
 
 #### Features
 * CSRF protection : disabled, session based, or double-submit cookie based.

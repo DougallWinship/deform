@@ -51,13 +51,4 @@ class ColorSelectorTest extends \Codeception\Test\Unit
         $inputDate = $allTags[0];
         $this->tester->assertIsHtmlTag($inputDate, "input", ["type"=>"color"]);
     }
-
-    public function testShadowJavascript()
-    {
-        $currency = ComponentFactory::ColorSelector('ns', 'cr', ['foo'=>'bar']);
-        $shadowJs = $currency->shadowJavascript();
-        $this->assertCount(1, $shadowJs);
-        $this->assertArrayHasKey('.control-container input', $shadowJs);
-    }
-
 }

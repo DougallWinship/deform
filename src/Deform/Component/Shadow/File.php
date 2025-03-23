@@ -20,11 +20,9 @@ if (element) {
             Array.from(element.files).forEach((file) => {
                 filenames.push(file.name);
             })
-/*            hiddenElement.value = filenames.join(',');*/
         }
         else {
             this.internals_.setFormValue(null);
-/*            hiddenELement.value = "";*/
         }
     });
     this.form?.addEventListener("formdata", (evt)=> {

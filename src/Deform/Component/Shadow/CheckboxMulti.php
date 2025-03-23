@@ -83,8 +83,8 @@ JS;
             'options',
             '.control-container .checkboxmulti-checkbox-wrapper',
             Attribute::TYPE_KEYVALUE_ARRAY,
-            "this.setOptions(element); element.style.display='none';",
-            "this.setOptions(element, true);"
+            "this.setOptions(element,true); element.style.display='none';",
+            "this.setOptions(element,true);"
         );
         $initJs = <<<JS
 let data;
@@ -109,7 +109,7 @@ const setFormData = (elements) => {
 
 checkboxElements.forEach((node, index) => {
     if (index>0) {
-        const value = node.getAttribute('value');
+        const value = node.getAttribute('value');console.log(typeof value, value);
         expectedValues.push(node.value);
         if (value && data.includes(node.getAttribute('value'))) {
             checkedValues.push(node.value);
@@ -132,20 +132,4 @@ JS;
         );
         return $attributes;
     }
-//
-//    /**
-//     * @return string[]
-//     */
-//    public function shadowJavascript(): array
-//    {
-//        return[
-//               /* promote the hidden input to the form and remove from the shadowdom */
-//                '.component-container input[type=hidden]' => <<<JS
-//element.name=(namespaceAttr ? namespaceAttr+'[expected_data][]' : 'expected_data');
-//element.value=nameAttr;
-//this.internals_.form.appendChild(element.cloneNode(false));
-//element.parentElement.removeChild(element);
-//JS
-//            ]  + parent::shadowJavascript();
-//    }
 }

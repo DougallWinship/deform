@@ -20,7 +20,6 @@ isChecked(element)
     const checked = this.getAttribute('value').toLowerCase();
     return !(!checked || checked.toLowerCase()==='false' || checked.toLowerCase()==='off' || parseInt(checked)===0);
 }
-
 setChecked(element, addEventListener=false) 
 {
     if (this.isChecked(element)) {

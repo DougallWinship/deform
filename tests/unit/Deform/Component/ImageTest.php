@@ -129,18 +129,6 @@ JS;
         $this->assertEquals($expectedJs, $getJs);
     }
 
-    public function testShadowJavascript()
-    {
-        $namespace = 'ns';
-        $name = 'dp';
-        $accept = 'image/*';
-        $image = ComponentFactory::Image($namespace ,$name, ['foo'=>'bar']);
-        $this->tester->setAttributeValue($image, 'acceptType', $accept);
-        $shadowJs = $image->shadowJavascript();
-        $this->assertArrayHasKey('.control-container input#hidden-image-namespace-name', $shadowJs);
-        $this->assertArrayHasKey('.control-container input', $shadowJs);
-    }
-
     public function testSetValue()
     {
         $namespace = 'ns';

@@ -71,17 +71,5 @@ class CurrencyTest extends \Codeception\Test\Unit
         $currencyLabelChildren = $currencyLabel->getChildren();
         $this->assertCount(1, $currencyLabelChildren);
         $this->assertEquals($useCurrencySymbol, $currencyLabelChildren[0]);
-
     }
-
-
-    public function testShadowJavascript()
-    {
-        $currency = ComponentFactory::Currency('ns', 'cr', ['foo'=>'bar']);
-        $shadowJs = $currency->shadowJavascript();
-        $this->assertArrayHasKey('.currency-symbol', $shadowJs);
-        $this->assertArrayHasKey('.control-container input', $shadowJs);
-
-    }
-
 }

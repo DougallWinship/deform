@@ -52,13 +52,4 @@ class SubmitTest extends \Codeception\Test\Unit
             'type' => 'submit',
         ]);
     }
-
-    public function testShadowJavascript()
-    {
-        $submit = ComponentFactory::Submit('ns', 'sb', ['foo'=>'bar']);
-        $shadowJs = $submit->shadowJavascript();
-        $this->assertCount(2, $shadowJs);
-        $this->assertArrayHasKey('.control-container input', $shadowJs);
-        $this->assertArrayHasKey("#component-submit input", $shadowJs);
-    }
 }

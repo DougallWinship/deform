@@ -77,28 +77,93 @@ JS;
     private function generateJavascriptClass(string $componentName, string $componentClass): string
     {
         $propertyDeclarations = '';
-        $constructor = $this->generateConstructor($componentName);
+        $constructor = Strings::prependPerLine($this->generateConstructor($componentName),"    ");
         $shadowMethods = $this->component->getShadowMethods();
         if ($shadowMethods) {
             $shadowMethods = Strings::prependPerLine($shadowMethods,"    ");
         }
-        $connectedCallback=$this->generateConnectedCallback($componentName);
-        $additionalMethods=$this->getAdditionalMethods($componentName);
-        $dynamicCallbacks=$this->getAttributeChangedCallbackRules();
+        $connectedCallback = Strings::prependPerLine($this->generateConnectedCallback($componentName),"    ");
+        $additionalMethods = Strings::prependPerLine($this->getAdditionalMethods($componentName),"    ");
+        $dynamicCallbacks = Strings::prependPerLine($this->getAttributeChangedCallbackRules(),"    ");
         $classJs = <<<JS
 class $componentClass extends HTMLElement {
     static formAssociated = true;
     template = null;
     container = null;
     form = null;
-    namespace = null;
     isConnected = false;
+    namespace = null;
+    namespaceChecked = false;
+    baseName = null;
+    hasInvalidName = false
 $propertyDeclarations
 $constructor
 $shadowMethods
 $additionalMethods
 $connectedCallback
 $dynamicCallbacks
+    isValidNamespace(namespace) {
+        return /^[a-zA-Z0-9_-]+$/.test(namespace);
+    }
+    isValidBaseName(baseName) {
+        return /^[a-zA-Z0-9_-]+$/.test(baseName);
+    }
+    isValidName(name) {
+        return /^[a-zA-Z0-9_-]+$/.test(name) || /^[a-zA-Z0-9_-]+\[[a-zA-Z0-9_-]+\]$/.test(name);
+    }
+    extractBaseName(namespacedName) {
+        const match = namespacedName.match(/\[([^\]]+)\]$/);
+        return match ? match[1] : null; 
+    }
+    extractNamespace(namespacedName) {
+        const match = namespacedName.match(/^([^\[\]]+)\[[^\[\]]+\]$/);
+        return match ? match[1] : null;
+    }
+    setComponentName(componentFullName) {
+        if (!this.isValidName(componentFullName)) {
+            this.hasInvalidName = true;
+            this.baseName = null;
+            return false;
+        }
+        else {
+            this.namespace = this.extractNamespace(componentFullName);
+            this.baseName = this.extractBaseName(componentFullName);
+            this.hasInvalidName = false;
+            return true;
+        }
+    }
+    setComponentBaseName(componentBaseName) {
+        if (!this.isValidBaseName(componentBaseName)) {
+            this.hasInvalidName = true;
+            this.baseName = null;
+            return false;
+        }
+        else {
+            this.baseName = componentBaseName;
+            this.hasInvalidName = false;
+            return true;
+        }
+    }
+    setComponentNamespace(componentNamespace) {
+        if (!this.isValidNamespace(componentNamespace)) {
+            this.hasInvalidName = true;
+            this.namespace = componentNamespace
+            return false;
+        }
+        else {
+            this.namespace = componentNamespace;
+            return true;
+        }
+    }
+    getComponentNamespace() {
+        return this.namespace;
+    }
+    getComponentBaseName() {
+        return this.baseName;
+    } 
+    triggerNameUpdated() {
+        this.setAttribute('name', this.namespace+"["+this.baseName+"]");
+    }
 }
 JS;
         return $classJs;
@@ -110,7 +175,7 @@ JS;
         $containerDefinition = $this->component->componentContainer->controlOnly
             ? "this.template"
             : "this.template.querySelector('#namespace-name-container')";
-        $constructorJs = <<<JS
+        return <<<JS
 constructor() {
     super();
     this.internals_ = this.attachInternals();
@@ -119,11 +184,11 @@ constructor() {
     this.template.innerHTML = `$shadowTemplate`;
     this.container = $containerDefinition;
     this.isConnected = false;
+    this.namespaceChecked = false;
     const shadowRoot = this.attachShadow({mode:'open'});
     shadowRoot.appendChild(this.template)
 }
 JS;
-        return Strings::prependPerLine($constructorJs, "    ");
     }
 
     private function generateConnectedCallback($componentName): string
@@ -135,16 +200,48 @@ if (!this.hasAttribute('name')) {
     this.container.innerHTML = "<div style='color:red'>"+errorMessage+"</div>";
     return;
 }
-this.form = this.closest('form');
-if (this.form) {
-    this.namespace = this.form.dataset.namespace;
-    if (this.namespace) {
-        this.setAttribute('name', this.namespace+"["+this.getAttribute('name')+"]");
+if (!this.componentName) {
+    this.setComponentName(this.getAttribute('name'));
+    const componentNameObserver = new MutationObserver((mutations) => {
+        mutations.forEach((mutation) => {
+            if (mutation.type==='attributes' && mutation.attributeName==='name') {
+                this.setComponentName(mutation.target.getAttribute('name'));
+            }
+        })
+    });
+    componentNameObserver.observe(this, {
+        attributes: true,
+        attributeFilter: ['name']
+    });
+}
+
+if (this.namespaceChecked === false) {
+    this.form = this.closest('form');
+    if (this.form) {
+        this.namespace = this.form.dataset.namespace;
+        if (this.namespace) {
+            this.setAttribute('name', this.namespace+"["+this.getAttribute('name')+"]");
+            const formObserver = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type==='attributes' && mutation.attributeName==="data-namespace") {
+                        const newValue = mutation.target.getAttribute('data-namespace');
+                        this.setComponentNamespace(newValue);
+                        this.triggerNameUpdated();
+                    }
+                });
+            });
+            formObserver.observe(this.form, {
+                attributes: true,
+                attributeFilter: ['data-namespace']
+            });
+        }
     }
+    else {
+        console.warn("this element has no parent form!");
+    }
+    this.namespaceChecked = true;
 }
-else {
-    console.warn("this element has no parent form!");
-}
+
 const container = this.template.querySelector('.component-container');
 if (container) {
     container.removeAttribute('id');
@@ -207,29 +304,36 @@ JS;
         }
         $metadata = json_encode($metadata);
         $js = <<<JS
-    static get metadata() {
-        return $metadata;
+static get metadata() {
+    return $metadata;
+}
+static get name() {
+    return '$componentName';
+}
+static get namespace() {
+    return this.namespace;
+}
+setExpectedField(name, previousName=null) {
+    if (!this.form) {
+        return false;
     }
-    static get name() {
-        return '$componentName';
+    let expectedValues = this.form.querySelector("input[name='expected_data']");
+    if (!expectedValues) {
+        expectedValues = document.createElement('input');
+        expectedValues.type = 'hidden';
+        expectedValues.name = 'expected-values';
+        expectedValues.value = '[]';
+        this.form.appendChild(expectedValues);
     }
-    static get namespace() {
-        return this.namespace;
+    const jsonValues = expectedValues.value;
+    let values = JSON.parse(jsonValues);
+    if (previousName) {
+        values = values.filter(item => item !== previousName);
     }
-    setExpectedField(name) {
-        if (!this.form) {
-            return false;
-        }
-        let expectedValues = this.form.querySelector("input[name='expected_data']");
-        if (!expectedValues) {
-            expectedValues = document.createElement('input');
-            expectedValues.type = 'hidden';
-            expectedValues.name = 'expected-values';
-            this.form.appendChild(expectedValues);
-        }
-        let jsonValues = document.createElement('input');
-    }
-    
+    values.push(name);
+    expectedValues.value = JSON.stringify(values);
+    return true;
+}
 JS;
         return $js;
     }
@@ -245,12 +349,11 @@ JS;
 if (name==='{$attribute->name}' && this.shadowRoot) {
     const element = this.container.querySelector("{$attribute->selector}");
     if (element) {
-        if ('{$attribute->name}'!=='value') {
+        if ('{$attribute->name}'!=='value' && '{$attribute->name}'!=='name') {
             if (newValue) {
                 element.style.display='reset';
             }
             else {
-                alert('hide');
                 element.style.display='none';
             }
         }
@@ -277,6 +380,6 @@ attributeChangedCallback(name, oldValue, newValue) {
 $callbacksJs
 }
 JS;
-        return Strings::prependPerLine($js,'    ');
+        return $js;
     }
 }

@@ -82,7 +82,7 @@ JS;
             'options',
             '.component-container select option',
             Attribute::TYPE_KEYVALUE_ARRAY,
-            "this.setOptions(element, this.getAttribute('options'));",
+            "this.setOptions(element, this.getAttribute('options'), true);",
             "this.setOptions(element, newValue, true);"
         );
 

@@ -37,12 +37,27 @@ trait BaseShadow
             "element.name = this.getAttribute('name');",
             "element.name = newValue;"
         );
+        $initJS = <<<JS
+element.value = this.getAttribute('value'); 
+this.internals_.setFormValue(element.value); 
+element.addEventListener('change', ()=> { 
+    if (this.getAttribute('value')!==element.value) { 
+        this.setAttribute('value',element.value); 
+    } 
+    this.internals_.setFormValue(element.value); });
+JS;
+        $updateJS = <<<JS
+if (element.value!==newValue) { 
+    element.value = newValue; 
+} 
+this.internals_.setFormValue(element.value);
+JS;
         $attributes["value"] = new Attribute(
             "value",
             ".control-container input",
             Attribute::TYPE_STRING,
-            "element.value = this.getAttribute('value'); this.internals_.setFormValue(element.value); element.addEventListener('change', ()=> { this.internals_.setFormValue(element.value); });",
-            "element.value = newValue; this.internals_.setFormValue(element.value);",
+            $initJS,
+            $updateJS,
             false
         );
         $mergeAttributes = $this->mergeShadowAttributes();

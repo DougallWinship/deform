@@ -23,6 +23,7 @@
     <div id="form-info" style="">
         <h3>Form Info</h3>
         <div id="form-definition">
+            <label>Form namespace<input id="form-namespace-input" type="text" value="builder" autocomplete="off" /></label>
             <p>Details about the form & any selected component will appear here.</p>
         </div>
         <div id="dynamic-component-info">
@@ -45,6 +46,7 @@
 
     let selectedComponent = null;
     let selectedComponentObject = null;
+    let selectedComponentNameObservers = null;
 
     // Helper: Get the element after which the dragged element should be inserted
     function getDragAfterElement(container, y) {
@@ -146,7 +148,7 @@
         closeElem.style.right = '6px';
         closeElem.style.top = '6px';
         closeElem.textContent = 'X';
-        closeElem.style.padding="2px 4px 0";
+        closeElem.style.padding="1px 4px";
         closeElem.style.fontFamily = "arial";
         closeElem.style.borderRadius = "100%";
         closeElem.style.border = "1px solid black"
@@ -163,7 +165,6 @@
         elem.appendChild(label);
 
         let definition = DeformComponentRegistry['DeformComponent'+componentType];
-        //console.log(definition);
         const component = document.createElement(definition.name);
         component.setAttribute('name', definition.name);
         const attributes = definition.metadata;
@@ -198,8 +199,7 @@
                 selectedComponent.parentElement.classList.remove('selected');
                 selectedComponent = null;
                 selectedComponentObject = null;
-                updateFormInfo();
-
+                updateFormComponentInfo();
             }
         });
         elem.addEventListener('dragend', event => {
@@ -215,10 +215,12 @@
                     selectedComponent.parentElement.classList.remove('selected');
                 }
                 if (!event.target.classList.contains('removed')) {
-                    selectedComponent = event.target;
+                    selectedComponent = event.target.classList.contains('builder-form-component-wrapper')
+                        ? event.target.lastChild
+                        : event.target
                     selectedComponent.parentElement.classList.add('selected');
                     selectedComponentObject = definition;
-                    updateFormInfo()
+                    updateFormComponentInfo()
                 }
             }
         });
@@ -236,29 +238,64 @@
             selectedComponent.classList.remove('selected');
             selectedComponent = null;
             selectedComponentObject = null;
+            selectedComponentNameObservers.forEach((observer) => {
+                observer.disconnect();
+            });
         }
     }
 
-
-    function updateFormInfo()
+    function updateFormComponentInfo()
     {
         const componentInfo = document.getElementById("dynamic-component-info");
         componentInfo.innerHTML = '';
         if (selectedComponent===null){
             return;
         }
+        if (selectedComponentNameObservers!==null) {
+            selectedComponentNameObservers.forEach((observer)=>{
+                observer.disconnect();
+            });
+        }
+        const componentInfoForm = document.createElement('form');
+
+
         const elem = document.createElement("h3");
+        elem.style.marginBottom = "2px";
         elem.innerText = "Component : " + selectedComponentObject.name;
         componentInfo.appendChild(elem);
 
-        const componentInfoForm = document.createElement('form');
-        componentInfo.appendChild(componentInfoForm);
+        const nameDiv = document.createElement("div");
+        nameDiv.style.marginBottom = "2px";
+        const nameLabel = document.createElement("label");
+        nameLabel.innerHTML = "name";
+        const nameInput = document.createElement("input");
+        nameInput.disabled = true;
+        nameInput.value = selectedComponent.getAttribute('name');
+        nameDiv.appendChild(nameLabel);
+        nameDiv.appendChild(nameInput);
+        componentInfoForm.appendChild(nameDiv);
+        const nameObserver = new MutationObserver((mutations) => {
+            mutations.forEach((mutation) => {
+                if (mutation.type==='attributes' && mutation.attributeName==='name') {
+                    nameInput.value = mutation.target.getAttribute('name');
+                }
+            })
+        });
+        nameObserver.observe(selectedComponent, {
+            attributes: true,
+            attributeFilter: ['name']
+        });
+        if (selectedComponentNameObservers===null) {
+            selectedComponentNameObservers = [];
+        }
+        selectedComponentNameObservers.push(nameObserver);
 
         const attributes = selectedComponentObject.metadata;
+        // console.log(selectedComponent, selectedComponentObject);
         Object.keys(attributes).forEach((key) => {
             const attrDiv = document.createElement("div");
             const label = document.createElement("label");
-            label.innerText = key;
+            label.innerText = key === 'name' ? 'basename' : key;
             attrDiv.appendChild(label);
             componentInfoForm.appendChild(attrDiv);
             const input = document.createElement("input")
@@ -283,13 +320,23 @@
                     input.setAttribute('value', slotHtml);
                 }
             }
+            else if (key==='name') {
+                input.setAttribute('value',selectedComponent.getComponentBaseName());
+            }
             else if (selectedComponent.hasAttribute(key)) {
                 input.setAttribute('value', selectedComponent.getAttribute(key));
             }
+            // else {
+            //     console.warn("can't find attribute '"+key+"'", selectedComponent);
+            // }
             input.addEventListener('change',evt => {
                 try {
                     if (key === 'slot') {
                         selectedComponent.innerHTML = evt.target.value;
+                    }
+                    else if (key === 'name') {
+                        selectedComponent.setComponentBaseName(evt.target.value);
+                        selectedComponent.triggerNameUpdated();
                     }
                     else if (attributes[key].type === 'string') {
                         selectedComponent.setAttribute(key, evt.target.value);
@@ -310,9 +357,30 @@
                 catch(err) {
                     console.error(err);
                 }
-            })
-        })
+            });
+            const inputObserver = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type==='attributes' && mutation.attributeName===key) {
+                        const value = key==='name'
+                            ? selectedComponent.getComponentBaseName()
+                            : selectedComponent.getAttribute(key);
+                        if (value !== input.value) {
+                            input.value = value;
+                        }
+                    }
+                })
+            });
+            inputObserver.observe(selectedComponent,{
+                attributes: true,
+                attributeFilter: [key]
+            });
+        });
+        componentInfo.appendChild(componentInfoForm);
     }
+
+    document.getElementById('form-namespace-input').addEventListener('change', (evt) => {
+        formArea.setAttribute('data-namespace', evt.target.value)
+    })
 </script>
 <style>
     #dynamic-component-info form {
