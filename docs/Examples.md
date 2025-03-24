@@ -70,7 +70,8 @@ $htmlTag = \Deform\Html\HtmlDocument::load($htmlString)->getHtmlRootTag();
 > **_NOTE:_** There is no checking of the generated HTML for correctness. It's up to you to get it right!
 
 ### Deform\Component
-Components are built using Deform\Html. Where appropriate they are provided with a wrapper and a label by default.
+Components are built using Deform\Html. Where appropriate they are provided with a wrapper, and optionally a label, hint
+and error.
 ```php
 use \Deform\Component\ComponentFactory as Component;
 
@@ -171,7 +172,7 @@ There is an exmaple [here](../tests/_data/App/ExampleFormModel.php) which is use
 * CSRF protection : disabled, session based, or double-submit cookie based.
 * optional namespaces.
 * unchecked values are explicit for Checkbox, CheckboxMulti, and RadioButtonSet when populateFormData(...) is called.
-* there are validateFormData(...) and processFormData(...) methods which should be overloaded.
+* there are validateFormData(...) and processFormData(...) methods which can/should be overloaded for form processing.
 * there is a single run() method which can be used to perform form generation & processing in one go.
 * generate an array definition from a form, and generate a form from such a definition (useful for db serialisation, or
   ajax submission etc.)

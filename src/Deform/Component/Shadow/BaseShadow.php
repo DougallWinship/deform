@@ -19,10 +19,10 @@ trait BaseShadow
         );
         $initJs = <<<JS
 if (!this.hasAttribute('required') || !Deform.isTruthy(this.getAttribute('required'))) {
-    element.part.remove('deform-hidden');
+    element.part.add('deform-hidden');
 }
 else {
-    element.part.add('deform-hidden');
+    element.part.remove('deform-hidden');
 }
 JS;
         $updateJs = <<<JS

@@ -1,10 +1,16 @@
 [&laquo; back](../README.md)
+
 ## Features
-* consistent generation of form components (as regards the HTML structure)
+* form component generation (with consistent structure)
+* full form model definition
+* form submission handling with CSRF protection
 * strong IDE auto-completion support & chaining wherever appropriate
-* generate forms in a controller action which can subsequently be tailored in a view
-* export a form definition to an array & build a form from an array definition
-* custom HTML element creation using shadow DOM
+* just-in-time DOM modification : via simplistic PHP selectors, full XPath selector, or optionally CSS selectors (*)
+* form array (and hence json) encoding/decoding
+
+> (*) - this requires a CSS to XPath conversion library such as https://css2xpath.github.io/
+
+> **_NOTE:_** validation is outside the scope of the project, but other libraries can easily be integrated.
 
 ### Layers
 There are 3 principal layers:
@@ -12,8 +18,3 @@ There are 3 principal layers:
 2. Deform\Component - generate various components using Deform\Html
 3. Deform\Form - generate forms using Deform\Component
 
-### ToDo:
-* change acceptance tests to use a real browser (via selenium) & test custom components (etc.)
-* add instructions/examples on styling
-* add instructions/examples on making your own components
-* improve instructions/examples on the form layer

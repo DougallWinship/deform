@@ -70,7 +70,7 @@ class LoginForm extends \Deform\Form\FormModel
 
 Typically, you would instantiate this in a controller action as follows:
 ```php
-$loginForm = new LoginForm();// $loginForm is now an HtmlTag containing the form
+$loginForm = new LoginForm();
 $loginForm->run();
 ```
 Then pass $loginForm to your view:
