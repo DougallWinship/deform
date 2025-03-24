@@ -1,7 +1,11 @@
 # Deform
-Generate consistent PHP form components and forms which can be subsequently manipulated before rendering.
+**Deform** is a PHP library to assist with consistent form component generation and processing.
 
-[Installation](#installation)  
+It supports both individual components and full form models, with built-in support for form submission handling, CSRF protection, JSON encoding/decoding, CSS(*) manipulation, and last-minute DOM-style modifications.
+
+Components are rendered as standard HTML/CSS by default, but can also be exported as JavaScript [custom elements](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements) for use in any frontend framework.
+
+[Installation](#installation)
 [Features](./docs/Features.md)  
 [Getting Started](./docs/GettingStarted.md)  
 [Examples](./docs/Examples.md)  
