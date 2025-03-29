@@ -7,9 +7,9 @@ namespace Deform\Html;
 /**
  * basic DOMDocument helper
  *
- * please note this is a specific implementation for this library, for a more generic solution try
+ * please note this is a specific implementation for this library, for a more generic solution try one of the following:
  *   https://github.com/phpbench/dom
- * or
+ *   https://github.com/PhpGt/Dom/wiki
  *   https://github.com/scotteh/php-dom-wrapper
  */
 class HtmlDocument implements \Stringable
@@ -38,7 +38,7 @@ class HtmlDocument implements \Stringable
     private static array $allowedTags = self::HTML5_ALLOWED_TAGS;
 
     /**
-     * prevent instancing manually
+     * private to prevent instancing manually
      */
     private function __construct()
     {
@@ -244,6 +244,9 @@ class HtmlDocument implements \Stringable
         return call_user_func(self::$cssToXpathConverter, $cssSelector);
     }
 
+    /**
+     * @return bool
+     */
     public static function canSelectCss(): bool
     {
         return is_callable(self::$cssToXpathConverter);

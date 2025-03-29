@@ -26,3 +26,5 @@ If you have [PHPDocumentor](https://docs.phpdoc.org/) installed then you can gen
 phpdoc run -d src -t docs/api
 ```
 This will create the API docs [/docs/api](./api/index.html).
+
+To view the docs either manually open in a browser or mount on a local webserver.

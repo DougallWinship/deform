@@ -2,6 +2,9 @@
 
 namespace Deform\Util;
 
+/**
+ * array handling utilities
+ */
 class Arrays
 {
     /**

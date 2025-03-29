@@ -20,7 +20,7 @@ $html = Html::div()->css('border','10px solid red'])->class('outerdiv')->add(
 );
 echo $html;
 ```
-...will output (indent & newlines added for readability):
+...will output:
 ```html
 <div style='border:10px solid red' class='outerdiv'>
     <hr style='border:10px solid green' class='innerhr'>
@@ -43,7 +43,7 @@ echo $html->deform('.blue-text',function(\Deform\Html\HtmlTag $node) {
 });
 ```
 
-If you want to do more complex manipulation you should load the tag into an HtmlDocument (a basic DomDocument wrapper):
+If you want to do more complex manipulation you should load the tag into [HtmlDocument](../src/Deform/Html/HtmlDocument.php) (a basic DomDocument wrapper):
 ```php
 $document = \Deform\Html\HtmlDocument::loadHtmlTag($html)
     ->selectXPath('.//*[contains(concat(" ",normalize-space(@class)," ")," blue-text ")]', function(\DOMElement $domElement) {
@@ -56,8 +56,8 @@ $document = \Deform\Html\HtmlDocument::loadHtmlTag($html)
 > You can alternatively use selectCss(...) directly if you install https://github.com/bkdotcom/CssXpath via composer,
 > otherwise an online conversion tool such as https://css2xpath.github.io/ can be useful.
 
-You can also generate an HtmlTag from an arbitrary HTML string rather than by chaining if you want to for some, as yet
-undetermined, reason:
+You can also generate an [HtmlTag](../src/Deform/Html/HtmlTag.php) from any arbitrary HTML string, rather than by 
+chaining if you want to (for some, as yet undetermined, reason!):
 ```php
 $htmlString = <<<HTML
 <div style='border:10px solid red' class='outerdiv'>
@@ -103,7 +103,7 @@ echo Component::RadioButtonSet('form1', 'myradiobuttonset')
 </div>
 ```
 Which looks like this:
-<div id="form1-myradiobuttonset-container" class="component-container container-type-radio-button-set">
+<div id="form1-myradiobuttonset-container" class="component-container container-type-radio-button-set" style="background-color:#333;display:inline-block;padding:8px;border-radius:8px">
     <div class="label-container">
         <label>My Radio Button Set</label>
     </div>
@@ -124,8 +124,9 @@ Which looks like this:
     </div>
 </div>
 
-> **_NOTE:_** Since components are defined as HtmlTag instances you can perform any manipulations on them outlined in
-> the previous section, they are only rendered as actual HTML when finally cast to a string.
+> **_NOTE:_** Since components are defined as [HtmlTag](../src/Deform/Html/HtmlTag.php) instances you can perform any 
+> manipulations on them as outlined in the previous section, they are only rendered as actual HTML when finally cast to
+> a string.
 
 #### Custom element definitions
 The components can also generate a set of [Custom Elements](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements)
@@ -181,5 +182,3 @@ There is an exmaple [here](../tests/_data/App/ExampleFormModel.php) which is use
 * DB model systems can easily be used but are not directly supported.
 * Validation is the responsibility of the user, however there is a convenient setErrors(...) method to which any
   validation errors can be sent, this matches fields to their Component and displays any issues.
-
-TODO: - make this section more useful with examples etc.

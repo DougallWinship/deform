@@ -1,22 +1,31 @@
 # Deform
 Deform helps you build consistent HTML forms with PHP.
 
-Components are rendered as standard HTML/CSS by default, but can also be exported as JavaScript [custom elements](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements) for use in any frontend framework.
+Components are rendered as standard HTML/CSS by default, but can also be exported as JavaScript [custom elements](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements) for use in frontend frameworks.
 
-## Content
+![output](./docs/example.gif)
+
+## Contents
 [Features](./docs/Features.md)  
-[Installation](#installation)
-[Getting Started](./docs/GettingStarted.md)  
+[Installation](#installation)  
+[Getting Started](#getting-started)  
 [Examples](./docs/Examples.md)  
 [Project Info](./docs/ProjectInfo.md)  
-
-You can contact me here : [dougall.winship@gmail.com](mailto:dougall.winship@gmail.com)
+[Contact](#contact)
 
 ## Quick Demo
 
 ### Direct Component Usage:
-![output](./docs/example.gif)
-which generates, with whitespace added for readability, the following:
+```php
+<?php
+use \Deform\Component\ComponentFactory as Component;
+?>
+<form action="" method="post">
+    <?= Component::Text('login', 'email')->label('Email', true); ?>
+    <?= Component::Password('login', 'password')->label('Password', true); ?>
+</form>
+```
+which generates:
 ```html
 <form action="" method="post">
     <div id='login-email-container' class='component-container container-type-text'>
@@ -34,38 +43,121 @@ which generates, with whitespace added for readability, the following:
 ## Installation
 <a name='installation'></a>
 
-Usage requires a PSR-4 compatible autoloader.
+With [composer](https://getcomposer.org/):
 
-### With composer
-As there is not yet a stable release install like this
 ```
 composer require dougallwinship/deform:dev-master
 ```
 
-### Manual
-Move to a suitable dir such as '/libs' then
+Alternatively you can manually install via git.
 ```
 git clone https://github.com/DougallWinship/deform.git
 ```
 
-Make the /deform/src dir available to autoload.
-
-> You may not be using composer, but you will need to use a PSR-4 autoloader to ```/src``` to load the library with
-> the root namespace ```\Deform```
->
-> If you were to manually do so for now you'll have to figure it out on your own, but the [composer.json](./composer.json)
-> definition is something like:
-> ```
->    "autoload": {
->        "psr-4": {"Deform": "libs/deform/src/Deform"}
->    },
->```
+Then move the code to a suitable directory and add a PSR-4 autoloader.
 
 ___
 
-### ToDo:
-* add/update example gifs on this page
+## Getting started
+<a name='getting-started'></a>
+
+#### Raw components
+Components can be used directly in a view file like this
+```php
+<?php use \Deform\Component\ComponentFactory as Component; ?>
+<?= Component::Text('namespace','text-field')
+    ->label('Text Field Label')
+    ->value('initial value')
+    ->hint('text field hint');
+?>
+```
+Your IDE should help with auto-completion lists to see what components are currently
+available. The authority is the annotations listed in [ComponentFactory](./src/Deform/Component/ComponentFactory.php).
+
+#### Form Model
+While it's possible to use the components manually, it's recommended to make a FormModel to represent a set of
+components & specify what you wish to do with them.
+```php
+<?php
+
+namespace App/Form;
+
+class LoginForm extends \Deform\Form\FormModel
+{
+    public function __construct() 
+    {
+        parent::__construct('login-form');
+        $this->addHtml("<h1>Login</h1>");
+        $this->addText('email')->label('Email');
+        $this->addPassword('password')->label('Password');
+        $this->addDisplay('login-failed-message');
+        $this->addSubmit('Login');
+    }
+    
+    public function validateFormData(array $formData) {
+        if (!isset($formData['email']) || !isset($formData['password'])) {
+            throw new \Exception('Unexpected missing form data');
+        }
+        $errors = [];
+        if (!$formData['email']) {
+            $errors['email']='Missing email';
+        }
+        elseif (!filter_var($email_a, FILTER_VALIDATE_EMAIL)) {
+            $errors['email']='Invalid email';
+        }
+        if (!$formData['password']) {
+            $errors['password']='Missing password';
+        }
+        return count($errors)===0 
+            ? true 
+            : $errors;
+    }
+    
+    public function processFormData(array $formData) 
+    {
+        // obviously this assumes you have an Auth class!
+        if (Auth::checkCredentials($formData['email'], $formData['password'])) {
+            Auth::login($formData['email'], $formData['password']);
+            Auth::redirectAfterLogin()
+        }
+        else {
+            $this->getFieldComponent('login-error-message')
+                ->value("Email or password was incorrect");
+        }
+    }
+}
+```
+
+Typically, you would instantiate this in a controller action as follows:
+```php
+$loginForm = new LoginForm();
+$loginForm->run();
+```
+Then pass $loginForm to your view:
+```php
+<?= $loginForm->getFormHtml(); ?>
+```
+
+The reason this library is called deform is that you can manipulate the form in the view (or action) prior to displaying
+it using selectors. Please see [build.php](../tests/_data/public/form/build.php)
+and [document.php](../tests/_data/public/html/document.php) for example usage.
+
+You can also convert the form to an array definition, and build a form instance from an array definition.
+```php
+$loginFormDefinition = $loginForm->toArray();
+$rebuiltLoginForm = FormModel::buildForm($loginFormDefinition);
+```
+___
+
+### Roadmap:
 * change acceptance tests to use a real browser (via selenium) & test custom components (etc.)
 * add instructions/examples on styling
 * add instructions/examples on making your own components
-* improve instructions/examples on the form layer
+* improve instructions/examples (particularly for the form layer)
+
+___
+
+### Contact
+<a name='contact'></a>
+
+You can contact me here : [dougall.winship@gmail.com](mailto:dougall.winship@gmail.com)

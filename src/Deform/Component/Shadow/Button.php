@@ -11,6 +11,22 @@ trait Button
         return str_replace('</button>', '<slot></slot></button>', parent::getShadowTemplate());
     }
 
+    /*
+    public function getShadowMethods(): string
+    {
+        return <<<JS
+changeName(name, oldValue, newValue)
+{
+    element.name = newValue;
+    if (name==='name' && oldValue!==newValue) {
+        this.internals_.setFormValue(null, oldValue);
+        this.internals_.setFormValue(element.value || '',newValue);
+    }
+}
+JS;
+    }
+    */
+
     public function mergeShadowAttributes(): array
     {
         $attributes = [];

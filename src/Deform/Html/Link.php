@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace Deform\Html;
 
 /**
- * for convenient link generation
+ * convenient link generation
  */
 class Link extends HtmlTag
 {

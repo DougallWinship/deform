@@ -5,9 +5,9 @@ declare(strict_types=1);
 namespace Deform\Html;
 
 /**
- * represents empty (or self-closing) HTML tag incapable of containing child elements.
+ * represents an HTML tag.
  *
- * non-authoritative list of potentially useful tag attributes to facilitate auto-completion:
+ * see below for a non-authoritative list of potentially useful tag attributes to facilitate auto-completion:
  * @method HtmlTag value(string $value)
  * @method HtmlTag checked(bool $value)
  * @method HtmlTag selected(bool $value)

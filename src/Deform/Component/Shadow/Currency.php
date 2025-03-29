@@ -19,7 +19,8 @@ trait Currency
             '.currency-symbol',
             Attribute::TYPE_STRING,
             "element.innerHTML=this.getAttribute('currency');",
-            "element.innerHTML=newValue;"
+            "element.innerHTML=newValue;",
+            default: "&pound;"
         );
         return $attributes;
     }

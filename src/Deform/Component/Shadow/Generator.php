@@ -61,6 +61,16 @@ window.Deform = {
     isTruthy(value) {
         const falsy = ["false","0","no","off"];
         return !falsy.includes(value);
+    },
+    parseJson(value, error) 
+    {
+        try {
+            return JSON.parse(value);
+        }
+        catch (err) {
+            console.error(error)
+            return null;
+        }
     }
 };
 JS;
@@ -140,7 +150,9 @@ class $componentClass extends HTMLElement {
     namespace = null;
     namespaceChecked = false;
     baseName = null;
-    hasInvalidName = false
+    hasInvalidName = false;
+    metadata = null;
+    syncGuards = {};
 $propertyDeclarations
 $constructor
 $shadowMethods
@@ -192,6 +204,15 @@ $dynamicCallbacks
     triggerNameUpdated() {
         this.setAttribute('name', this.namespace+"["+this.baseName+"]");
     }
+    isGuarded(field) {
+        return this.syncGuards[field];
+    }
+    guard(field) {
+        this.syncGuards[field]=true;
+    }
+    unguard(field) {
+        this.syncGuards[field]=false;
+    }
 }
 JS;
         return $classJs;
@@ -213,8 +234,9 @@ constructor() {
     this.container = $containerDefinition;
     this.isConnected = false;
     this.namespaceChecked = false;
+    this.metadata = this.constructor.metadata
     const shadowRoot = this.attachShadow({mode:'open', delegatesFocus: true});
-    shadowRoot.appendChild(this.template)
+    shadowRoot.appendChild(this.template);
 }
 JS;
     }
@@ -248,7 +270,6 @@ if (this.namespaceChecked === false) {
     if (this.form) {
         this.namespace = this.form.dataset.namespace;
         if (this.namespace) {
-            console.log('name', this.namespace+"["+this.getAttribute('name')+"]");
             this.setAttribute('name', this.namespace+"["+this.getAttribute('name')+"]");
             const formObserver = new MutationObserver((mutations) => {
                 mutations.forEach((mutation) => {
@@ -275,6 +296,9 @@ const container = this.template.querySelector('.component-container');
 if (container) {
     container.removeAttribute('id');
 }
+Object.keys(this.metadata).forEach((metadataKey) => {
+    this.syncGuards[metadataKey] = false;
+});
 JS;
         $connectedCallbackSetup = Strings::prependPerLine($connectedCallbackSetup, "    ");
         $connectedCallbackRulesJs = Strings::prependPerLine($this->getConnectedCallbackRules(), "    ");
@@ -282,20 +306,26 @@ JS;
 connectedCallback() {
 $connectedCallbackSetup
 $connectedCallbackRulesJs
+    const metadata = this.constructor.metadata;
+    Object.keys(metadata).forEach((key) => {
+        const item = metadata[key];
+        if (!this.hasAttribute(item.name) && item['default']!==null) {
+            this.setAttribute(item.name, item['default']);
+        }
+    });
     this.isConnected=true;
 }
 JS;
     }
 
     /**
-     *
      * @return string
+     * @throws \Exception
      */
     private function getConnectedCallbackRules(): string
     {
         $generatedComponentRules = [
             "/* start : connected callback rules */",
-            "let element;"
         ];
 
         foreach ($this->attributes as $attribute) {
@@ -309,47 +339,50 @@ JS;
                 }
             } elseif ($attribute->behaviour === Attribute::BEHAVIOUR_CUSTOM) {
                 $generatedComponentRules[] = <<<JS
-element = this.container.querySelector("{$attribute->selector}");
-if (element!==null) {
-    {$attribute->initialiseJs}
-}
-else {
-    console.error("{$failedToFind}");
-}
+(()=> {
+    const element = this.container.querySelector("{$attribute->selector}");
+    if (element!==null) {
+        {$attribute->initialiseJs}
+    }
+    else {
+        console.error("{$failedToFind}");
+    }
+})();
 JS;
             } elseif ($attribute->behaviour === Attribute::BEHAVIOUR_HIDE_IF_EMPTY) {
                 $generatedComponentRules[] = <<<JS
-element = this.container.querySelector("{$attribute->selector}");
-if (element!==null) { 
-    if (this.hasAttribute('{$attribute->name}'))
-    {
-        {$attribute->initialiseJs}
-        element.part.remove('deform-hidden');
+(()=> {
+    const element = this.container.querySelector("{$attribute->selector}");
+    if (element!==null) { 
+        if (this.hasAttribute('{$attribute->name}'))
+        {
+            {$attribute->initialiseJs}
+            element.part.remove('deform-hidden');
+        }
+        else {
+            element.part.add('deform-hidden');
+        }
     }
     else {
-        element.part.add('deform-hidden');
+        console.error("{$failedToFind}");
     }
-}
-else {
-    console.error("{$failedToFind}");
-}
+})();
 JS;
             } elseif ($attribute->behaviour === Attribute::BEHAVIOUR_VISIBLE_IF_EMPTY) {
                 $generatedComponentRules[] = <<<JS
-element = this.container.querySelector("{$attribute->selector}");
-if (element!==null) { 
-    if (this.hasAttribute('{$attribute->name}'))
-    {
-        {$attribute->initialiseJs}
-        element.part.remove('deform-hidden');
+(() => {
+    const element = this.container.querySelector("{$attribute->selector}");
+    if (element!==null) { 
+        if (this.hasAttribute('{$attribute->name}'))
+        {
+            {$attribute->initialiseJs}
+            element.part.remove('deform-hidden');
+        }
     }
     else {
-        element.part.add('deform-hidden');
+        console.error("{$failedToFind}");
     }
-}
-else {
-    console.error("{$failedToFind}");
-}
+})();
 JS;
             } else {
                 throw new \Exception("Invalid behaviour : " . $attribute->behaviour);

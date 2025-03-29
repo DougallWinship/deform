@@ -303,6 +303,7 @@ class FormModel
     }
 
     /**
+     * @param array $formData
      * @return true|array
      */
     protected function validateFormData(array $formData): true|array

@@ -12,6 +12,7 @@ trait Hidden
         $attributes['label'] = false;
         $attributes['hint'] = false;
         $attributes['error'] = false;
+        $attributes['required'] = false;
         $attributes['name'] = new Attribute(
             'name',
             'input',

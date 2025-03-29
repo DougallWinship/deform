@@ -17,10 +17,11 @@
     <form id="form-area" data-namespace="builder" method="post">
         <h3>Form Area</h3>
         <p>Drag components here</p>
-        <input type="submit" value="Submit"/>
+        <button type="button" id="dump-button">Log Form Data</button>
+        <div id="form-data"></div>
     </form>
 
-    <div id="form-info" style="">
+    <div id="form-info">
         <h3>Form Info</h3>
         <div id="form-definition">
             <label>Form namespace<input id="form-namespace-input" type="text" value="builder" autocomplete="off" /></label>
@@ -32,11 +33,16 @@
 </div>
 
 <script>
+    document.getElementById("dump-button").addEventListener("click", ()=> {
+        const formElem = document.getElementById("form-area");
+        new FormData(formElem);
+    })
     document.addEventListener("formdata", (event) => {
         const entries = event.formData.entries();
-        console.log("FormData:");
-        for (var pair of entries) {
-            console.log("  "+pair[0]+"="+pair[1]);
+        console.clear();
+        console.log("Form Data:");
+        for (const[key, value] of entries) {
+            console.log(key, value);
         }
     });
 
@@ -148,7 +154,7 @@
         closeElem.style.right = '6px';
         closeElem.style.top = '6px';
         closeElem.textContent = 'X';
-        closeElem.style.padding="1px 4px";
+        closeElem.style.padding="0 4px 0";
         closeElem.style.fontFamily = "arial";
         closeElem.style.borderRadius = "100%";
         closeElem.style.border = "1px solid black"
@@ -165,20 +171,24 @@
         elem.appendChild(label);
 
         let definition = Deform.getComponent('DeformComponent'+componentType);
+        console.log(definition);
         const component = document.createElement(definition.name);
         component.setAttribute('name', definition.name);
         const attributes = definition.metadata;
         Object.keys(attributes).forEach((key) => {
             if (key!=='slot' && key!=='error') {
                 let attribute = attributes[key];
-                if (attribute.type==='string' || attribute.type==='int' || attribute.type==='float') {
-                    component.setAttribute(key, key);
+                if (attribute.name==='name') {
+                    component.setAttribute('name', definition.name.substring(7));
+                }
+                else if (attribute.type==='string' || attribute.type==='int' || attribute.type==='float') {
+                    component.setAttribute(key, attribute['default'] ?? key);
                 }
                 else if (attribute.type==='array') {
-                    component.setAttribute(key, '["'+key+'"]');
+                    component.setAttribute(key, attribute['default'] ?? '["'+key+'"]');
                 }
                 else if (attribute.type==='keyvalue-array') {
-                    component.setAttribute(key, JSON.stringify([[key+"1", key+"1"],[key+"2",key+"2"]]));
+                    component.setAttribute(key, attribute['default'] ?? JSON.stringify([[key+"1", key+"1"],[key+"2",key+"2"]]));
                 }
             }
             else if (key==='error') {
@@ -258,7 +268,6 @@
         }
         const componentInfoForm = document.createElement('form');
 
-
         const elem = document.createElement("h3");
         elem.style.marginBottom = "2px";
         elem.innerText = "Component : " + selectedComponentObject.name;
@@ -291,7 +300,6 @@
         selectedComponentNameObservers.push(nameObserver);
 
         const attributes = selectedComponentObject.metadata;
-        // console.log(selectedComponent, selectedComponentObject);
         Object.keys(attributes).forEach((key) => {
             const attrDiv = document.createElement("div");
             const label = document.createElement("label");
@@ -331,27 +339,29 @@
             // }
             input.addEventListener('change',evt => {
                 try {
-                    if (key === 'slot') {
-                        selectedComponent.innerHTML = evt.target.value;
-                    }
-                    else if (key === 'name') {
-                        selectedComponent.setComponentBaseName(evt.target.value);
-                        selectedComponent.triggerNameUpdated();
-                    }
-                    else if (attributes[key].type === 'string') {
-                        selectedComponent.setAttribute(key, evt.target.value);
-                    } else if (attributes[key].type === 'keyvalue-array') {
-                        selectedComponent.setAttribute(key, evt.target.value);
-                    } else if (attributes[key].type === 'array') {
-                        selectedComponent.setAttribute(key, evt.target.value);
-                    } else if (attributes[key].type === 'int') {
-                        selectedComponent.setAttribute(key, evt.target.value);
-                    } else if (attributes[key].type === 'float') {
-                        selectedComponent.setAttribute(key, evt.target.value);
-                    } else if (attributes[key].type === 'boolean') {
-                        selectedComponent.setAttribute(key, evt.target.value);
-                    } else {
-                        console.error("Unrecognised attribute type '"+attributes[key].type+"'");
+                    if (!selectedComponent.isGuarded(key)) {
+                        selectedComponent.guard(key);
+                        if (key === 'slot') {
+                            selectedComponent.innerHTML = evt.target.value;
+                        } else if (key === 'name') {
+                            selectedComponent.setComponentBaseName(evt.target.value);
+                            selectedComponent.triggerNameUpdated();
+                        } else if (attributes[key].type === 'string') {
+                            selectedComponent.setAttribute(key, evt.target.value);
+                        } else if (attributes[key].type === 'keyvalue-array') {
+                            selectedComponent.setAttribute(key, evt.target.value);
+                        } else if (attributes[key].type === 'array') {
+                            selectedComponent.setAttribute(key, evt.target.value);
+                        } else if (attributes[key].type === 'integer') {
+                            selectedComponent.setAttribute(key, evt.target.value);
+                        } else if (attributes[key].type === 'float') {
+                            selectedComponent.setAttribute(key, evt.target.value);
+                        } else if (attributes[key].type === 'boolean') {
+                            selectedComponent.setAttribute(key, evt.target.value);
+                        } else {
+                            console.error("Unrecognised attribute type '" + attributes[key].type + "'");
+                        }
+                        selectedComponent.unguard(key);
                     }
                 }
                 catch(err) {
@@ -361,11 +371,15 @@
             const inputObserver = new MutationObserver((mutations) => {
                 mutations.forEach((mutation) => {
                     if (mutation.type==='attributes' && mutation.attributeName===key) {
-                        const value = key==='name'
-                            ? selectedComponent.getComponentBaseName()
-                            : selectedComponent.getAttribute(key);
-                        if (value !== input.value) {
-                            input.value = value;
+                        if (!selectedComponent.isGuarded(mutation.attributeName)) {
+                            selectedComponent.guard(mutation.attributeName);
+                            const value = key === 'name'
+                                ? selectedComponent.getComponentBaseName()
+                                : selectedComponent.getAttribute(key);
+                            if (value !== input.value) {
+                                input.value = value;
+                            }
+                            selectedComponent.unguard(mutation.attributeName);
                         }
                     }
                 })
@@ -380,11 +394,29 @@
 
     document.getElementById('form-namespace-input').addEventListener('change', (evt) => {
         formArea.setAttribute('data-namespace', evt.target.value)
-    })
+    });
+
+    function syntaxHighlight(json) {
+        if (typeof json !== 'string') {
+            json = JSON.stringify(json, null, 2);
+        }
+        return json
+            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+            .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, match => {
+                let cls = 'number';
+                if (/^"/.test(match)) {
+                    cls = /:$/.test(match) ? 'key' : 'string';
+                } else if (/true|false/.test(match)) {
+                    cls = 'boolean';
+                } else if (/null/.test(match)) {
+                    cls = 'null';
+                }
+                return `<span class="json-${cls}">${match}</span>`;
+            });
+    }
+
 </script>
 <style>
-
-
     #form-builder {
         display:flex;
         flex-direction:row;
@@ -397,7 +429,7 @@
         padding: 10px;
         user-select: none;
     }
-    #form-builder #available-components h3 {
+    h3 {
         margin-top: 0;
     }
     #form-builder .component {
@@ -456,7 +488,6 @@
         min-height:300px;
     }
 
-
     #dynamic-component-info form {
         display:table
     }
@@ -469,5 +500,13 @@
     #dynamic-component-info form>div>*:first-child {
         text-align:right;
         padding-right:4px;
+    }
+    #form-data pre {
+        background: #f8f8f8;
+        border: 1px solid #ccc;
+        padding: 1em;
+        font-family: monospace;
+        font-size: 0.9em;
+        white-space: pre-wrap
     }
 </style>

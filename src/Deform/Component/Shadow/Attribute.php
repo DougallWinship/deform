@@ -29,6 +29,7 @@ class Attribute
         public string $initialiseJs = '',
         public string $updateJs = '',
         public string $behaviour = self::BEHAVIOUR_HIDE_IF_EMPTY,
+        public ?string $default = null
     ) {
         if ($updateJs) {
             $this->dynamic = true;
@@ -41,6 +42,7 @@ class Attribute
             'name' => $this->name,
             'selector' => $this->selector,
             'type' => $this->type,
+            'default' => $this->default,
         ];
     }
 }

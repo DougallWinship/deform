@@ -10,7 +10,7 @@ trait File
     {
         $attributes = [];
         $initJs = <<<JS
-element = this.container.querySelector(".control-container input");
+const element = this.container.querySelector(".control-container input");
 
 if (element) {
     element.addEventListener('change',()=> {

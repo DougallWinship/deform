@@ -3,7 +3,7 @@
 namespace Deform\Util;
 
 /**
- * string handling utility functions
+ * string handling utilities
  */
 class Strings
 {
