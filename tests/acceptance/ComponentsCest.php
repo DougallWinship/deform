@@ -148,7 +148,7 @@ class ComponentsCest
 
     public function submitButton(AcceptanceTester $I)
     {
-        $I->seeElement(['css'=>'input#submit-form1-mysubmitbutton[type=submit][value="My Submit Button"]']);
+        $I->seeElement(['css'=>'input#submit-form1-mysubmitbutton[type=submit][value="Submit Button"]']);
 
     }
 
@@ -183,7 +183,7 @@ class ComponentsCest
             'myselectmulti2'=>["two","five"],
             'mytext'=>'',
             'mytextarea'=>'',
-            'mysubmitbutton'=>'My Submit Button',
+            'mysubmitbutton'=>'Submit Button',
             'expected_data' => ['mycheckbox','mymulticheckbox','myradiobuttonset','myradiobuttonset2']
         ],$form1Data);
     }

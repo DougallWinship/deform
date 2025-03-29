@@ -1,22 +1,23 @@
 # Deform
 Deform helps you build consistent HTML forms with PHP.
 
-Components are rendered as standard HTML/CSS by default, but can also be exported as JavaScript [custom elements](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements) for use in frontend frameworks.
+Components are rendered as standard HTML/CSS by default, but can also be exported as JavaScript 
+[custom elements](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements).
 
 ![output](./docs/example.gif)
 
 ## Contents
-[Features](./docs/Features.md)  
 [Installation](#installation)  
 [Getting Started](#getting-started)  
+[Features](./docs/Features.md)  
 [Examples](./docs/Examples.md)  
-[Styling](./doc/Styling.md)
+[Styling](./doc/Styling.md)  
 [Project Info](./docs/ProjectInfo.md)  
 [Contact](#contact)
 
 ## Quick Demo
 
-### Direct Component Usage:
+Direct component usage:
 ```php
 <?php
 use \Deform\Component\ComponentFactory as Component;
@@ -26,7 +27,7 @@ use \Deform\Component\ComponentFactory as Component;
     <?= Component::Password('login', 'password')->label('Password', true); ?>
 </form>
 ```
-which generates:
+generates:
 ```html
 <form action="" method="post">
     <div id='login-email-container' class='component-container container-type-text'>
@@ -139,9 +140,9 @@ Then pass $loginForm to your view:
 <?= $loginForm->getFormHtml(); ?>
 ```
 
-The reason this library is called deform is that you can manipulate the form in the view (or action) prior to displaying
-it using selectors. Please see [build.php](../tests/_data/public/form/build.php)
-and [document.php](../tests/_data/public/html/document.php) for example usage.
+> The reason this library is called deform is that you can manipulate the form using selectors. 
+> Please see [build.php](./tests/_data/public/form/build.php)
+> and [document.php](./tests/_data/public/html/document.php) for example usage.
 
 You can also convert the form to an array definition, and build a form instance from an array definition.
 ```php
@@ -152,9 +153,9 @@ ___
 
 ### Roadmap:
 * change acceptance tests to use a real browser (via selenium) & test custom components (etc.)
-* add instructions/examples on styling
+* improve the styling instructions/examples
 * add instructions/examples on making your own components
-* improve instructions/examples (particularly for the form layer)
+* improve the usage instructions/examples (particularly for the form layer)
 
 ___
 

@@ -1,6 +1,6 @@
 [&laquo; back](../README.md)
 
-## Project Info
+# Project Info
 
 ### Dependencies
 As previously noted, if you want to use CSS selectors (rather than XPath) you should install https://github.com/bkdotcom/CssXpath.

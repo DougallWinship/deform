@@ -1,6 +1,6 @@
 [&laquo; back](../README.md)
 
-## Layer Examples
+# Examples
 
 Here are some simple examples of each layer:
 

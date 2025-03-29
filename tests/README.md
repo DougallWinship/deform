@@ -18,6 +18,8 @@ Additionally generate a coverage report (to /_output/coverage) like this:
 ./codecept run --coverage --coverage-html
 ```
 
+## XDebug
+
 During coverage report generation you may see this error:
 ```XDEBUG_MODE=coverage or xdebug.mode=coverage has to be set```
 If so then you can either run it like this

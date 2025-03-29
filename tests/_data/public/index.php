@@ -82,14 +82,14 @@ else {
 
 renderLayout($path, $contents);
 
-function renderLayout($title, $contents, $defaultCss=null)
+function renderLayout($title, $contents)
 {
     $head = [
         Html::title()->add($title),
         Html::meta(['charset' => 'utf-8']),
         Html::link(['rel' => 'stylesheet', 'href' => '/deform.css?version='.uniqid()]),
         Html::link(['rel' => 'icon', 'type' => 'image/x-icon', 'href'=>'http://deform-tests.test/favicon.ico']),
-        Html::style()->add("{text-decoration:none}")
+        Html::style()->add("a {text-decoration:none}")
     ];
     $html = Html::html(['lang' => 'en'])->add([
         Html::head()->add($head),

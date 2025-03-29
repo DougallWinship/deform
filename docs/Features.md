@@ -1,6 +1,6 @@
 [&laquo; back](../README.md)
 
-## Features
+# Features
 * form component generation (with consistent structure)
 * full form model definition
 * form submission handling with CSRF protection
