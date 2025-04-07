@@ -69,9 +69,10 @@ setFormData(optionElements)
     });
     this.internals_.setFormValue(JSON.stringify(values));
 }
-setupControls(values) 
+initValue(value) 
 {
-    if (values===null) return;
+    if (value===null) return;
+    const values = Deform.parseJson(value, "Failed to parse CheckboxMulti 'value'");
     const checkboxElements = this.template.querySelectorAll('input');
     let expectedValues = [];
     let checkedValues = [];
@@ -93,9 +94,10 @@ setupControls(values)
     });
     this.setFormData(checkboxElements);
 }
-updateControls(values) 
+updateValue(value) 
 {
-    if (values===null) return;
+    if (value===null) return;
+    const values = Deform.parseJson(value, "Failed to parse CheckboxMulti 'value'");
     const checkboxElements = this.template.querySelectorAll('input');
     checkboxElements.forEach((checkbox) => {
         if (values.includes(checkbox.getAttribute('value'))) {
@@ -123,8 +125,8 @@ JS;
             'value',
             '.control-container .checkboxmulti-checkbox-wrapper',
             Attribute::TYPE_ARRAY,
-            "this.setupControls(Deform.parseJson(this.getAttribute('value'), 'Failed to parse CheckboxMulti \'value\''))",
-            "this.updateControls(Deform.parseJson(newValue, 'Failed to parse CheckboxMulti \'value\''));"
+            "this.initValue(this.getAttribute('value'));",
+            "this.updateValue(newValue);"
         );
         return $attributes;
     }

@@ -91,7 +91,7 @@ class ComponentContainer
     public function setLabel(string $label, bool $required = false): void
     {
         $this->label = $label;
-        $this->labelTag = Html::label(['style' => 'margin-bottom:0'])->add($label);
+        $this->labelTag = Html::label()->add($label);
         if ($required) {
             $requiredTag = Html::span(['class' => 'required'])->add("*");
             $this->labelTag->add($requiredTag);

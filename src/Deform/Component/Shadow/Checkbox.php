@@ -17,8 +17,8 @@ trait Checkbox
 isChecked(element) 
 {
     if (!this.hasAttribute('value')) return false;
-    const checked = this.getAttribute('value').toLowerCase();
-    return !(!checked || checked.toLowerCase()==='false' || checked.toLowerCase()==='off' || parseInt(checked)===0);
+    const checked = this.getAttribute('value');
+    return checked && Deform.isTruthy(checked.toLowerCase());
 }
 setChecked(element, addEventListener=false) 
 {

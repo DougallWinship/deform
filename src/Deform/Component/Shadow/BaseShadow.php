@@ -69,13 +69,14 @@ element.addEventListener('change', ()=> {
     if (this.getAttribute('value')!==element.value) { 
         this.setAttribute('value',element.value); 
     } 
-    this.internals_.setFormValue(element.value); });
+    this.internals_.setFormValue(element.value);
+});
 JS;
         $updateJS = <<<JS
 if (element.value!==newValue) { 
-    element.value = newValue; 
-} 
-this.internals_.setFormValue(element.value);
+    element.value = newValue;
+    this.internals_.setFormValue(element.value);
+}
 JS;
         $attributes["value"] = new Attribute(
             "value",
@@ -112,5 +113,10 @@ JS;
     public function getShadowMethods(): string
     {
         return "";
+    }
+
+    public function getAdditionalAttributes(): array
+    {
+        return [];
     }
 }

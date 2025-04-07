@@ -13,6 +13,8 @@ class Attribute
     public const TYPE_ARRAY = 'array';
     public const TYPE_KEYVALUE_ARRAY = 'keyvalue-array';
     public const TYPE_FILE = 'file';
+    public const TYPE_TEXTAREA = 'textarea';
+
     public const SLOT_SELECTOR = 'slot';
     public const NAME_SELECTOR = 'name';
 

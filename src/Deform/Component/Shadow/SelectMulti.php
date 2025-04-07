@@ -9,7 +9,7 @@ trait SelectMulti
     public function getShadowMethods(): string
     {
         return <<<JS
-setOptions(element, value, removeExisting=false) 
+setOptions(selectElement, value, removeExisting=false) 
 {
     let values;
     try {
@@ -19,23 +19,24 @@ setOptions(element, value, removeExisting=false)
         console.error("invalid SelectMulti options json : "+value);
         return;
     }
+    const options = selectElement.querySelectorAll('option');
+    const templateOption = options[0];
     if (removeExisting) {
-        element.parentNode.querySelectorAll('option').forEach(function (element, index) {
+        options.forEach(function (element, index) {
             if (index>0) {
                 element.remove();
             }
         })
     }
     values.forEach((keyValue) => {
-        const option = element.cloneNode(true);
+        const option = templateOption.cloneNode(true);
         option.value = keyValue[0];
         option.innerText = keyValue[1];
-        option.style.display = "block";
-        element.parentNode.appendChild(option);
+        option.part.remove('deform-hidden');
+        selectElement.appendChild(option);
     });
-    element.style.display = 'none';
+    templateOption.part.add('deform-hidden');
 }
-
 setFormValue(options, name=null) 
 {
     let values = [];
@@ -43,33 +44,26 @@ setFormValue(options, name=null)
         if (element.selected) {
             values.push(element.value);
         }
-    })
-    this.internals_.setFormValue(JSON.stringify(values));
+    });
+    const valuesJson = JSON.stringify(values);
+    this.internals_.setFormValue(valuesJson);
 }
-
-setValues(element, valuesJson) 
+setValues(selectElement, valuesJson) 
 {
-    let values;
-    try {
-        values = JSON.parse(valuesJson);
-    }
-    catch (err) {
-        console.error("invalid SelectMulti options json : "+value);
+    const values = Deform.parseJson(valuesJson, "invalid SelectMulti options json : "+valuesJson);
+    if (values===null) {
         return;
     }
-    let options = element.querySelectorAll('option');
+    let options = selectElement.querySelectorAll('option');
     options.forEach((option, index) => {
         if (index>0) {
             option.selected = values.includes(option.value);
         }
     })
     this.setFormValue(options);
-    element.addEventListener('change', () => {
+    selectElement.addEventListener('change', () => {
         this.setFormValue(options);
     })
-}
-setName(element, value) {
-    
 }
 JS;
     }
@@ -80,7 +74,7 @@ JS;
 
         $attributes['options'] = new Attribute(
             'options',
-            '.component-container select option',
+            '.component-container select',
             Attribute::TYPE_KEYVALUE_ARRAY,
             "this.setOptions(element, this.getAttribute('options'), true);",
             "this.setOptions(element, newValue, true);"
@@ -99,7 +93,7 @@ JS;
             ".component-container select",
             Attribute::TYPE_STRING,
             "element.name = this.getAttribute('name');",
-            "if (oldValue!==newValue) {  }"
+            "element.name = newValue;"
         );
 
         return $attributes;

@@ -59,6 +59,7 @@ window.Deform = {
         return match ? match[1] : null;
     },
     isTruthy(value) {
+        if (!value) return false;
         const falsy = ["false","0","no","off"];
         return !falsy.includes(value);
     },
@@ -68,6 +69,7 @@ window.Deform = {
             return JSON.parse(value);
         }
         catch (err) {
+            console.error(value);
             console.error(error)
             return null;
         }
@@ -131,7 +133,10 @@ JS;
 
     private function generateJavascriptClass(string $componentName, string $componentClass): string
     {
-        $propertyDeclarations = '';
+        $additionalAttributes = $this->additionalAttributes();
+        if ($additionalAttributes !== null) {
+            $additionalAttributes = Strings::prependPerLine($additionalAttributes, "    ");
+        }
         $constructor = Strings::prependPerLine($this->generateConstructor($componentName), "    ");
         $shadowMethods = $this->component->getShadowMethods();
         if ($shadowMethods) {
@@ -153,7 +158,7 @@ class $componentClass extends HTMLElement {
     hasInvalidName = false;
     metadata = null;
     syncGuards = {};
-$propertyDeclarations
+$additionalAttributes
 $constructor
 $shadowMethods
 $additionalMethods
@@ -216,6 +221,15 @@ $dynamicCallbacks
 }
 JS;
         return $classJs;
+    }
+
+    private function additionalAttributes(): string
+    {
+        $additionalAttributes = $this->component->getAdditionalAttributes();
+        if (!$additionalAttributes) {
+            return "";
+        }
+        return implode(";".PHP_EOL, $additionalAttributes).";";
     }
 
     private function generateConstructor(string $componentName): string

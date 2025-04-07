@@ -36,22 +36,17 @@ class Image extends File
             . ' { this.nextSibling.src = window.URL.createObjectURL(this.files[0]); }'
             . ' this.nextSibling.nextSibling.value="";'
         );
-        $this->input->css('display', 'none');
         $htmlTag = parent::getHtmlTag();
         list($labelDiv, $componentDiv) = $htmlTag->getChildren();
         if (!$this->previewImageTag) {
             $this->addSupportTags();
         }
-        $closeButton = Html::button([
-            'class' => 'clear-image',
-            'style' => 'margin-left:10px;line-height:10px;background-color:transparent',
-            'onclick' => 'let input = this.parentNode.nextSibling.firstChild; '
-                        . 'input.nextSibling.src = "' . self::PLACEHOLDER_IMAGE_BASE64 . '";'
-                        . 'input.value=null;'
-                        . 'input.nextSibling.nextSibling.value=null'
-        ])->add('clear');
-        $labelDiv->set('onclick', 'return false');
-        $labelDiv->add($closeButton);
+        $this->input->css('display', 'none');
+        $onclickJs = 'let input = this.parentNode.nextSibling.firstChild; '
+            . 'input.nextSibling.src = "' . self::PLACEHOLDER_IMAGE_BASE64 . '";'
+            . 'input.value=null;'
+            . 'input.nextSibling.nextSibling.value=null';
+        $this->clearButton->set('onclick', $onclickJs );
         $componentDiv->add($this->previewImageTag);
         $componentDiv->add($this->hiddenUrlInput);
         return $htmlTag;

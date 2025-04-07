@@ -13,18 +13,6 @@ trait File
 const element = this.container.querySelector(".control-container input");
 
 if (element) {
-    element.addEventListener('change',()=> {
-        if (element.files.length > 0 ) {
-            this.internals_.setFormValue(element.files);
-            let filenames = [];
-            Array.from(element.files).forEach((file) => {
-                filenames.push(file.name);
-            })
-        }
-        else {
-            this.internals_.setFormValue(null);
-        }
-    });
     this.form?.addEventListener("formdata", (evt)=> {
         const formData = evt.formData;
         for (let file of element.files) {

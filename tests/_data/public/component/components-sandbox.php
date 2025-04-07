@@ -36,7 +36,7 @@
     document.getElementById("dump-button").addEventListener("click", ()=> {
         const formElem = document.getElementById("form-area");
         new FormData(formElem);
-    })
+    });
     document.addEventListener("formdata", (event) => {
         const entries = event.formData.entries();
         console.clear();
@@ -117,6 +117,7 @@
         }
 
         const source = event.dataTransfer.getData('source');
+
         if (source === 'select') {
             // Create a new component instance from the palette.
             const componentType = event.dataTransfer.getData('text/plain');
@@ -171,15 +172,28 @@
         elem.appendChild(label);
 
         let definition = Deform.getComponent('DeformComponent'+componentType);
-        console.log(definition);
+        //console.log(definition);
         const component = document.createElement(definition.name);
         component.setAttribute('name', definition.name);
         const attributes = definition.metadata;
+
+        let useKeyValueArrayValue = null;
+        if ('options' in attributes && attributes['options'].type==='keyvalue-array') {
+            if ('value' in attributes && attributes['value'].type==='array') {
+                useKeyValueArrayValue = '["options1"]';
+            }
+            else {
+                useKeyValueArrayValue = 'options1';
+            }
+        }
         Object.keys(attributes).forEach((key) => {
             if (key!=='slot' && key!=='error') {
                 let attribute = attributes[key];
                 if (attribute.name==='name') {
                     component.setAttribute('name', definition.name.substring(7));
+                }
+                else if (attribute.name==='value' && useKeyValueArrayValue) {
+                    component.setAttribute(key, useKeyValueArrayValue);
                 }
                 else if (attribute.type==='string' || attribute.type==='int' || attribute.type==='float') {
                     component.setAttribute(key, attribute['default'] ?? key);
@@ -301,14 +315,20 @@
 
         const attributes = selectedComponentObject.metadata;
         Object.keys(attributes).forEach((key) => {
+            if (attributes[key].type === 'file') {
+                // not currently handled
+                return;
+            }
             const attrDiv = document.createElement("div");
             const label = document.createElement("label");
             label.innerText = key === 'name' ? 'basename' : key;
             attrDiv.appendChild(label);
             componentInfoForm.appendChild(attrDiv);
-            const input = document.createElement("input")
-            input.setAttribute("name", key);
-            attrDiv.appendChild(input);
+            const attributeElement = attributes[key].type === 'textarea'
+                ? document.createElement('textarea')
+                : document.createElement("input")
+            attributeElement.setAttribute("name", key);
+            attrDiv.appendChild(attributeElement);
 
             if (key==='slot') {
                 if (selectedComponent.shadowRoot) {
@@ -325,24 +345,25 @@
                             return '';
                         }
                     }).join('');
-                    input.setAttribute('value', slotHtml);
+                    attributeElement.value = slotHtml;
                 }
             }
             else if (key==='name') {
-                input.setAttribute('value',selectedComponent.getComponentBaseName());
+                attributeElement.value = selectedComponent.getComponentBaseName();
             }
             else if (selectedComponent.hasAttribute(key)) {
-                input.setAttribute('value', selectedComponent.getAttribute(key));
+                attributeElement.value = selectedComponent.getAttribute(key);
             }
             // else {
             //     console.warn("can't find attribute '"+key+"'", selectedComponent);
             // }
-            input.addEventListener('change',evt => {
+            attributeElement.addEventListener('change',evt => {
                 try {
                     if (!selectedComponent.isGuarded(key)) {
                         selectedComponent.guard(key);
                         if (key === 'slot') {
-                            selectedComponent.innerHTML = evt.target.value;
+                            //selectedComponent.innerHTML = evt.target.value;
+                            selectedComponent.textContent = evt.target.value;
                         } else if (key === 'name') {
                             selectedComponent.setComponentBaseName(evt.target.value);
                             selectedComponent.triggerNameUpdated();
@@ -358,6 +379,8 @@
                             selectedComponent.setAttribute(key, evt.target.value);
                         } else if (attributes[key].type === 'boolean') {
                             selectedComponent.setAttribute(key, evt.target.value);
+                        } else if (attributes[key].type === 'textarea') {
+                            selectedComponent.setAttribute(key, evt.target.value);
                         } else {
                             console.error("Unrecognised attribute type '" + attributes[key].type + "'");
                         }
@@ -371,13 +394,13 @@
             const inputObserver = new MutationObserver((mutations) => {
                 mutations.forEach((mutation) => {
                     if (mutation.type==='attributes' && mutation.attributeName===key) {
-                        if (!selectedComponent.isGuarded(mutation.attributeName)) {
+                        if (selectedComponent && !selectedComponent.isGuarded(mutation.attributeName)) {
                             selectedComponent.guard(mutation.attributeName);
                             const value = key === 'name'
                                 ? selectedComponent.getComponentBaseName()
                                 : selectedComponent.getAttribute(key);
-                            if (value !== input.value) {
-                                input.value = value;
+                            if (value !== attributeElement.value) {
+                                attributeElement.value = value;
                             }
                             selectedComponent.unguard(mutation.attributeName);
                         }
@@ -496,10 +519,14 @@
     }
     #dynamic-component-info form>div>* {
         display:table-cell;
+        vertical-align:top;
+        width:100%;
+        resize:vertical;
     }
     #dynamic-component-info form>div>*:first-child {
         text-align:right;
         padding-right:4px;
+        width:fit-content;
     }
     #form-data pre {
         background: #f8f8f8;

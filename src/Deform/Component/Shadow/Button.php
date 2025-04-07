@@ -11,55 +11,57 @@ trait Button
         return str_replace('</button>', '<slot></slot></button>', parent::getShadowTemplate());
     }
 
-    /*
     public function getShadowMethods(): string
     {
         return <<<JS
-changeName(name, oldValue, newValue)
+initValue(element) 
 {
-    element.name = newValue;
-    if (name==='name' && oldValue!==newValue) {
-        this.internals_.setFormValue(null, oldValue);
-        this.internals_.setFormValue(element.value || '',newValue);
+    element.value = this.getAttribute('value');
+    element.addEventListener('click', ()=> { 
+        this.internals_.setFormValue(element.value);
+    });
+}
+initName(element)
+{
+    element.value = this.getAttribute('value'); 
+    this.internals_.setFormValue(element.value); 
+    element.addEventListener('change', ()=> { 
+        if (this.getAttribute('value')!==element.value) { 
+            this.setAttribute('value',element.value); 
+        } 
+        this.internals_.setFormValue(element.value); 
+    });
+}
+updateName(element, newValue)
+{
+    if (element.value!==newValue) { 
+        element.value = newValue;
+        this.internals_.setFormValue(element.value);
     }
 }
 JS;
     }
-    */
 
     public function mergeShadowAttributes(): array
     {
         $attributes = [];
 
-        $updateJs = <<<JS
-element.name = newValue;
-if (name==='name' && oldValue!==newValue) {
-    this.internals_.setFormValue(null, oldValue);
-    this.internals_.setFormValue(element.value || '',newValue);
-}
-JS;
-
         $attributes["name"] = new Attribute(
             "name",
             ".control-container button",
             Attribute::TYPE_STRING,
-            "element.name = this.getAttribute('name');",
-            $updateJs
+            "this.initName(element);",
+            "this.updateName(element, newValue);"
         );
 
-        $initJs = <<<JS
-element.value = this.getAttribute('value');
-element.addEventListener('click', ()=> { 
-    this.internals_.setFormValue(element.value);
-});
-JS;
         $attributes["value"] = new Attribute(
             "value",
             ".control-container button",
             Attribute::TYPE_STRING,
-            $initJs,
+            "this.initValue(element)",
             "element.value = newValue; this.internals_.setFormValue(element.value);"
         );
+
         $attributes['slot'] = new Attribute(
             "slot",
             Attribute::SLOT_SELECTOR,

@@ -76,7 +76,7 @@ form {
 
 /* === Component Sections === */
 
-.container-type-text label,
+.component-container label,
 *::part(deform-label) {
     display: block;
     font-weight: 500;
@@ -198,7 +198,7 @@ input[type=submit]:hover,
     accent-color: var(--deform-accent);
 }
 
-*::part(deform-clear-image) {
+.component-container .clear-button, *::part(deform-clear-button) {
     width: fit-content;
     padding: 0.2rem;
     font-size: 0.8rem;
