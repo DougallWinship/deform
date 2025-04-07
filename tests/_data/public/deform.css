@@ -1,6 +1,7 @@
 /* deform.css */
 
-/* Vars */
+/* === Vars === */
+
 :root {
     --deform-form-bg: #eee;
     --deform-font-family: Arial, sans-serif;
@@ -35,7 +36,7 @@ button, input, textarea, select {
     font: inherit;
 }
 
-/* Core Defaults */
+/* === Core Defaults === */
 
 form {
     padding: 1rem;
@@ -78,7 +79,7 @@ form {
 
 .component-container label,
 *::part(deform-label) {
-    display: block;
+    display: inline-block;
     font-weight: 500;
     margin-bottom: 0.3rem;
     color: #333;

@@ -27,11 +27,14 @@ class Currency extends Input
     {
         $this->currencyLabel = Html::label(['class' => 'currency-symbol']);
         $this->currencyInput = Html::input([
-            'type' => 'number',
+            'type' => 'text',
             'name' => $this->getName(),
             'id' => $this->getId(),
-            'step' => 'any',
-            'min' => '0'
+            'min' => '0',
+            'inputmode' => 'decimal',
+            'pattern'=>"^\d+(\.\d{1,2})?$",
+            'placeholder' => "0.00",
+            'onchange' => "!isNaN(this.value) && (this.value = parseFloat(this.value).toFixed(2))"
         ]);
         $this->addControl($this->currencyInput, [
             $this->currencyLabel,
