@@ -18,10 +18,12 @@ use Deform\Util\Strings;
  * @method static Currency Currency(string $namespace, string $field, array $attributes=[])
  * @method static Date Date(string $namespace, string $field, array $attributes=[])
  * @method static DateTime DateTime(string $namespace, string $field, array $attributes=[])
+ * @method static Decimal Decimal(string $namespace, string $field, array $attributes = [])
  * @method static Display Display(string $namespace, string $field, array $attributes=[])
  * @method static Email Email(string $namespace, string $field, array $attributes=[])
  * @method static File File(string $namespace, string $field, array $attributes=[])
  * @method static Image Image(string $namespace, string $field, array $attributes=[])
+ * @method static Integer Integer(string $namespace, string $field, array $attributes = [])
  * @method static MultipleFile MultipleFile(string $namespace, string $field, array $attributes=[])
  * @method static MultipleEmail MultipleEmail(string $namespace, string $field, array $attributes=[])
  * @method static Hidden Hidden(string $namespace, string $field, array $attributes=[])
@@ -157,7 +159,7 @@ class ComponentFactory
      */
     public static function getCustomElementDefinitionsJavascript(bool $compress = false): false|string
     {
-        $setupJs = Generator::setupDeformObject();
+        $setupJs = Generator::alterDeformObject();
         $componentNames = self::getRegisteredComponents();
         $js = [];
         $js[] = $compress ? Strings::trimInternal($setupJs) : $setupJs;

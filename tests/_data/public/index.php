@@ -87,8 +87,9 @@ function renderLayout($title, $contents)
     $head = [
         Html::title()->add($title),
         Html::meta(['charset' => 'utf-8']),
-        Html::link(['rel' => 'stylesheet', 'href' => '/deform.css?version='.uniqid()]),
-        Html::link(['rel' => 'icon', 'type' => 'image/x-icon', 'href'=>'http://deform-tests.test/favicon.ico']),
+        Html::link(['rel' => 'stylesheet', 'href' => '/assets/deform.css?version='.uniqid()]),
+        Html::link(['rel' => 'icon', 'type' => 'image/x-icon', 'href'=>'/assets/favicon.ico']),
+        Html::script(['type'=>'text/javascript', 'src' => '/assets/deform.js']),
         Html::style()->add("a {text-decoration:none}")
     ];
     $html = Html::html(['lang' => 'en'])->add([

@@ -21,6 +21,8 @@ if (isset($_POST) && count($_POST)) { ?>
 
     <?= Component::DateTime(null,'mydatetime')->label('Datetime'); ?>
 
+    <?= Component::Decimal(null, 'mydecimal')->label('Decimal')->dp(2); ?>
+
     <?= Component::Display(null,'mydisplay')->value('something to show')->label('Display'); ?>
 
     <?= Component::Email( null,'myemail')->value('wibble@hatstand.org')->label('Email'); ?>
@@ -31,6 +33,8 @@ if (isset($_POST) && count($_POST)) { ?>
     &laquo; hidden value!
 
     <?= Component::Image(null, 'myimage')->label("Image") ?>
+
+    <?= Component::Integer(null, 'myinteger')->value("1") ?>
 
     <?= Component::MultipleEmail(null,'mymultiple-email')->label('Multiple Email'); ?>
 
@@ -54,7 +58,7 @@ if (isset($_POST) && count($_POST)) { ?>
 
     <?= Component::Submit( null,'mysubmitbutton')->value('Submit Button'); ?>
 
-    <?= Component::Text(null,'mytext')->label('Text'); ?>
+    <?= Component::Text(null,'mytext')->label('Text')->value("text"); ?>
 
     <?= Component::TextArea(null, 'mytextarea')->label('Text Area'); ?>
 

@@ -51,7 +51,9 @@ form {
 .center {
     text-align: center;
 }
-
+a {
+    text-decoration:none
+}
 
 /* === Component Container === */
 

@@ -23,58 +23,14 @@ class Generator
     private array $attributes;
 
 
-    public static function setupDeformObject()
+    public static function alterDeformObject()
     {
         list($short, $full) = BaseComponent::getGitVersions();
         return <<<JS
 if (window.Deform !== undefined) {
-  throw new Error("Deform is already defined. Possible duplicate inclusion?");
+    window.Deform.version = '{$short}';
+    window.Deform.fullVersion = '{$full}';
 }
-window.Deform = {
-    version: '{$short}',
-    fullVersion: '{$full}',
-    components: {},
-    registerComponent(componentClassName, componentName, definition) {
-        this.components[componentClassName] = definition;
-        customElements.define(componentName, definition);
-    },
-    getComponent(componentClassName) {
-        return this.components[componentClassName];
-    },
-    isValidNamespace(ns) {
-        return /^[a-zA-Z0-9_-]+$/.test(ns);
-    },
-    isValidBaseName(name) {
-        return /^[a-zA-Z0-9_-]+$/.test(name);
-    },
-    isValidName(name) {
-        return /^[a-zA-Z0-9_-]+$/.test(name) || /^[a-zA-Z0-9_-]+\\[[a-zA-Z0-9_-]+\\]$/.test(name);
-    },
-    extractBaseName(namespacedName) {
-        const match = namespacedName.match(/\\[([^\\]]+)\\]$/);
-        return match ? match[1] : null;
-    },
-    extractNamespace(namespacedName) {
-        const match = namespacedName.match(/^([^\\[\\]]+)\\[[^\\[\\]]+\\]$/);
-        return match ? match[1] : null;
-    },
-    isTruthy(value) {
-        if (!value) return false;
-        const falsy = ["false","0","no","off"];
-        return !falsy.includes(value);
-    },
-    parseJson(value, error) 
-    {
-        try {
-            return JSON.parse(value);
-        }
-        catch (err) {
-            console.error(value);
-            console.error(error)
-            return null;
-        }
-    }
-};
 JS;
     }
 
@@ -338,9 +294,7 @@ JS;
      */
     private function getConnectedCallbackRules(): string
     {
-        $generatedComponentRules = [
-            "/* start : connected callback rules */",
-        ];
+        $generatedComponentRules = [];
 
         foreach ($this->attributes as $attribute) {
             $failedToFind =
@@ -392,18 +346,31 @@ JS;
             {$attribute->initialiseJs}
             element.part.remove('deform-hidden');
         }
+        else {
+            console.log("Failed to find attribute {$attribute->name}!!");
+        }
     }
     else {
         console.error("{$failedToFind}");
     }
 })();
 JS;
-            } else {
+            }
+            else {
                 throw new \Exception("Invalid behaviour : " . $attribute->behaviour);
             }
         }
-        $generatedComponentRules[] = "/* end : connected callback rules */";
-        return implode("\n", $generatedComponentRules);
+
+        $js = Strings::prependPerLine(implode("\n", $generatedComponentRules),"    ");
+
+        return <<<JS
+/* start : connected callback rules */
+requestAnimationFrame(() => {
+$js
+})
+JS;
+
+
     }
 
     public function getAdditionalMethods($componentName): string

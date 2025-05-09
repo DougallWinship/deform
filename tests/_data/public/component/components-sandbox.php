@@ -54,6 +54,8 @@
     let selectedComponentObject = null;
     let selectedComponentNameObservers = null;
 
+    let dragData = null;
+
     // Helper: Get the element after which the dragged element should be inserted
     function getDragAfterElement(container, y) {
         const draggableElements = [...container.querySelectorAll('.builder-form-component-wrapper:not(.dragging)')];
@@ -71,8 +73,10 @@
     document.querySelectorAll('#available-components .component').forEach(elem => {
         elem.addEventListener('dragstart', event => {
             event.dataTransfer.effectAllowed = 'copy';
-            event.dataTransfer.setData('text/plain', event.target.getAttribute('data-component'));
-            event.dataTransfer.setData('source', 'select');
+            dragData = JSON.stringify({
+                source:'select',
+                component: event.target.getAttribute('data-component')
+            });
             event.target.classList.add('dragging');
         });
         elem.addEventListener('dragend', event => {
@@ -86,8 +90,8 @@
     // Dragover: update the drop target indicator position
     formArea.addEventListener('dragover', event => {
         event.preventDefault();
-        const source = event.dataTransfer.getData('source');
-        event.dataTransfer.dropEffect = (source === 'select') ? 'copy' : 'move';
+        const data = JSON.parse(dragData);
+        event.dataTransfer.dropEffect = (data.source === 'select') ? 'copy' : 'move';
         formArea.classList.add('dragover');
 
         // Calculate insertion point and position the placeholder
@@ -110,18 +114,18 @@
     // Drop: remove indicator and move or create the element
     formArea.addEventListener('drop', event => {
         event.preventDefault();
+
         formArea.classList.remove('dragover');
         // Remove the placeholder from the DOM
         if (placeholder.parentNode) {
             placeholder.parentNode.removeChild(placeholder);
         }
 
-        const source = event.dataTransfer.getData('source');
+        const data = JSON.parse(dragData);
 
-        if (source === 'select') {
+        if (data.source === 'select') {
             // Create a new component instance from the palette.
-            const componentType = event.dataTransfer.getData('text/plain');
-            const newComponent = createComponent(componentType);
+            const newComponent = createComponent(data.component);
             // Insert at the calculated position.
             const afterElement = getDragAfterElement(formArea, event.clientY);
             if (afterElement == null) {
@@ -129,7 +133,7 @@
             } else {
                 formArea.insertBefore(newComponent, afterElement);
             }
-        } else if (source === 'form') {
+        } else if (data.source === 'form') {
             // For reordering: move the existing dragged element.
             const draggingElement = document.querySelector('.dragging');
             const afterElement = getDragAfterElement(formArea, event.clientY);
@@ -217,7 +221,11 @@
         // Add drag events for reordering.
         elem.addEventListener('dragstart', event => {
             event.dataTransfer.effectAllowed = 'move';
-            event.dataTransfer.setData('source', 'form');
+
+            dragData = JSON.stringify({
+                component: componentType,
+                source: 'form'
+            });
             elem.classList.add('dragging');
             if (selectedComponent!==null) {
                 selectedComponent.parentElement.classList.remove('selected');
