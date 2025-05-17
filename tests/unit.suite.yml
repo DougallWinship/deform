@@ -8,7 +8,7 @@ modules:
         - Asserts
         - \Helper\Unit
         - Db:
-            dsn: 'mysql:host=localhost;dbname=deform-test-db'
+            dsn: 'mysql:host=127.0.0.1;dbname=deform-test-db'
             user: 'root'
             password: 'root'
             create: true
