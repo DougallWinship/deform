@@ -36,7 +36,7 @@ if (isset($_POST) && count($_POST)) { ?>
 
     <?= Component::Image('form1','myimage')->label("Image") ?>
 
-    <?= Component::MultipleEmail('form1','mymultiple-email')->label('Multiple Emails'); ?>
+    <?= Component::MultipleEmail('form1','mymultiple-email')->label('Multiple Emails')->emails(['a@b.c','d@e.f']) ?>
 
     <?= Component::MultipleFile('form1','mymultiple-file')->label('Multiple Files'); ?>
 

@@ -6,9 +6,9 @@ namespace Deform\Component\Shadow;
 
 trait Integer
 {
-    public function mergeShadowAttributes(): array
+    public function mergeShadowAttributes(&$attributes): void
     {
-        $attributes = [];
+        $attributes["value"]->default = "0";
         $attributes["min"] = new Attribute(
             "min",
             ".control-container input",
@@ -36,6 +36,5 @@ trait Integer
             Attribute::BEHAVIOUR_VISIBLE_IF_EMPTY,
             "1"
         );
-        return $attributes;
     }
 }

@@ -50,10 +50,8 @@ setValue(selectElement, value, addEventListener=false)
 JS;
     }
 
-    public function mergeShadowAttributes(): array
+    public function mergeShadowAttributes(&$attributes): void
     {
-        $attributes = [];
-
         $attributes['options'] = new Attribute(
             'options',
             '.component-container select',
@@ -77,7 +75,5 @@ JS;
             "this.setValue(element, this.getAttribute('value'), true);",
             "this.setValue(element, newValue);"
         );
-
-        return $attributes;
     }
 }

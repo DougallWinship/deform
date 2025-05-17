@@ -11,9 +11,8 @@ trait Currency
         return parent::getShadowTemplate() . "<style>.control-container {display:flex;flex-direction: row}</style>";
     }
 
-    public function mergeShadowAttributes(): array
+    public function mergeShadowAttributes(&$attributes): void
     {
-        $attributes = [];
         $attributes['currency'] = new Attribute(
             'currency',
             '.currency-symbol',
@@ -22,6 +21,5 @@ trait Currency
             "element.innerHTML=newValue;",
             default: "&pound;"
         );
-        return $attributes;
     }
 }

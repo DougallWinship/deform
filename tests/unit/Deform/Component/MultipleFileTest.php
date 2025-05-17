@@ -33,7 +33,7 @@ class MultipleFileTest extends \Codeception\Test\Unit
         $expectedId = 'multiplefile-'.$namespace.'-'.$name;
         $this->tester->assertIsHtmlTag($multipleFile->input,'input',[
             'id' => $expectedId,
-            'name' => $namespace.'['.$name.']',
+            'name' => $namespace.'['.$name.'][]',
             'type' => 'file',
             'multiple' => 'multiple'
         ]);

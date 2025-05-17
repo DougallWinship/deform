@@ -185,7 +185,7 @@ class ComponentsCest
             'mydatetime'=>'',
             'myemail'=>'wibble@hatstand.org',
             'myhidden'=>'hidden value',
-            'mymultiple-email'=>'',
+            'mymultiple-email'=>'a@b.c,d@e.f',
             'mypassword'=>'',
             'myradiobuttonset2'=>'four',
             'myselect'=>'two',

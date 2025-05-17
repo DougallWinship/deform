@@ -6,7 +6,7 @@ namespace Deform\Component;
 
 /**
  */
-class MultipleEmail extends Email
+class MultipleEmail extends Input
 {
     /**
      * @inheritDoc
@@ -14,6 +14,20 @@ class MultipleEmail extends Email
     public function setup(): void
     {
         parent::setup();
-        $this->input->set('multiple', 'multiple');
+        $this->type('email');
+        $this->input->set('multiple','multiple');
+    }
+
+    /**
+     * @param string|array $emails
+     * @return self
+     */
+    public function emails(string|array $emails): self
+    {
+        if (is_array($emails)) {
+            $emails = implode(",", $emails);
+        }
+        $this->input->value($emails);
+        return $this;
     }
 }

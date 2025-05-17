@@ -86,28 +86,28 @@ JS;
             $updateJS,
             Attribute::BEHAVIOUR_VISIBLE_IF_EMPTY
         );
-        $mergeAttributes = $this->mergeShadowAttributes();
-
-        // it's necessary to ensure the order specified in mergeShadowAttributes is preserved
-        // hence pre-remove any which are to be overwritten
-        $removeKeys = array_intersect(array_keys($attributes), array_keys($mergeAttributes));
-        foreach ($removeKeys as $key) {
-            unset($attributes[$key]);
-        }
-
-        foreach ($mergeAttributes as $name => $attribute) {
-            if ($attribute) {
-                $attributes[$name] = $attribute;
-            } else {
-                unset($attributes[$name]);
-            }
-        }
-        return $attributes;
+        $this->mergeShadowAttributes($attributes);
+        return array_filter($attributes);
+//
+//        // it's necessary to ensure the order specified in mergeShadowAttributes is preserved
+//        // hence pre-remove any which are to be overwritten
+//        $removeKeys = array_intersect(array_keys($attributes), array_keys($mergeAttributes));
+//        foreach ($removeKeys as $key) {
+//            unset($attributes[$key]);
+//        }
+//
+//        foreach ($mergeAttributes as $name => $attribute) {
+//            if ($attribute) {
+//                $attributes[$name] = $attribute;
+//            } else {
+//                unset($attributes[$name]);
+//            }
+//        }
+//        return $attributes;
     }
 
-    public function mergeShadowAttributes(): array
+    public function mergeShadowAttributes(array &$attributes): void
     {
-        return [];
     }
 
     public function getShadowMethods(): string

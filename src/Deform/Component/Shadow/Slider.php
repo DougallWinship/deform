@@ -6,9 +6,8 @@ namespace Deform\Component\Shadow;
 
 trait Slider
 {
-    public function mergeShadowAttributes(): array
+    public function mergeShadowAttributes(&$attributes): void
     {
-        $attributes = [];
         $attributes["min"] = new Attribute(
             "min",
             ".control-container input",
@@ -36,6 +35,5 @@ trait Slider
             Attribute::BEHAVIOUR_VISIBLE_IF_EMPTY,
             "1"
         );
-        return $attributes;
     }
 }

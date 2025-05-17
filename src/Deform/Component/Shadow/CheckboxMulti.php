@@ -61,6 +61,7 @@ setOptions(element, clearFirst=false)
 }
 setFormData(optionElements) 
 {
+    console.log('optionElements', optionElements);
     let values = [];
     optionElements.forEach((element)=> {
         if (element.checked) {
@@ -111,14 +112,13 @@ updateValue(value)
 JS;
     }
 
-    public function mergeShadowAttributes(): array
+    public function mergeShadowAttributes(&$attributes): void
     {
-        $attributes = [];
         $attributes['options'] = new Attribute(
             'options',
             '.control-container .checkboxmulti-checkbox-wrapper',
             Attribute::TYPE_KEYVALUE_ARRAY,
-            "this.setOptions(element,false); element.style.display='none';",
+            "this.setOptions(element,true); element.style.display='none';",
             "this.setOptions(element,true);"
         );
         $attributes['value'] = new Attribute(
@@ -126,8 +126,8 @@ JS;
             '.control-container .checkboxmulti-checkbox-wrapper',
             Attribute::TYPE_ARRAY,
             "this.initValue(this.getAttribute('value'));",
-            "this.updateValue(newValue);"
+            "this.updateValue(newValue);",
+            default: '[]'
         );
-        return $attributes;
     }
 }

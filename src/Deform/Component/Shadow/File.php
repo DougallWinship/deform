@@ -6,9 +6,8 @@ namespace Deform\Component\Shadow;
 
 trait File
 {
-    public function mergeShadowAttributes(): array
+    public function mergeShadowAttributes(&$attributes): void
     {
-        $attributes = [];
         $initJs = <<<JS
 const element = this.container.querySelector(".control-container input");
 
@@ -27,6 +26,5 @@ JS;
             Attribute::TYPE_FILE,
             $initJs,
         );
-        return $attributes;
     }
 }

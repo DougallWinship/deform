@@ -39,10 +39,8 @@ setChecked(element, addEventListener=false)
 JS;
     }
 
-    public function mergeShadowAttributes(): array
+    public function mergeShadowAttributes(array &$attributes): void
     {
-        $attributes = [];
-
         $attributes['value'] = new Attribute(
             'value',
             ".control-container input",
@@ -67,7 +65,5 @@ JS;
             "element.textContent=this.getAttribute('text');",
             "element.textContent=newValue;"
         );
-
-        return $attributes;
     }
 }

@@ -72,10 +72,8 @@ setValue(checked, addEventListener=false)
 }
 JS;
     }
-    public function mergeShadowAttributes(): array
+    public function mergeShadowAttributes(&$attributes): void
     {
-        $attributes = [];
-
         $attributes['options'] = new Attribute(
             'options',
             '.control-container .radiobuttonset-radio-container',
@@ -84,7 +82,6 @@ JS;
             "this.setOptions(element, newValue, true);",
             Attribute::BEHAVIOUR_VISIBLE_IF_EMPTY
         );
-
         $attributes['value'] = new Attribute(
             'value',
             '.control-container .radiobuttonset-radio-container',
@@ -92,7 +89,5 @@ JS;
             "this.setValue(this.getAttribute('value'), true);",
             "this.setValue(newValue);"
         );
-
-        return $attributes;
     }
 }

@@ -6,9 +6,9 @@ namespace Deform\Component\Shadow;
 
 trait Decimal
 {
-    public function mergeShadowAttributes(): array
+    public function mergeShadowAttributes(&$attributes): void
     {
-        $attributes = [];
+        $attributes["value"]->default = "0";
         $attributes["min"] = new Attribute(
             "min",
             ".control-container input",
@@ -45,6 +45,5 @@ trait Decimal
             Attribute::BEHAVIOUR_VISIBLE_IF_EMPTY,
             "standard"
         );
-        return $attributes;
     }
 }

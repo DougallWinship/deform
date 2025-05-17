@@ -23,9 +23,8 @@ initValue(element)
 JS;
     }
 
-    public function mergeShadowAttributes(): array
+    public function mergeShadowAttributes(&$attributes): void
     {
-        $attributes = [];
         $attributes['label'] = false;
         $attributes['hint'] = false;
         $attributes['error'] = false;
@@ -44,6 +43,5 @@ JS;
             "this.initValue(element);",
             "element.value = newValue;this.internals_.setFormValue(element.value);",
         );
-        return $attributes;
     }
 }

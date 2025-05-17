@@ -181,23 +181,20 @@
         component.setAttribute('name', definition.name);
         const attributes = definition.metadata;
 
-        let useKeyValueArrayValue = null;
-        if ('options' in attributes && attributes['options'].type==='keyvalue-array') {
-            if ('value' in attributes && attributes['value'].type==='array') {
-                useKeyValueArrayValue = '["options1"]';
-            }
-            else {
-                useKeyValueArrayValue = 'options1';
-            }
-        }
         Object.keys(attributes).forEach((key) => {
             if (key!=='slot' && key!=='error') {
                 let attribute = attributes[key];
                 if (attribute.name==='name') {
                     component.setAttribute('name', definition.name.substring(7));
                 }
-                else if (attribute.name==='value' && useKeyValueArrayValue) {
-                    component.setAttribute(key, useKeyValueArrayValue);
+                else if (attribute.name==='value') {
+                    let setValue = attribute.default;
+                    if (!setValue) {
+                        setValue = (('options' in attributes) && attributes['options'].type==='keyvalue-array')
+                            ? "[]"
+                            : "";
+                    }
+                    component.setAttribute(key, setValue);
                 }
                 else if (attribute.type==='string' || attribute.type==='int' || attribute.type==='float') {
                     component.setAttribute(key, attribute['default'] ?? key);

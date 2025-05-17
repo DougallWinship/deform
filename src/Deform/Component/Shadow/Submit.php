@@ -6,14 +6,15 @@ namespace Deform\Component\Shadow;
 
 trait Submit
 {
-    public function mergeShadowAttributes(): array
+    public function mergeShadowAttributes(&$attributes): void
     {
-        $attributes = [];
         $attributes['value'] = new Attribute(
             "value",
             "input",
             Attribute::TYPE_STRING,
             "element.value = this.getAttribute('value'); this.internals_.setFormValue(element.value);",
+            "element.value=newValue; this.internals_.setFormValue(element.value);",
+            default: "Submit"
         );
         $attributes['hint'] = null;
         $attributes['error'] = null;
@@ -27,7 +28,5 @@ trait Submit
             "element.name = this.getAttribute('name');",
             "element.name = newValue;"
         );
-
-        return $attributes;
     }
 }

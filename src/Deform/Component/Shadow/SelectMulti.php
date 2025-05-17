@@ -68,10 +68,8 @@ setValues(selectElement, valuesJson)
 JS;
     }
 
-    public function mergeShadowAttributes(): array
+    public function mergeShadowAttributes(&$attributes): void
     {
-        $attributes = [];
-
         $attributes['options'] = new Attribute(
             'options',
             '.component-container select',
@@ -79,7 +77,6 @@ JS;
             "this.setOptions(element, this.getAttribute('options'), true);",
             "this.setOptions(element, newValue, true);"
         );
-
         $attributes['value'] = new Attribute(
             'value',
             '.component-container select',
@@ -87,7 +84,6 @@ JS;
             "this.setValues(element, this.getAttribute('value'));",
             "this.setValues(element, newValue);"
         );
-
         $attributes["name"] = new Attribute(
             "name",
             ".component-container select",
@@ -95,7 +91,5 @@ JS;
             "element.name = this.getAttribute('name');",
             "element.name = newValue;"
         );
-
-        return $attributes;
     }
 }

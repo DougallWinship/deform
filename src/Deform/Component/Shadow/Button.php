@@ -42,10 +42,8 @@ updateName(element, newValue)
 JS;
     }
 
-    public function mergeShadowAttributes(): array
+    public function mergeShadowAttributes(&$attributes): void
     {
-        $attributes = [];
-
         $attributes["name"] = new Attribute(
             "name",
             ".control-container button",
@@ -67,6 +65,5 @@ JS;
             Attribute::SLOT_SELECTOR,
             Attribute::TYPE_STRING,
         );
-        return $attributes;
     }
 }

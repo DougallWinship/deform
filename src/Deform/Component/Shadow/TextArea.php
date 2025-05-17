@@ -61,9 +61,8 @@ initSlot()
 JS;
     }
 
-    public function mergeShadowAttributes(): array
+    public function mergeShadowAttributes(&$attributes): void
     {
-        $attributes = [];
         $attributes['value'] = null;
         $attributes['slot'] = new Attribute(
             "slot",
@@ -72,7 +71,6 @@ JS;
             "this.initSlot();",
             "",
         );
-
         $attributes["name"] = new Attribute(
             "name",
             ".component-container textarea",
@@ -80,6 +78,5 @@ JS;
             "element.name = this.getAttribute('name')",
             "element.name = newValue"
         );
-        return $attributes;
     }
 }
