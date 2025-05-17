@@ -21,11 +21,11 @@ class HtmlDocumentTest extends \Codeception\Test\Unit
     public function testLoadBad()
     {
         $htmlDocument = HtmlDocument::load(">><<<>aaaagh!>><><<>>");
-        
+
         if (!$htmlDocument->hasErrors()) {
             fwrite(STDERR, "No libxml errors:\n");
             libxml_use_internal_errors(true);
-            $dom = new DOMDocument();
+            $dom = new \DOMDocument();
             $dom->loadHTML(">><<<>aaaagh!>><><<>>", LIBXML_HTML_NOIMPLIED | LIBXML_HTML_NODEFDTD);
             foreach (libxml_get_errors() as $e) {
                 fwrite(STDERR, trim($e->message) . "\n");
