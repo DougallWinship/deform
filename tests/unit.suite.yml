@@ -15,5 +15,6 @@ modules:
             dump: tests/_data/dump.sql
             populate: true
             cleanup: true
-            populator: 'mysql --defaults-extra-file=tests/.user.cnf  $dbname < $dump'
+            populator: 'mysql -h 127.0.0.1 -u root -proot $dbname < $dump'
+
     step_decorators: ~
