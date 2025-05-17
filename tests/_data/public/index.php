@@ -89,7 +89,7 @@ function renderLayout($title, $contents)
         Html::meta(['charset' => 'utf-8']),
         Html::link(['rel' => 'stylesheet', 'href' => '/assets/deform.css?version='.uniqid()]),
         Html::link(['rel' => 'icon', 'type' => 'image/x-icon', 'href'=>'/assets/favicon.ico']),
-        Html::script(['type'=>'text/javascript', 'src' => '/assets/deform.js']),
+        Html::script(['type'=>'text/javascript', 'src' => '/assets/deform.js?version='.uniqid()]),
         Html::style()->add("a {text-decoration:none}")
     ];
     $html = Html::html(['lang' => 'en'])->add([

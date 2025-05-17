@@ -4,7 +4,6 @@ declare(strict_types=1);
 
 namespace Deform\Component;
 
-use Deform\Component\Shadow\Builder;
 use Deform\Component\Shadow\Generator;
 use Deform\Html\Html;
 use Deform\Html\HtmlTag;
@@ -23,7 +22,7 @@ use Deform\Util\Strings;
  * @method static Email Email(string $namespace, string $field, array $attributes=[])
  * @method static File File(string $namespace, string $field, array $attributes=[])
  * @method static Image Image(string $namespace, string $field, array $attributes=[])
- * @method static Integer Integer(string $namespace, string $field, array $attributes = [])
+ * @method static \Deform\Component\Integer Integer(string $namespace, string $field, array $attributes = [])
  * @method static MultipleFile MultipleFile(string $namespace, string $field, array $attributes=[])
  * @method static MultipleEmail MultipleEmail(string $namespace, string $field, array $attributes=[])
  * @method static Hidden Hidden(string $namespace, string $field, array $attributes=[])

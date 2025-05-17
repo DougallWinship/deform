@@ -336,13 +336,13 @@
                 ? document.createElement('textarea')
                 : document.createElement("input")
             attributeElement.setAttribute("name", key);
-            attrDiv.appendChild(attributeElement);
+            attrDiv.appendChild(attributeElement)
 
             if (key==='slot') {
                 if (selectedComponent.shadowRoot) {
                     const slot = selectedComponent.shadowRoot.querySelector("slot");
                     const assignedNodes = slot.assignedNodes({flatten: true});
-                    const slotHtml = assignedNodes.map(node => {
+                    assignedNodes.map(node => {
                         if (node.nodeType === Node.ELEMENT_NODE) {
                             return node.outerHTML;
                         }
@@ -426,26 +426,6 @@
     document.getElementById('form-namespace-input').addEventListener('change', (evt) => {
         formArea.setAttribute('data-namespace', evt.target.value)
     });
-
-    function syntaxHighlight(json) {
-        if (typeof json !== 'string') {
-            json = JSON.stringify(json, null, 2);
-        }
-        return json
-            .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
-            .replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, match => {
-                let cls = 'number';
-                if (/^"/.test(match)) {
-                    cls = /:$/.test(match) ? 'key' : 'string';
-                } else if (/true|false/.test(match)) {
-                    cls = 'boolean';
-                } else if (/null/.test(match)) {
-                    cls = 'null';
-                }
-                return `<span class="json-${cls}">${match}</span>`;
-            });
-    }
-
 </script>
 <style>
     #form-builder {

@@ -50,7 +50,6 @@ window.Deform = {
         BANKERS: 'bankers',
     },
     round(value, type= Deform.ROUND.STANDARD, decimalPlaces=2) {
-        console.log('round type=' + type + ' dp='+decimalPlaces);
         switch (type) {
             case Deform.ROUND.STANDARD: return Deform.roundStandardTo(value, decimalPlaces);
             case Deform.ROUND.CEIL: return Deform.roundCeilTo(value, decimalPlaces);
@@ -64,15 +63,18 @@ window.Deform = {
     roundStandardTo(value, decimalPlaces = 2)
     {
         const factor = 10 ** decimalPlaces;
-        return Math.round(value * factor) / factor;
+        const rounded = Math.round(value * factor) / factor;
+        return rounded.toFixed(decimalPlaces);
     },
     roundCeilTo(value, decimalPlaces = 2) {
         const factor = 10 ** decimalPlaces;
-        return Math.ceil(value * factor) / factor;
+        const rounded = Math.ceil(value * factor) / factor;
+        return rounded.toFixed(decimalPlaces);
     },
     roundFloorTo(value, decimalPlaces = 2) {
         const factor = 10 ** decimalPlaces;
-        return Math.floor(value * factor) / factor;
+        const rounded = Math.floor(value * factor) / factor;
+        return rounded.toFixed(decimalPlaces);
     },
     roundBankersTo(value, decimalPlaces = 2) {
         const factor = Math.pow(10, decimalPlaces);
@@ -80,15 +82,32 @@ window.Deform = {
         const integer = Math.floor(scaled);
         const fraction = Math.abs(scaled - integer);
 
+        let rounded;
         if (fraction !== 0.5) {
-            return Math.round(scaled) / factor;
+            rounded = Math.round(scaled) / factor;
         }
-
-        // Handle .5 case — round to nearest even
-        if (integer % 2 === 0) {
-            return integer / factor;
-        } else {
-            return (value > 0 ? integer + 1 : integer - 1) / factor;
+        else {
+            // Handle .5 case — round to nearest even
+            if (integer % 2 === 0) {
+                rounded = integer / factor;
+            } else {
+                rounded = (value > 0 ? integer + 1 : integer - 1) / factor;
+            }
+        }
+        return rounded.toFixed(decimalPlaces);
+    },
+    debounce(func, wait, immediate) {
+        let timeout
+        return function (...args) {
+            const context = this
+            const later = function () {
+                timeout = null
+                if (!immediate) func.apply(context, args)
+            }
+            const callNow = immediate && !timeout
+            clearTimeout(timeout)
+            timeout = setTimeout(later, wait)
+            if (callNow) func.apply(context, args)
         }
     }
 };

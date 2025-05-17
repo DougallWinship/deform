@@ -19,6 +19,15 @@ trait Submit
         $attributes['error'] = null;
         $attributes['label'] = null;
         $attributes['required'] = null;
+
+        $attributes["name"] = new Attribute(
+            "name",
+            "input",
+            Attribute::TYPE_STRING,
+            "element.name = this.getAttribute('name');",
+            "element.name = newValue;"
+        );
+
         return $attributes;
     }
 }

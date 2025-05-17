@@ -34,9 +34,7 @@ class CurrencyTest extends \Codeception\Test\Unit
         $this->tester->assertIsHtmlTag($currency->currencyInput,'input',[
             'id' => $expectedId,
             'name' => $namespace.'['.$name.']',
-            'type' => 'number',
-            'step' => 'any',
-            'min' => 0
+            'type' => 'text',
         ]);
     }
 

@@ -82,13 +82,13 @@ class ImageTest extends \Codeception\Test\Unit
         $this->tester->assertIsHtmlTag($childTags[1], 'div', ['class'=>'control-container']);
 
         $labelsTags = $this->tester->getAttributeValue($childTags[0], 'childTags');
-        $this->tester->assertIsHtmlTag($labelsTags[0],'label', ['for'=>'image-ns-dp']);
-        $labelTextTags = $this->tester->getAttributeValue($labelsTags[0], 'childTags');
+        $this->tester->assertIsHtmlTag($labelsTags[1],'label', ['for'=>'image-ns-dp']);
+        $labelTextTags = $this->tester->getAttributeValue($labelsTags[1], 'childTags');
         $this->assertCount(1, $labelTextTags);
         $this->assertEquals('dp', $labelTextTags[0]);
 
-        $this->tester->assertIsHtmlTag($labelsTags[1], 'button', ['class'=>'clear-image']);
-        $attributes = $this->tester->getAttributeValue($labelsTags[1], 'attributes');
+        $this->tester->assertIsHtmlTag($labelsTags[0], 'button', ['class'=>'clear-button']);
+        $attributes = $this->tester->getAttributeValue($labelsTags[0], 'attributes');
         $this->assertArrayHasKey('style', $attributes);
         $this->assertArrayHasKey('onclick', $attributes);
 

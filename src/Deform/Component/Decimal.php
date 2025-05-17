@@ -24,7 +24,8 @@ if (!isNaN(this.value)) {
     const max = this.dataset.max !== undefined ? parseFloat(this.dataset.max) : null;
     if (min !== null && val < min) val = min;
     if (max !== null && val > max) val = max;
-    this.value = Deform.round(val, this.dataset.round, dp);
+    const rounded = Deform.round(val, this.dataset.round, dp);
+    this.value = rounded;
 }
 JS;
         $this->input = Html::input([

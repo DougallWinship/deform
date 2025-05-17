@@ -369,8 +369,6 @@ requestAnimationFrame(() => {
 $js
 })
 JS;
-
-
     }
 
     public function getAdditionalMethods($componentName): string

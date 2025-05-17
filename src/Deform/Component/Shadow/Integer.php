@@ -13,7 +13,7 @@ trait Integer
             "min",
             ".control-container input",
             Attribute::TYPE_INTEGER,
-            "console.log('init min!'); element.min = parseInt(this.getAttribute('min'));",
+            "element.min = parseInt(this.getAttribute('min'));",
             "element.min = newValue;",
             Attribute::BEHAVIOUR_VISIBLE_IF_EMPTY,
             "0"

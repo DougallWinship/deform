@@ -38,7 +38,7 @@ class ComponentsCest
     {
         $I->seeElement(['css'=>'div#form1-mycurrency-container.component-container.container-type-currency>div.label-container>label']);
         $I->seeElement(['css'=>'div#form1-mycurrency-container.component-container.container-type-currency>div.control-container>label.currency-symbol']);
-        $I->seeElement(['css'=>'div#form1-mycurrency-container.component-container.container-type-currency>div.control-container>input[type=number]']);
+        $I->seeElement(['css'=>'div#form1-mycurrency-container.component-container.container-type-currency>div.control-container>input[type=text]']);
     }
 
     public function date(AcceptanceTester $I)
@@ -51,6 +51,12 @@ class ComponentsCest
     {
         $I->seeElement(['css'=>'div#form1-mydatetime-container.component-container.container-type-date-time>div.label-container>label']);
         $I->seeElement(['css'=>'div#form1-mydatetime-container.component-container.container-type-date-time>div.control-container>input[type=datetime-local]']);
+    }
+
+    public function decimal(AcceptanceTester $I)
+    {
+        $I->seeElement(['css'=>'div#form1-mydecimal-container.component-container.container-type-decimal>div.label-container>label']);
+        $I->seeElement(['css'=>'div#form1-mydecimal-container.component-container.container-type-decimal>div.control-container>input[type=text]']);
     }
 
     public function display(AcceptanceTester $I)
@@ -76,6 +82,11 @@ class ComponentsCest
         $I->seeElement(['css'=>'input#hidden-form1-myhidden[type=hidden][value="hidden value"]']);
     }
 
+    public function integer(AcceptanceTester $I)
+    {
+        $I->seeElement(['css'=>'div#form1-myinteger-container.component-container.container-type-integer>div.label-container>label']);
+        $I->seeElement(['css'=>'div#form1-myinteger-container.component-container.container-type-integer>div.control-container>input[type=number]']);
+    }
     public function image(AcceptanceTester $I)
     {
         $I->seeElement(['css'=>'div#form1-myimage-container.component-container.container-type-image>div.label-container>label']);
