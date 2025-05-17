@@ -11,6 +11,22 @@ jobs:
     name: Run Codeception with Coverage
     runs-on: ubuntu-latest
 
+    services:
+      mariadb:
+        image: mariadb:10.11
+        env:
+          MYSQL_DATABASE: deform-test-db
+          MYSQL_USER: root
+          MYSQL_PASSWORD: root
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=5
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
