@@ -58,7 +58,7 @@ JS;
         }
         $minValue = intval($minValue);
         $maxValue = $this->input->get('data-max');
-        if ($maxValue!==null) {
+        if ($maxValue !== null) {
             $maxValue = intval($maxValue);
             if ($minValue >= $maxValue) {
                 throw new \Exception("'min' must be less than 'max'");
@@ -86,9 +86,9 @@ JS;
         $maxValue = intval($maxValue);
 
         $minValue = $this->input->get('data-min');
-        if ($minValue!==null) {
+        if ($minValue !== null) {
             $minValue = intval($minValue);
-            if($maxValue <= $minValue) {
+            if ($maxValue <= $minValue) {
                 throw new \Exception("'max' must be greater than 'min'");
             }
         }
@@ -102,7 +102,7 @@ JS;
      * @return $this
      * @throws \Exception
      */
-    public function step($stepValue=null): self
+    public function step($stepValue = null): self
     {
         if ($stepValue === null) {
             $this->input->unset('data-step');

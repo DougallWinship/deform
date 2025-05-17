@@ -9,6 +9,7 @@ use Deform\Html\Html as Html;
 class Decimal extends Input
 {
     use Shadow\Decimal;
+
     public const string ROUND_STANDARD = "standard";
     public const string ROUND_CEIL = "ceil";
     public const string ROUND_FLOOR = "floor";
@@ -48,7 +49,7 @@ JS;
             throw new \Exception("'min' must be a numeric value");
         }
         $maxValue = $this->input->get('data-max');
-        if ($maxValue!==null && floatVal($minValue) >= floatval($maxValue)) {
+        if ($maxValue !== null && floatVal($minValue) >= floatval($maxValue)) {
             throw new \Exception("'min' must be less than 'max'");
         }
         $this->input->set('data-min', (string)$minValue);
@@ -61,7 +62,7 @@ JS;
             throw new \Exception("'max' must be a numeric value");
         }
         $minValue = $this->input->get('data-min');
-        if ($minValue!==null && floatval($maxValue) <= floatval($minValue)) {
+        if ($minValue !== null && floatval($maxValue) <= floatval($minValue)) {
             throw new \Exception("'max' must be greater than 'min'");
         }
         $this->input->set('data-max', (string)$maxValue);
@@ -74,7 +75,7 @@ JS;
         return $this;
     }
 
-    public function dp(int $decimalPlaces=2): self
+    public function dp(int $decimalPlaces = 2): self
     {
         $this->input->set('data-dp', $decimalPlaces);
 
@@ -82,15 +83,13 @@ JS;
         $max = $this->input->get('data-max');
         if ($min == 0) {
             $negativePattern = "";
-        }
-        elseif ($max == 0) {
+        } elseif ($max == 0) {
             $negativePattern = "-";
-        }
-        else {
+        } else {
             $negativePattern = "-?";
         }
         $escapedDecimal = preg_quote('.', '/'); // safer if you later allow comma/locale rules
-        $pattern = '^'.$negativePattern.'\\d+(' . $escapedDecimal . '\\d{1,' . $decimalPlaces . '})?$';
+        $pattern = '^' . $negativePattern . '\\d+(' . $escapedDecimal . '\\d{1,' . $decimalPlaces . '})?$';
         $this->input->set('pattern', $pattern);
         return $this;
     }

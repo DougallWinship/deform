@@ -32,7 +32,7 @@ class Currency extends Input
             'id' => $this->getId(),
             'min' => '0',
             'inputmode' => 'decimal',
-            'pattern'=>"^\d+(\.\d{1,2})?$",
+            'pattern' => "^\d+(\.\d{1,2})?$",
             'placeholder' => "0.00",
             'onchange' => "!isNaN(this.value) && (this.value = parseFloat(this.value).toFixed(2))"
         ]);

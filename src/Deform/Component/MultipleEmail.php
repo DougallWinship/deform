@@ -15,7 +15,7 @@ class MultipleEmail extends Input
     {
         parent::setup();
         $this->type('email');
-        $this->input->set('multiple','multiple');
+        $this->input->set('multiple', 'multiple');
     }
 
     /**

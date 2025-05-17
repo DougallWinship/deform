@@ -46,7 +46,7 @@ class Image extends File
             . 'input.nextSibling.src = "' . self::PLACEHOLDER_IMAGE_BASE64 . '";'
             . 'input.value=null;'
             . 'input.nextSibling.nextSibling.value=null';
-        $this->clearButton->set('onclick', $onclickJs );
+        $this->clearButton->set('onclick', $onclickJs);
         $componentDiv->add($this->previewImageTag);
         $componentDiv->add($this->hiddenUrlInput);
         return $htmlTag;

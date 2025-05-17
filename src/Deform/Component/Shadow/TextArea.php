@@ -11,7 +11,8 @@ trait TextArea
         return str_replace('</textarea>', '</textarea><slot style="display:none"></slot>', parent::getShadowTemplate());
     }
 
-    public function getAdditionalAttributes(): array {
+    public function getAdditionalAttributes(): array
+    {
         return [
             "_observer = null",
             "_ignoreSlotChanges = false"

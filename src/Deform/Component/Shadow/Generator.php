@@ -185,7 +185,7 @@ JS;
         if (!$additionalAttributes) {
             return "";
         }
-        return implode(";".PHP_EOL, $additionalAttributes).";";
+        return implode(";" . PHP_EOL, $additionalAttributes) . ";";
     }
 
     private function generateConstructor(string $componentName): string
@@ -355,13 +355,12 @@ JS;
     }
 })();
 JS;
-            }
-            else {
+            } else {
                 throw new \Exception("Invalid behaviour : " . $attribute->behaviour);
             }
         }
 
-        $js = Strings::prependPerLine(implode("\n", $generatedComponentRules),"    ");
+        $js = Strings::prependPerLine(implode("\n", $generatedComponentRules), "    ");
 
         return <<<JS
 /* start : connected callback rules */

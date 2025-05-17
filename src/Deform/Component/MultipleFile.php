@@ -17,10 +17,10 @@ class MultipleFile extends File
     public function setup(): void
     {
         parent::setup();
-        $this->input->set('multiple','multiple');
+        $this->input->set('multiple', 'multiple');
         $list = Html::ul(['class' => 'filelist']);
         $this->componentContainer->control->addHtmlTag($list);
-        $this->input->set('onchange','console.log("event",event);');
-        $this->input->set('name', $this->input->get('name')."[]");
+        $this->input->set('onchange', 'console.log("event",event);');
+        $this->input->set('name', $this->input->get('name') . "[]");
     }
 }

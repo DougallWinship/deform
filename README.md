@@ -11,7 +11,7 @@ Components are rendered as standard HTML/CSS by default, but can also be exporte
 [Getting Started](#getting-started)  
 [Features](./docs/Features.md)  
 [Examples](./docs/Examples.md)  
-[Styling](./doc/Styling.md)  
+[Styling](./docs/Styling.md)  
 [Project Info](./docs/ProjectInfo.md)  
 [Contact](#contact)
 
