@@ -20,7 +20,7 @@ class HtmlDocumentTest extends \Codeception\Test\Unit
 
     public function testLoadBad()
     {
-        $htmlDocument = HtmlDocument::load("<div><span><p>aaaagh!>><><<>>");
+        $htmlDocument = HtmlDocument::load(">><<<>aaaagh!>><><<>>");
         $this->assertTrue($htmlDocument->hasErrors());
     }
 
