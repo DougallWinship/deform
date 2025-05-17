@@ -35,6 +35,8 @@ jobs:
           php-version: '8.3'
           coverage: xdebug
 
+      - name: Show PHP info
+        run: php -i | grep -i libxml
       - name: Install dependencies
         run: composer install --no-progress --prefer-dist
 
