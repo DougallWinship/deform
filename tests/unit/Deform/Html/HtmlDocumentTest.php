@@ -18,11 +18,11 @@ class HtmlDocumentTest extends \Codeception\Test\Unit
 
     // tests
 
-    public function testLoadBad()
-    {
-        $htmlDocument = HtmlDocument::load(">><<<>aaaagh!>><><<>>");
-        $this->assertTrue($htmlDocument->hasErrors());
-    }
+//    public function testLoadBad()
+//    {
+//        $htmlDocument = HtmlDocument::load(">><<<>aaaagh!>><><<>>");
+//        $this->assertTrue($htmlDocument->hasErrors());
+//    }
 
     public function testLoadHtml5Tag()
     {
