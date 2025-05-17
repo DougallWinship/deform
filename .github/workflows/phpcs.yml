@@ -1,0 +1,27 @@
+name: PHP Code Style Check (PSR-12)
+
+on:
+  push:
+    branches: [ master, develop ]
+  pull_request:
+    branches: [ master, develop ]
+
+jobs:
+  phpcs:
+    name: Run PHP_CodeSniffer
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+
+      - name: Install dependencies
+        run: composer install --no-progress --prefer-dist
+
+      - name: Run PHPCS (PSR-12)
+        run: vendor/bin/phpcs --standard=PSR12 ./src/Deform
