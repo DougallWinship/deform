@@ -28,7 +28,7 @@ setOptions(selectElement, optionsJson, removeExisting = false)
         const key = keyValue[0];
         const value = keyValue[1];
         const option = templateOption.cloneNode(true);
-        option.value = key
+        option.value = key;
         option.innerText = value;
         option.part.remove('deform-hidden');
         selectElement.appendChild(option);
@@ -56,8 +56,8 @@ JS;
             'options',
             '.component-container select',
             Attribute::TYPE_KEYVALUE_ARRAY,
-            "this.setOptions(element, this.getAttribute('options'))",
-            "this.setOptions(element, newValue, true)"
+            "this.setOptions(element, this.getAttribute('options'));",
+            "this.setOptions(element, newValue, true);"
         );
 
         $attributes['name'] = new Attribute(

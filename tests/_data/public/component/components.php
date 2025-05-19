@@ -7,10 +7,9 @@ if (isset($_POST) && count($_POST)) { ?>
 if (isset($_FILES) && count($_FILES)) { ?>
     <pre><?= print_r($_FILES,true); ?></pre>
 <?php } ?>
-
 <script>
 <?php
-echo \Deform\Component\ComponentFactory::getCustomElementDefinitionsJavascript(false);
+echo \Deform\Component\ComponentFactory::getCustomElementDefinitionsJavascript(true);
 ?>
 </script>
 <form id='form' name="potatoes" data-namespace="potatoes" method="post" action="" enctype="multipart/form-data">
@@ -36,7 +35,7 @@ echo \Deform\Component\ComponentFactory::getCustomElementDefinitionsJavascript(f
     <deform-select name='select1' label="Component Select" options='[["one","One"],["two","Two"],["three","Three"]]' value='two'></deform-select>
     <deform-select-multi name='selectmulti1' label="Component Multi-Select" options='[["one","One"],["two","Two"],["three","Three"]]' value='["one","three"]'></deform-select-multi>
     <deform-slider name='slider1' label='Slider Label' min="50" max="150" showOutput="true" value="100"></deform-slider>
-    <deform-text name='text1' label='Text Label' value='text value'></deform-text>
+    <deform-text name='text1' label='Component Text' value='text value'></deform-text>
     <deform-text-area name='textarea1' label='Component Text Area'>this is some text area value</deform-text-area>
     <deform-submit name='submit1' value="potatoes" onclick="this.parentNode.submit()"></deform-submit>
 </form>

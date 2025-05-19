@@ -26,7 +26,7 @@ setOptions(selectElement, value, removeExisting=false)
             if (index>0) {
                 element.remove();
             }
-        })
+        });
     }
     values.forEach((keyValue) => {
         const option = templateOption.cloneNode(true);
@@ -59,7 +59,7 @@ setValues(selectElement, valuesJson)
         if (index>0) {
             option.selected = values.includes(option.value);
         }
-    })
+    });
     this.setFormValue(options);
     selectElement.addEventListener('change', () => {
         this.setFormValue(options);

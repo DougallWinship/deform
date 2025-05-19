@@ -41,6 +41,10 @@ class File extends Input
         return $this;
     }
 
+    /**
+     * @return HtmlTag
+     * @throws DeformException
+     */
     public function getHtmlTag(): HtmlTag
     {
         $htmlTag = parent::getHtmlTag();
@@ -55,6 +59,10 @@ class File extends Input
         return $htmlTag;
     }
 
+    /**
+     * @return void
+     * @throws DeformException
+     */
     public function hydrate(): void
     {
         if ($this->acceptType != null) {

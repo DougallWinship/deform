@@ -146,7 +146,7 @@ $dynamicCallbacks
     setComponentNamespace(componentNamespace) {
         if (!Deform.isValidNamespace(componentNamespace)) {
             this.hasInvalidName = true;
-            this.namespace = componentNamespace
+            this.namespace = componentNamespace;
             return false;
         }
         else {
@@ -202,7 +202,7 @@ constructor() {
     this.container = $containerDefinition;
     this.isConnected = false;
     this.namespaceChecked = false;
-    this.metadata = this.constructor.metadata
+    this.metadata = this.constructor.metadata;
     const shadowRoot = this.attachShadow({mode:'open', delegatesFocus: true});
     shadowRoot.appendChild(this.template);
 }
@@ -364,7 +364,7 @@ JS;
 /* start : connected callback rules */
 requestAnimationFrame(() => {
 $js
-})
+});
 JS;
     }
 

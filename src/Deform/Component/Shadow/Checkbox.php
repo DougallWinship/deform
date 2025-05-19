@@ -45,8 +45,8 @@ JS;
             'value',
             ".control-container input",
             Attribute::TYPE_BOOLEAN,
-            "this.setChecked(element,false)",
-            "this.setChecked(element,true)",
+            "this.setChecked(element,false);",
+            "this.setChecked(element,true);",
             Attribute::BEHAVIOUR_VISIBLE_IF_EMPTY,
         );
 

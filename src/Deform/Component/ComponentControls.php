@@ -83,6 +83,7 @@ class ComponentControls
     {
         $this->controlTags = [];
         $this->allTags = [];
+        $this->tagsWithForById = [];
     }
 
 

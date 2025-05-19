@@ -116,7 +116,7 @@ abstract class BaseComponent implements \Stringable
     }
 
     /**
-     * whether to try and guess the components label automatically
+     * whether to try and guess the component's label automatically or not
      * @param bool $autoLabel
      * @return self
      */
@@ -140,6 +140,7 @@ abstract class BaseComponent implements \Stringable
     }
 
     /**
+     * replace a control and optionally
      * @param HtmlTag $control
      * @param mixed|null $controlTagDecorator
      * @return $this
@@ -249,7 +250,6 @@ abstract class BaseComponent implements \Stringable
         return (string) $this->getHtmlTag();
     }
 
-
     /**
      * @return string
      */
@@ -309,6 +309,7 @@ abstract class BaseComponent implements \Stringable
      * @param string $name
      * @param array $arguments
      * @return BaseComponent
+     * @throws DeformException
      */
     public function __call(string $name, array $arguments)
     {
@@ -412,7 +413,6 @@ abstract class BaseComponent implements \Stringable
     /**
      * hydrate the component using its properties (those annotated as @persistAttribute) when it's being rebuilt
      * from an array definition
-     * @throws DeformException
      */
     public function hydrate(): void
     {
@@ -582,6 +582,9 @@ abstract class BaseComponent implements \Stringable
         }
     }
 
+    /**
+     * @return array [ 0 => {short version}, 1 => {full version} ]
+     */
     public static function getGitVersions(): array
     {
         static $versions = null;

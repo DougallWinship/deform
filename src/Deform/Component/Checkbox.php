@@ -54,16 +54,6 @@ class Checkbox extends Input
     /**
      * @inheritDoc
      */
-    public function hydrate(): void
-    {
-        if (is_string($this->inputLabelText)) {
-            $this->text($this->inputLabelText);
-        }
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function setValue($value): static
     {
         if ($value) {
@@ -81,5 +71,16 @@ class Checkbox extends Input
         $label = $labelDiv->getChildren()[0];
         $label->unset('for');
         return $tag;
+    }
+
+    /**
+     * @inheritDoc
+     * @throws DeformException
+     */
+    public function hydrate(): void
+    {
+        if (is_string($this->inputLabelText)) {
+            $this->text($this->inputLabelText);
+        }
     }
 }

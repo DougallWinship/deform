@@ -76,7 +76,7 @@ class Button extends BaseComponent
     }
 
     /**
-     * @return void
+     * @inheritdoc
      * @throws DeformException
      */
     public function hydrate(): void

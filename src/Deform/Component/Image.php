@@ -29,6 +29,20 @@ class Image extends File
     /** @var HtmlTag|null  */
     private ?HtmlTag $hiddenUrlInput = null;
 
+    /**
+     * @return void
+     * @throws DeformException
+     */
+    public function setup(): void
+    {
+        parent::setup();
+        $this->accept("image/*");
+    }
+
+    /**
+     * @return HtmlTag
+     * @throws DeformException
+     */
     public function getHtmlTag(): HtmlTag
     {
         $this->input->set(
@@ -130,7 +144,7 @@ if (typeof $js!=="function") {
             document.getElementById("$hiddenId").value=url 
         } 
     }, function(error) {
-        console.log(error); 
+        console.error("Failed to use preview", error); 
     }) 
 }
 JS;

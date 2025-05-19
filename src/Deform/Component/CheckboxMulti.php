@@ -67,16 +67,6 @@ class CheckboxMulti extends BaseComponent
     /**
      * @inheritDoc
      */
-    public function hydrate(): void
-    {
-        if ($this->checkboxValues != null && count($this->checkboxValues) > 0) {
-            $this->checkboxes($this->checkboxValues);
-        }
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function setValue($value): static
     {
         foreach ($this->checkboxes as $checkbox) {
@@ -88,5 +78,15 @@ class CheckboxMulti extends BaseComponent
             }
         }
         return $this;
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function hydrate(): void
+    {
+        if ($this->checkboxValues != null && count($this->checkboxValues) > 0) {
+            $this->checkboxes($this->checkboxValues);
+        }
     }
 }

@@ -118,18 +118,6 @@ class Select extends BaseComponent
     /**
      * @inheritDoc
      */
-    public function hydrate(): void
-    {
-        if ($this->hasOptGroups) {
-            $this->optgroupOptions($this->optionsValues);
-        } else {
-            $this->options($this->optionsValues);
-        }
-    }
-
-    /**
-     * @inheritDoc
-     */
     public function getHtmlTag(): HtmlTag
     {
         if (!is_array($this->optionsValues)) {
@@ -139,5 +127,18 @@ class Select extends BaseComponent
             throw new DeformComponentException("A select component must contain at least one option");
         }
         return parent::getHtmlTag();
+    }
+
+    /**
+     * @inheritDoc
+     * @throws DeformException
+     */
+    public function hydrate(): void
+    {
+        if ($this->hasOptGroups) {
+            $this->optgroupOptions($this->optionsValues);
+        } else {
+            $this->options($this->optionsValues);
+        }
     }
 }

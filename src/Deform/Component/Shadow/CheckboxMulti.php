@@ -61,7 +61,6 @@ setOptions(element, clearFirst=false)
 }
 setFormData(optionElements) 
 {
-    console.log('optionElements', optionElements);
     let values = [];
     optionElements.forEach((element)=> {
         if (element.checked) {

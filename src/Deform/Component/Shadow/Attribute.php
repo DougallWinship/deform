@@ -6,21 +6,23 @@ namespace Deform\Component\Shadow;
 
 class Attribute
 {
-    public const TYPE_STRING = 'string';
-    public const TYPE_INTEGER = 'integer';
-    public const TYPE_FLOAT = 'float';
-    public const TYPE_BOOLEAN = 'boolean';
-    public const TYPE_ARRAY = 'array';
-    public const TYPE_KEYVALUE_ARRAY = 'keyvalue-array';
-    public const TYPE_FILE = 'file';
-    public const TYPE_TEXTAREA = 'textarea';
+    public const bool ADD_MISSING_SEMICOLONS = false;
 
-    public const SLOT_SELECTOR = 'slot';
-    public const NAME_SELECTOR = 'name';
+    public const string TYPE_STRING = 'string';
+    public const string TYPE_INTEGER = 'integer';
+    public const string TYPE_FLOAT = 'float';
+    public const string TYPE_BOOLEAN = 'boolean';
+    public const string TYPE_ARRAY = 'array';
+    public const string TYPE_KEYVALUE_ARRAY = 'keyvalue-array';
+    public const string TYPE_FILE = 'file';
+    public const string TYPE_TEXTAREA = 'textarea';
 
-    public const BEHAVIOUR_VISIBLE_IF_EMPTY = 'visible-if-empty';
-    public const BEHAVIOUR_HIDE_IF_EMPTY = 'hide-if-empty';
-    public const BEHAVIOUR_CUSTOM = 'custom';
+    public const string SLOT_SELECTOR = 'slot';
+    public const string NAME_SELECTOR = 'name';
+
+    public const string BEHAVIOUR_VISIBLE_IF_EMPTY = 'visible-if-empty';
+    public const string BEHAVIOUR_HIDE_IF_EMPTY = 'hide-if-empty';
+    public const string BEHAVIOUR_CUSTOM = 'custom';
 
     public bool $dynamic = false;
 
@@ -35,6 +37,15 @@ class Attribute
     ) {
         if ($updateJs) {
             $this->dynamic = true;
+        }
+        if (self::ADD_MISSING_SEMICOLONS) {
+            // paranoia ... get it right
+            if (!str_ends_with($this->initialiseJs, ';')) {
+                $this->initialiseJs .= ';';
+            }
+            if (!str_ends_with($this->updateJs, ';')) {
+                $this->updateJs .= ';';
+            }
         }
     }
 

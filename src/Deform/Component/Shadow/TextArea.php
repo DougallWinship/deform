@@ -76,8 +76,8 @@ JS;
             "name",
             ".component-container textarea",
             Attribute::TYPE_STRING,
-            "element.name = this.getAttribute('name')",
-            "element.name = newValue"
+            "element.name = this.getAttribute('name');",
+            "element.name = newValue;"
         );
     }
 }

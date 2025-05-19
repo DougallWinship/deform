@@ -56,7 +56,7 @@ JS;
             "value",
             ".control-container button",
             Attribute::TYPE_STRING,
-            "this.initValue(element)",
+            "this.initValue(element);",
             "element.value = newValue; this.internals_.setFormValue(element.value);"
         );
 

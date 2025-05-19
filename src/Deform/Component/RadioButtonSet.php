@@ -88,6 +88,7 @@ class RadioButtonSet extends BaseComponent
 
     /**
      * @inheritDoc
+     * @throws DeformException
      */
     public function hydrate(): void
     {
