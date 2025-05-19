@@ -6,6 +6,8 @@ namespace Deform\Component\Shadow;
 
 use Deform\Component\BaseComponent;
 use Deform\Component\ComponentFactory;
+use Deform\Exception\DeformComponentException;
+use Deform\Exception\DeformException;
 use Deform\Util\Strings;
 
 /**
@@ -36,7 +38,7 @@ JS;
 
     /**
      * @param string $componentName
-     * @throws \ReflectionException|\Exception
+     * @throws DeformException
      */
     public function __construct(string $componentName)
     {
@@ -49,10 +51,6 @@ JS;
         $this->prepareTemplateMethods();
     }
 
-    /**
-     * @return void
-     * @throws \ReflectionException
-     */
     private function prepareTemplateMethods(): void
     {
         $templateMethods = $this->component->getTemplateMethods();
@@ -60,7 +58,7 @@ JS;
             foreach ($templateMethods as $templateMethod) {
                 $params = $templateMethod->getParameters();
                 if (count($params) > 1) {
-                    throw new \Exception("Not yet supported!");
+                    throw new DeformComponentException("Not yet supported!");
                 } elseif (count($params) === 1) {
                     $type = $params[0]->getType();
                     $typeName = $type->getName();
@@ -69,7 +67,7 @@ JS;
                     } elseif ($typeName === 'string') {
                         $templateMethod->invoke($this->component, '{item}');
                     } else {
-                        throw new \Exception("As yet unsupported @templateMethod parameter type " .
+                        throw new DeformComponentException("As yet unsupported @templateMethod parameter type " .
                             "'" . $typeName . "' for " . $templateMethod->name);
                     }
                 }
@@ -290,7 +288,7 @@ JS;
 
     /**
      * @return string
-     * @throws \Exception
+     * @throws DeformException
      */
     private function getConnectedCallbackRules(): string
     {
@@ -356,7 +354,7 @@ JS;
 })();
 JS;
             } else {
-                throw new \Exception("Invalid behaviour : " . $attribute->behaviour);
+                throw new DeformComponentException("Invalid behaviour : " . $attribute->behaviour);
             }
         }
 

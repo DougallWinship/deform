@@ -5,6 +5,8 @@ declare(strict_types=1);
 namespace Deform\Component;
 
 use Deform\Component\Shadow\Generator;
+use Deform\Exception\DeformComponentException;
+use Deform\Exception\DeformException;
 use Deform\Html\Html;
 use Deform\Html\HtmlTag;
 use Deform\Util\Strings;
@@ -53,14 +55,14 @@ class ComponentFactory
      * @param string $method
      * @param array $arguments
      * @return object
-     * @throws \Exception
+     * @throws DeformException
      */
     public static function __callStatic(string $method, array $arguments)
     {
         self::identifyComponents();
 
         if (!in_array($method, self::$components)) {
-            throw new \Exception(
+            throw new DeformComponentException(
                 "You are trying to construct a Component which hasn't been registered."
                 . " Please add a suitable @method signature to the Component class for '" . $method . "'"
             );
@@ -78,7 +80,7 @@ class ComponentFactory
      * @param string $fieldName
      * @param array $arguments
      * @return object
-     * @throws \Exception
+     * @throws DeformException
      */
     public static function build(
         string $component,
@@ -90,17 +92,19 @@ class ComponentFactory
             // if a namespace was included then check & strip it!
             $checkNamespace = substr($component, 0, $namespaceDividerPos);
             if ($checkNamespace !== __NAMESPACE__) {
-                throw new \Exception(__METHOD__ . " can only accept classes in the namespace " . __NAMESPACE__);
+                throw new DeformComponentException(
+                    __METHOD__ . " can only accept classes in the namespace " . __NAMESPACE__
+                );
             }
             $component = substr($component, $namespaceDividerPos + 1);
         }
 
         $class = __NAMESPACE__ . '\\' . $component;
         if (!class_exists($class)) {
-            throw new \Exception("Failed to find class for component '" . $component . "' : " . $class);
+            throw new DeformComponentException("Failed to find class for component '" . $component . "' : " . $class);
         }
         if (!is_subclass_of($class, BaseComponent::class)) {
-            throw new \Exception("You can only build components (which must subclass BaseComponent)");
+            throw new DeformComponentException("You can only build components (which must subclass BaseComponent)");
         }
 
         // use the protected constructor!
@@ -120,7 +124,7 @@ class ComponentFactory
     /**
      * @param string $component
      * @return HtmlTag
-     * @throws \Exception
+     * @throws DeformException
      */
     public static function buildTemplate(string $component): HtmlTag
     {
@@ -132,7 +136,7 @@ class ComponentFactory
     /**
      * @param string $componentName
      * @return bool
-     * @throws \Exception
+     * @throws DeformException
      */
     public static function isRegisteredComponent(string $componentName): bool
     {
@@ -142,7 +146,7 @@ class ComponentFactory
 
     /**
      * @return string[]
-     * @throws \Exception
+     * @throws DeformException
      */
     public static function getRegisteredComponents(): array
     {
@@ -154,7 +158,7 @@ class ComponentFactory
      * generate javascript definitions for the components
      * @param bool $compress
      * @return false|string
-     * @throws \ReflectionException|\Exception
+     * @throws DeformException
      */
     public static function getCustomElementDefinitionsJavascript(bool $compress = false): false|string
     {
@@ -172,7 +176,7 @@ class ComponentFactory
 
     /**
      * analyses the phpdoc element from this class
-     * @throws \Exception
+     * @throws DeformException
      */
     private static function identifyComponents(): void
     {

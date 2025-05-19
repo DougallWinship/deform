@@ -1,6 +1,8 @@
 <?php
 namespace Deform\Component;
 
+use Deform\Exception\DeformComponentException;
+
 class SelectTest extends \Codeception\Test\Unit
 {
     /**
@@ -19,7 +21,7 @@ class SelectTest extends \Codeception\Test\Unit
     public function testInvalidSetupNull()
     {
         $select = ComponentFactory::Select('ns','sl');
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformComponentException::class);
         $this->expectExceptionMessage('Select component options must be an array');
         $select->getHtmlTag();
     }
@@ -28,7 +30,7 @@ class SelectTest extends \Codeception\Test\Unit
     {
         $select = ComponentFactory::Select('ns','sl');
         $select->options([]);
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformComponentException::class);
         $this->expectExceptionMessage('A select component must contain at least one option');
         $select->getHtmlTag();
     }
@@ -158,7 +160,7 @@ class SelectTest extends \Codeception\Test\Unit
             ->optgroupOptions($selectOptions);
         $select->setValue('e');
 
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformComponentException::class);
         $select->setValue(['k','c','g']);
     }
 

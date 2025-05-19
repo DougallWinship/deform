@@ -1,6 +1,8 @@
 <?php
 namespace Deform\Html;
 
+use Deform\Exception\DeformHtmlException;
+
 class HtmlDocumentTest extends \Codeception\Test\Unit
 {
     /**
@@ -155,7 +157,7 @@ HTML;
     public function testSelectCssNoConverter()
     {
         $this->assertFalse(HtmlDocument::canSelectCss());
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformHtmlException::class);
         $this->expectExceptionMessage("If you want to use css selectors then please specify a converter via setCssToXpathConverter");
 
         $htmlDocument = HtmlDocument::load("<div><ul><li class='noinput'>one</li><li class='noinput'>two</li><li><input name='name' value='three' /></li></ul></div>");

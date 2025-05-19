@@ -1,6 +1,8 @@
 <?php
 namespace Deform\Component;
 
+use Deform\Exception\DeformComponentException;
+
 class CheckboxMultiTest extends \Codeception\Test\Unit
 {
     /**
@@ -20,7 +22,7 @@ class CheckboxMultiTest extends \Codeception\Test\Unit
     public function testInvalidSetup()
     {
         $checkbox = ComponentFactory::CheckboxMulti('ns','cbm');
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformComponentException::class);
         $this->expectExceptionMessage('Components must contain at least one control');
         $checkbox->getHtmlTag();
     }

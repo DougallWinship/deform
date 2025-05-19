@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Deform\Component;
 
+use Deform\Exception\DeformComponentException;
+use Deform\Exception\DeformException;
 use Deform\Html\Html as Html;
 use Deform\Html\HtmlTag;
 use Deform\Html\IHtml;
@@ -39,7 +41,7 @@ class Select extends BaseComponent
      * @templateMethod
      * @param array $optionsValues
      * @return static
-     * @throws \Exception
+     * @throws DeformException
      */
     public function options(array $optionsValues): static
     {
@@ -64,7 +66,7 @@ class Select extends BaseComponent
     /**
      * @param array $optgroupOptions
      * @return static
-     * @throws \Exception
+     * @throws DeformException
      */
     public function optgroupOptions(array $optgroupOptions): static
     {
@@ -93,7 +95,7 @@ class Select extends BaseComponent
     public function setValue($value): static
     {
         if (is_array($value)) {
-            throw new \Exception("Select component can only set a single value");
+            throw new DeformComponentException("Select component can only set a single value");
         }
         $checkOptionTags = [];
         if ($this->hasOptGroups) {
@@ -131,10 +133,10 @@ class Select extends BaseComponent
     public function getHtmlTag(): HtmlTag
     {
         if (!is_array($this->optionsValues)) {
-            throw new \Exception("Select component options must be an array");
+            throw new DeformComponentException("Select component options must be an array");
         }
         if (count($this->optionsValues) == 0) {
-            throw new \Exception("A select component must contain at least one option");
+            throw new DeformComponentException("A select component must contain at least one option");
         }
         return parent::getHtmlTag();
     }

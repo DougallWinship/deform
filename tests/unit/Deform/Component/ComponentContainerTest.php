@@ -1,6 +1,7 @@
 <?php
 namespace Deform\Component;
 
+use Deform\Exception\DeformComponentException;
 use Deform\Html\Html;
 
 class ComponentContainerTest extends \Codeception\Test\Unit
@@ -25,7 +26,7 @@ class ComponentContainerTest extends \Codeception\Test\Unit
         $control = $this->tester->getAttributeValue($container, 'control');
         $this->tester->setAttributeValue($control,'controlTags',[1,2,3,4]);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformComponentException::class);
         $hidden->getHtmlTag();
     }
 

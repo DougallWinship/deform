@@ -1,6 +1,8 @@
 <?php
 namespace Deform\Html;
 
+use Deform\Exception\DeformHtmlException;
+
 class HtmlTagTest extends \Codeception\Test\Unit
 {
     /**
@@ -19,13 +21,13 @@ class HtmlTagTest extends \Codeception\Test\Unit
     // tests
     public function testConstructorFailsForBadTag()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformHtmlException::class);
         new HtmlTag("foo");
     }
 
     public function testConstructorFailsForBadTag2()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformHtmlException::class);
         new HtmlTag("foo", ['bar']);
     }
 
@@ -129,14 +131,14 @@ class HtmlTagTest extends \Codeception\Test\Unit
 
     public function testPrependStringFailSelfClosing()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformHtmlException::class);
         $br = Html::br();
         $br->prepend("not allowed");
     }
 
     public function testPrependTagFailSelfClosing()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformHtmlException::class);
         $br = Html::br();
         $br->prepend(Html::hr());
     }
@@ -159,7 +161,7 @@ class HtmlTagTest extends \Codeception\Test\Unit
 
     public function testClearFailSelfClosing()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformHtmlException::class);
         $br = Html::br();
         $br->clear();
     }
@@ -174,7 +176,7 @@ class HtmlTagTest extends \Codeception\Test\Unit
 
     public function testResetFailSelfClosing()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformHtmlException::class);
         $br = Html::br();
         $br->reset("foo");
     }
@@ -414,7 +416,7 @@ class HtmlTagTest extends \Codeception\Test\Unit
 
     public function testImplodeAttributeValuesNonString()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformHtmlException::class);
         HtmlTag::implodeAttributeValues('other', ["foo", "bar", new \stdClass()]);
     }
 

@@ -3,6 +3,7 @@ namespace Deform\Component;
 
 use Deform\Component\Button;
 use Deform\Component\ComponentFactory;
+use Deform\Exception\DeformComponentException;
 
 class ButtonTest extends \Codeception\Test\Unit
 {
@@ -73,7 +74,7 @@ class ButtonTest extends \Codeception\Test\Unit
     public function testInvalidType()
     {
         $button = ComponentFactory::Button('namespace', 'button', ['foo' => 'bar']);
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformComponentException::class);
         $button->type('invalidType');
     }
 

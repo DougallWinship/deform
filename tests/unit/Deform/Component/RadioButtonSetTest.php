@@ -1,6 +1,7 @@
 <?php
 namespace Deform\Component;
 
+use Deform\Exception\DeformComponentException;
 use Deform\Util\Arrays;
 
 class RadioButtonSetTest extends \Codeception\Test\Unit
@@ -21,7 +22,7 @@ class RadioButtonSetTest extends \Codeception\Test\Unit
     public function testInvalidSetup()
     {
         $checkbox = ComponentFactory::CheckboxMulti('ns','rbs');
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformComponentException::class);
         $this->expectExceptionMessage('Components must contain at least one control');
         $checkbox->getHtmlTag();
     }

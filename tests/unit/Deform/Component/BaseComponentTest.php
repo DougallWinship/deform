@@ -1,7 +1,7 @@
 <?php
 namespace Deform\Component;
 
-use Deform\Html\Html;
+use Deform\Exception\DeformComponentException;
 
 /**
  * it appears to be tricky to mock an abstract class with a protected constructor (if you read this and know of a way
@@ -180,7 +180,7 @@ class BaseComponentTest extends \Codeception\Test\Unit
 
     public function testToStringException()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformComponentException::class);
         $namespace = 'ns';
         $field = 'field';
         $input = ComponentFactory::Text($namespace, $field);
@@ -247,7 +247,7 @@ class BaseComponentTest extends \Codeception\Test\Unit
     public function testDumbMagicCall()
     {
         $text = ComponentFactory::Text('ns','txt');
-        $this->expectException(\InvalidArgumentException::class);
+        $this->expectException(DeformComponentException::class);
         $text->wibble(1,2,3);
     }
 

@@ -2,6 +2,9 @@
 
 namespace Deform\Util;
 
+use Deform\Exception\DeformException;
+use Deform\Exception\DeformUtilException;
+
 /**
  * array handling utilities
  */
@@ -28,7 +31,7 @@ class Arrays
      * @param array $keys
      * @param bool $strict if this is true then an exception is throw if any keys are not found
      * @return array
-     * @throws \Exception
+     * @throws DeformException
      */
     public static function extractKeys(array $data, array $keys, bool $strict = false): array
     {
@@ -43,7 +46,7 @@ class Arrays
         $results = array_intersect_key($data, $extractKeys);
         $missingKeys = array_flip(array_diff_key($extractKeys, $results));
         if ($strict && count($missingKeys) > 0) {
-            throw new \Exception(
+            throw new DeformUtilException(
                 "The following fields were specified which were not found in the data : "
                 . implode(", ", $missingKeys)
             );

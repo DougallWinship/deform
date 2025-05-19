@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Deform\Component;
 
+use Deform\Exception\DeformException;
 use Deform\Html\Html;
 use Deform\Html\HtmlTag;
 
@@ -31,7 +32,7 @@ class File extends Input
     /**
      * @param string $acceptType
      * @return static
-     * @throws \Exception
+     * @throws DeformException
      */
     public function accept(string $acceptType): static
     {

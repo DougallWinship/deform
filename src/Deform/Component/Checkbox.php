@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Deform\Component;
 
+use Deform\Exception\DeformException;
 use Deform\Html\Html as Html;
 use Deform\Html\HtmlTag;
 
@@ -41,7 +42,7 @@ class Checkbox extends Input
     /**
      * @param string $text
      * @return static
-     * @throws \Exception
+     * @throws DeformException
      */
     public function text(string $text): static
     {

@@ -2,6 +2,9 @@
 
 namespace Deform\Util;
 
+use Deform\Exception\DeformException;
+use Deform\Exception\DeformUtilException;
+
 /**
  * string handling utilities
  */
@@ -11,7 +14,7 @@ class Strings
      * Get a class name for an object or class name *without* it's namespace.
      * @param string|object $object
      * @return string
-     * @throws \Exception
+     * @throws DeformException
      */
     public static function getClassWithoutNamespace(mixed $object): string
     {
@@ -20,11 +23,11 @@ class Strings
         } elseif (is_string($object)) {
             $className = $object;
         } else {
-            throw new \Exception("Parameter must be an object or class name");
+            throw new DeformUtilException("Parameter must be an object or class name");
         }
 
         if (!class_exists($className)) {
-            throw new \Exception("Class does not exist : " . $className);
+            throw new DeformUtilException("Class does not exist : " . $className);
         }
 
         $idx = strrpos($className, "\\");
@@ -70,7 +73,6 @@ class Strings
      * Extract the method name, if available, from a PHPDocs style annotation comment line (not particularly strict!).
      * @param string $comment
      * @return string[]|null
-     * @throws \Exception
      */
     public static function extractStaticMethodSignature(string $comment): ?array
     {

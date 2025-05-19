@@ -1,6 +1,8 @@
 <?php
 namespace Deform\Util;
 
+use Deform\Exception\DeformUtilException;
+
 class ArraysTest extends \Codeception\Test\Unit
 {
     /**
@@ -71,7 +73,7 @@ class ArraysTest extends \Codeception\Test\Unit
 
     public function testExtractKeysNonAssocStrictFail()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformUtilException::class);
         Arrays::extractKeys([
             'one' => 'ONE',
             'two' => 'TWO',
@@ -101,7 +103,7 @@ class ArraysTest extends \Codeception\Test\Unit
 
     public function testExtractKeysAssocStrictFail()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformUtilException::class);
         Arrays::extractKeys([
             'one' => 'ONE',
             'two' => 'TWO',

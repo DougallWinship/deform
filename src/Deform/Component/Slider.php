@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Deform\Component;
 
+use Deform\Exception\DeformException;
 use Deform\Html\Html;
 
 /**
@@ -28,7 +29,7 @@ class Slider extends Input
      * whether to add an output tag showing the current value
      * @param bool $showOutput
      * @return void|static
-     * @throws \Exception
+     * @throws DeformException
      */
     public function showOutput(bool $showOutput = true): ?static
     {

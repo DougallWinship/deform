@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Deform\Component;
 
+use Deform\Exception\DeformComponentException;
+use Deform\Exception\DeformException;
 use Deform\Html\Html as Html;
 
 /**
@@ -37,6 +39,10 @@ class Decimal extends Input
 
     private ?string $pattern = null;
 
+    /**
+     * @return void
+     * @throws DeformException
+     */
     public function setup(): void
     {
         $js = <<<JS
@@ -65,13 +71,18 @@ JS;
         $this->addControl($this->input);
     }
 
+    /**
+     * @param mixed $minValue
+     * @return $this
+     * @throws DeformException
+     */
     public function min(mixed $minValue): self
     {
         if (!is_numeric($minValue)) {
-            throw new \Exception("'min' must be a numeric value");
+            throw new DeformComponentException("'min' must be a numeric value");
         }
         if ($this->max !== null && $minValue >= $this->max) {
-            throw new \Exception("'min' must be less than 'max'");
+            throw new DeformComponentException("'min' must be less than 'max'");
         }
         $this->min = (float)$minValue;
         $this->input->set('data-min', (string)$this->min);
@@ -79,13 +90,18 @@ JS;
         return $this;
     }
 
+    /**
+     * @param mixed $maxValue
+     * @return $this
+     * @throws DeformException
+     */
     public function max(mixed $maxValue): self
     {
         if (!is_numeric($maxValue)) {
-            throw new \Exception("'max' must be a numeric value");
+            throw new DeformComponentException("'max' must be a numeric value");
         }
         if ($this->min !== null && $maxValue <= $this->min) {
-            throw new \Exception("'max' must be greater than 'min'");
+            throw new DeformComponentException("'max' must be greater than 'min'");
         }
         $this->max = (float)$maxValue;
         $this->input->set('data-max', (string)$this->max);
@@ -93,20 +109,30 @@ JS;
         return $this;
     }
 
+    /**
+     * @param string $roundingStrategy
+     * @return $this
+     * @throws DeformException
+     */
     public function roundStrategy(string $roundingStrategy): self
     {
         if (!in_array($roundingStrategy, self::ALL_ROUND_STRATEGIES)) {
-            throw new \Exception("Unrecognised round strategy '$roundingStrategy'");
+            throw new DeformComponentException("Unrecognised round strategy '$roundingStrategy'");
         }
         $this->strategy = $roundingStrategy;
         $this->input->set('data-round', $roundingStrategy);
         return $this;
     }
 
+    /**
+     * @param int $decimalPlaces
+     * @return $this
+     * @throws DeformException
+     */
     public function dp(int $decimalPlaces): self
     {
         if ($decimalPlaces < 0) {
-            throw new \Exception("'$decimalPlaces' must be greater than 0");
+            throw new DeformComponentException("'$decimalPlaces' must be greater than 0");
         }
         $this->dp = $decimalPlaces;
         $this->input->set('data-dp', $decimalPlaces);
@@ -114,6 +140,10 @@ JS;
         return $this;
     }
 
+    /**
+     * @return self
+     * @throws DeformException
+     */
     private function updatePattern(): self
     {
         if ($this->min === null && $this->max === null) {
@@ -136,6 +166,10 @@ JS;
         return $this;
     }
 
+    /**
+     * @return void
+     * @throws DeformException
+     */
     public function hydrate(): void
     {
         if ($this->min !== null) {

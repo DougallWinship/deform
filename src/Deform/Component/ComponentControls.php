@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Deform\Component;
 
+use Deform\Exception\DeformComponentException;
+use Deform\Exception\DeformException;
 use Deform\Html\HtmlTag;
 use Deform\Html\IHtml;
 
@@ -35,12 +37,12 @@ class ComponentControls
      *
      * @param HtmlTag $controlTag
      * @param array|string|HtmlTag|IHtml|null $controlDecoration
-     * @throws \Exception
+     * @throws DeformException
      */
     public function addControl(HtmlTag $controlTag, HtmlTag|IHtml|array|string $controlDecoration = null): void
     {
         if (!$controlTag->has('id')) {
-            throw new \Exception("The control tag must contain an 'id'");
+            throw new DeformComponentException("The control tag must contain an 'id'");
         }
         $id = $controlTag->get('id');
         $this->controlTags[] = $controlTag;
@@ -61,7 +63,7 @@ class ComponentControls
                     }
                 }
                 if (!$containsControlTag) {
-                    throw new \Exception(
+                    throw new DeformComponentException(
                         "When adding decoration as an array, one of the elements must be the control tag itself"
                     );
                 }
@@ -76,7 +78,6 @@ class ComponentControls
 
     /**
      * @return void
-     * @throws \Exception
      */
     public function clearControls(): void
     {
@@ -110,7 +111,7 @@ class ComponentControls
      * update all controls id and name entries, and any for values
      * @param string $newId
      * @param string $newName
-     * @throws \Exception
+     * @throws DeformException
      */
     public function changeNamespacedAttributes(string $newId, string $newName): void
     {
@@ -120,7 +121,9 @@ class ComponentControls
             if ($multipleControlTags) {
                 $value = $control->get('value');
                 if (!$value) {
-                    throw new \Exception("When there are multiple control tags they must specify a value");
+                    throw new DeformComponentException(
+                        "When there are multiple control tags they must specify a value"
+                    );
                 }
                 $setNewId = BaseComponent::getMultiControlId($newId, $value);
             } else {
@@ -139,13 +142,15 @@ class ComponentControls
     /**
      * set the value(s))
      * @param mixed $value
-     * @throws \Exception
+     * @throws DeformException
      */
     public function setValue(mixed $value): void
     {
         if (is_array($value)) {
             if (count($value) != count($this->controlTags)) {
-                throw new \Exception("The number of values provided does not match the number of controls");
+                throw new DeformComponentException(
+                    "The number of values provided does not match the number of controls"
+                );
             }
             foreach ($this->controlTags as $controlTag) {
                 $controlTag->value(array_shift($value));

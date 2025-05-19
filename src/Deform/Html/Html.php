@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Deform\Html;
 
+use Deform\Exception\DeformException;
+use Deform\Exception\DeformHtmlException;
 use Deform\Util\Strings;
 
 /**
@@ -160,7 +162,7 @@ class Html
      * @param $tag string
      * @param $arguments mixed
      * @return IHtml
-     * @throws \Exception
+     * @throws DeformException
      */
     public static function __callStatic(string $tag, mixed $arguments): IHtml
     {
@@ -169,13 +171,13 @@ class Html
         $isSelfClosing = in_array($tag, self::$selfClosingTags);
         $isStandard = in_array($tag, self::$standardTags);
         if (!$isSelfClosing && !$isStandard) {
-            throw new \Exception(
+            throw new DeformHtmlException(
                 "Undocumented tag '" . $tag . "' please add a static method definition to the class annotations"
             );
         }
 
         if ((isset($arguments[0]) && !is_array($arguments[0])) || isset($arguments[1])) {
-            throw new \Exception(
+            throw new DeformHtmlException(
                 "Html::" . $tag . "(....) expects either no arguments or a single array of attributes"
             );
         }
@@ -185,12 +187,13 @@ class Html
     }
 
     /**
-     * @throws \Exception
+     * @return void
      */
     private static function identifyTags(): void
     {
         if (self::$reflectionSelf === null) {
             self::$reflectionSelf = new \ReflectionClass(self::class);
+
             $comments = explode(PHP_EOL, self::$reflectionSelf->getDocComment());
             array_walk($comments, function ($comment) {
                 $signature = Strings::extractStaticMethodSignature($comment);
@@ -211,7 +214,6 @@ class Html
     /**
      * @param string $tag
      * @return bool
-     * @throws \Exception
      */
     public static function isSelfClosedTag(string $tag): bool
     {
@@ -222,7 +224,6 @@ class Html
     /**
      * @param string $tag
      * @return bool
-     * @throws \Exception
      */
     public static function isStandardTag(string $tag): bool
     {
@@ -233,7 +234,6 @@ class Html
     /**
      * @param string $tag
      * @return bool
-     * @throws \Exception
      */
     public static function isRegisteredTag(string $tag): bool
     {

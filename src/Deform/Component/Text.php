@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Deform\Component;
 
+use Deform\Exception\DeformException;
 use Deform\Html\Html;
 
 /**
@@ -33,7 +34,7 @@ class Text extends Input
      * @param array $datalist
      * @param string|null $datalistId
      * @return static
-     * @throws \Exception
+     * @throws DeformException
      */
     public function datalist(array $datalist, string $datalistId = null): static
     {

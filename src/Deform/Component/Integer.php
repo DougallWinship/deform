@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Deform\Component;
 
+use Deform\Exception\DeformComponentException;
+use Deform\Exception\DeformException;
 use Deform\Html\Html as Html;
 
 /**
@@ -23,7 +25,7 @@ class Integer extends Input
 
     /**
      * @return void
-     * @throws \Exception
+     * @throws DeformException
      */
     public function setup(): void
     {
@@ -57,7 +59,7 @@ JS;
     /**
      * @param $minValue
      * @return $this
-     * @throws \Exception
+     * @throws DeformException
      */
     public function min($minValue): self
     {
@@ -65,14 +67,14 @@ JS;
             $this->input->unset('data-min');
         }
         if (!is_numeric($minValue)) {
-            throw new \Exception("'min' must be a numeric value");
+            throw new DeformComponentException("'min' must be a numeric value");
         }
         $minValue = (int)$minValue;
         $maxValue = $this->input->get('max');
         if ($maxValue !== null) {
             $maxValue = intval($maxValue);
             if ($minValue >= $maxValue) {
-                throw new \Exception("'min' must be less than 'max'");
+                throw new DeformComponentException("'min' must be less than 'max'");
             }
         }
         $this->min = $minValue;
@@ -84,7 +86,7 @@ JS;
     /**
      * @param mixed $maxValue
      * @return $this
-     * @throws \Exception
+     * @throws DeformException
      */
     public function max(mixed $maxValue): self
     {
@@ -93,14 +95,14 @@ JS;
             return $this;
         }
         if (!is_numeric($maxValue)) {
-            throw new \Exception("'max' must be a numeric value");
+            throw new DeformComponentException("'max' must be a numeric value");
         }
         $maxValue = (int)$maxValue;
         $minValue = $this->input->get('min');
         if ($minValue !== null) {
             $minValue = intval($minValue);
             if ($maxValue <= $minValue) {
-                throw new \Exception("'max' must be greater than 'min'");
+                throw new DeformComponentException("'max' must be greater than 'min'");
             }
         }
         $this->max = $maxValue;
@@ -112,7 +114,7 @@ JS;
     /**
      * @param $stepValue
      * @return $this
-     * @throws \Exception
+     * @throws DeformException
      */
     public function step($stepValue = null): self
     {
@@ -121,7 +123,7 @@ JS;
             return $this;
         }
         if (!is_numeric($stepValue)) {
-            throw new \Exception("'step' must be a +ve numeric value");
+            throw new DeformComponentException("'step' must be a +ve numeric value");
         }
         $stepValue = (int)$stepValue;
         $this->step = $stepValue;
@@ -131,7 +133,7 @@ JS;
 
     /**
      * @return void
-     * @throws \Exception
+     * @throws DeformException
      */
     private function updatePattern(): void
     {
@@ -149,6 +151,10 @@ JS;
         $this->input->set('pattern', $pattern);
     }
 
+    /**
+     * @return void
+     * @throws DeformException
+     */
     public function hydrate(): void
     {
         if ($this->min !== null) {

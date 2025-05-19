@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Deform\Html;
 
+use Deform\Exception\DeformException;
+use Deform\Exception\DeformHtmlException;
+
 /**
  * convenient link generation
  */
@@ -13,7 +16,7 @@ class Link extends HtmlTag
 
     /**
      * @param string|null $url
-     * @throws \Exception
+     * @throws DeformException
      * @return Link
      */
     public static function url(string $url = null): Link
@@ -25,7 +28,7 @@ class Link extends HtmlTag
 
     /**
      * @param array $options optional attributes
-     * @throws \Exception
+     * @throws DeformException
      */
     public function __construct(array $options = [])
     {
@@ -35,13 +38,13 @@ class Link extends HtmlTag
     /**
      * @param string $url
      * @return Link $this
-     * @throws \Exception
+     * @throws DeformException
      */
     public function setUrl(string $url): Link
     {
         $urlParts = parse_url($url);
         if ($urlParts === false) {
-            throw new \Exception("Unable to parse url : " . $url);
+            throw new DeformHtmlException("Unable to parse url : " . $url);
         }
         $this->urlParts = $urlParts;
         return $this;
@@ -134,7 +137,7 @@ class Link extends HtmlTag
     /**
      * @param string $text
      * @return Link $this
-     * @throws \Exception
+     * @throws DeformException
      */
     public function text(string $text): Link
     {
@@ -144,12 +147,12 @@ class Link extends HtmlTag
 
     /**
      * @return string
-     * @throws \Exception
+     * @throws DeformException
      */
     public function __toString()
     {
         if (!isset($this->urlParts['host'])) {
-            throw new \Exception("You can't generate a link without specifying a host");
+            throw new DeformHtmlException("You can't generate a link without specifying a host");
         }
         $url = isset($this->urlParts["scheme"])
             ? $this->urlParts["scheme"] . "://"
@@ -172,7 +175,7 @@ class Link extends HtmlTag
         $url .= (isset($this->urlParts["fragment"]))
             ? "#" . $this->urlParts["fragment"]
             : "";
-        $this->href($url);
+        $this->set('href', $url);
         if (!$this->hasChildren()) {
             $this->add($url);
         }

@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Deform\Html;
 
+use Deform\Exception\DeformException;
+use Deform\Exception\DeformHtmlException;
+
 /**
  * represents an HTML tag.
  *
@@ -45,12 +48,12 @@ class HtmlTag implements IHtml
      * @param string $tagName
      * @param array $attributes optionally specify initial attributes in an associative array
      *
-     * @throws \Exception
+     * @throws DeformException
      */
     public function __construct(string $tagName, array $attributes = [])
     {
         if (!Html::isRegisteredTag($tagName)) {
-            throw new \Exception("Unregistered html tag '" . $tagName . "'");
+            throw new DeformHtmlException("Unregistered html tag '" . $tagName . "'");
         }
         $this->tagName = $tagName;
         $this->attributes = $attributes;
@@ -60,7 +63,7 @@ class HtmlTag implements IHtml
     /**
      * add a child or children
      * @param string|string[]|HtmlTag|HtmlTag[] $childNodes
-     * @throws \Exception
+     * @throws DeformException
      */
     public function add(mixed $childNodes): HtmlTag
     {
@@ -78,7 +81,7 @@ class HtmlTag implements IHtml
     /**
      * prepend a child
      * @param string|HtmlTag $childNode
-     * @throws \Exception
+     * @throws DeformException
      */
     public function prepend(mixed $childNode): HtmlTag
     {
@@ -90,7 +93,7 @@ class HtmlTag implements IHtml
     /**
      * clears any children
      * @return self
-     * @throws \Exception
+     * @throws DeformException
      */
     public function clear(): HtmlTag
     {
@@ -103,7 +106,7 @@ class HtmlTag implements IHtml
      * replace any children with a new child
      * @param IHtml|string $htmlTag
      * @return self
-     * @throws \Exception
+     * @throws DeformException
      */
     public function reset($htmlTag): HtmlTag
     {
@@ -125,7 +128,7 @@ class HtmlTag implements IHtml
     /**
      * get any children
      * @return HtmlTag[]
-     * @throws \Exception
+     * @throws DeformException
      */
     public function getChildren(): array
     {
@@ -150,7 +153,7 @@ class HtmlTag implements IHtml
      * @param string $name
      * @param string|array $arguments
      * @return HtmlTag
-     * @throws \Exception
+     * @throws DeformException
      */
     public function set(string $name, $arguments): HtmlTag
     {
@@ -168,7 +171,7 @@ class HtmlTag implements IHtml
      * @param string $name
      * @param string|array $arguments
      * @return self
-     * @throws \Exception
+     * @throws DeformException
      */
     public function setIfExists(string $name, $arguments): HtmlTag
     {
@@ -182,7 +185,7 @@ class HtmlTag implements IHtml
      * set many attributes in one go (overwriting any that already exist)
      * @param array $attributes
      * @return HtmlTag
-     * @throws \Exception
+     * @throws DeformException
      */
     public function setMany(array $attributes): HtmlTag
     {
@@ -197,7 +200,7 @@ class HtmlTag implements IHtml
      * @param string $name
      * @param string|array $arguments
      * @return HtmlTag
-     * @throws \Exception
+     * @throws DeformException
      */
     public function setIfEmpty(string $name, $arguments): HtmlTag
     {
@@ -254,7 +257,7 @@ class HtmlTag implements IHtml
      * @param string $name
      * @param array $arguments
      * @return HtmlTag
-     * @throws \Exception
+     * @throws DeformException
      */
     public function __call(string $name, array $arguments)
     {
@@ -306,7 +309,7 @@ class HtmlTag implements IHtml
     /**
      * recursively (via string coercion) generates the html string for this tag and all it's children
      * @return string
-     * @throws \Exception note that generating an exception inside __toString() does bad things!
+     * @throws DeformException
      */
     public function __toString()
     {
@@ -324,7 +327,7 @@ class HtmlTag implements IHtml
      * helper method for composing html attributes from an array
      * @param array $attributes associative array of attribute keys and values
      * @return string
-     * @throws \Exception
+     * @throws DeformException
      */
     public static function attributesString(array $attributes): string
     {
@@ -363,7 +366,7 @@ class HtmlTag implements IHtml
      * @param string $key
      * @param array $values
      * @return string
-     * @throws \Exception
+     * @throws DeformException
      */
     public static function implodeAttributeValues(string $key, array $values): string
     {
@@ -378,7 +381,7 @@ class HtmlTag implements IHtml
             // for any other attribute types just try to use the last one found...
             $lastElement = end($values);
             if (!is_scalar($lastElement)) {
-                throw new \Exception(
+                throw new DeformHtmlException(
                     "Unexpected non string attribute type for key='" . $key . "' = " . print_r($lastElement)
                 );
             }
@@ -458,14 +461,14 @@ class HtmlTag implements IHtml
 
     /**
      * internal check for invalid operations on self-closing tags
-     * @throws \Exception
+     * @throws DeformException
      */
     private function disallowSelfClosingCheck(): void
     {
         if ($this->isSelfClosing) {
             $callingMethod = debug_backtrace(DEBUG_BACKTRACE_IGNORE_ARGS, 2);
             $method = $callingMethod[1]['function'];
-            throw new \Exception("You can't call '" . $method . "' on a '" . $this->tagName . "' tag!");
+            throw new DeformHtmlException("You can't call '" . $method . "' on a '" . $this->tagName . "' tag!");
         }
     }
 }

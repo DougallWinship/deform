@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Deform\Component;
 
+use Deform\Exception\DeformException;
 use Deform\Html\Html as Html;
 use Deform\Html\HtmlTag;
 
@@ -32,7 +33,7 @@ class RadioButtonSet extends BaseComponent
      * @templateMethod
      * @param array $radioButtons
      * @return static
-     * @throws \Exception
+     * @throws DeformException
      */
     public function radioButtons(array $radioButtons): static
     {

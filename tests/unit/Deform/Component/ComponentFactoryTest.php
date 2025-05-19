@@ -1,6 +1,7 @@
 <?php
 namespace Deform\Component;
 
+use Deform\Exception\DeformComponentException;
 use Deform\Form\FormModel;
 
 class ComponentFactoryTest extends \Codeception\Test\Unit
@@ -49,7 +50,7 @@ class ComponentFactoryTest extends \Codeception\Test\Unit
 
     public function testBuildNonExistentViaCallStatic()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformComponentException::class);
         $button = ComponentFactory::Potato("namespace","button");
     }
 
@@ -67,25 +68,25 @@ class ComponentFactoryTest extends \Codeception\Test\Unit
 
     public function testBuildWithBadClassName()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformComponentException::class);
         ComponentFactory::build("NotAThing", "namespace","button");
     }
 
     public function testBuildWithBaseComponent()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformComponentException::class);
         ComponentFactory::build(BaseComponent::class, "namespace","button");
     }
 
     public function testBuildWithWrongNamespace()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformComponentException::class);
         ComponentFactory::build(FormModel::class, "namespace","button");
     }
 
     public function testBuildInvalidClass()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformComponentException::class);
         ComponentFactory::build(ComponentControls::class, "namespace","button");
     }
 }

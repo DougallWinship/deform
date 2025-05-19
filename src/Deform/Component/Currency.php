@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Deform\Component;
 
+use Deform\Exception\DeformException;
 use Deform\Html\Html as Html;
 use Deform\Html\HtmlTag;
 
@@ -43,7 +44,7 @@ class Currency extends Decimal
      * @templateMethod
      * @param string $currency
      * @return static
-     * @throws \Exception
+     * @throws DeformException
      */
     public function currency(string $currency): static
     {

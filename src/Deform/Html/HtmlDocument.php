@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace Deform\Html;
 
+use Deform\Exception\DeformException;
+use Deform\Exception\DeformHtmlException;
+
 /**
  * basic DOMDocument helper
  *
@@ -134,12 +137,11 @@ class HtmlDocument implements \Stringable
         return $this->errors;
     }
 
-
     /**
      * generate an HtmlTag tree from the current document
      * @param bool $preserveWhitespace
      * @return HtmlTag
-     * @throws \Exception
+     * @throws DeformException
      */
     public function getHtmlRootTag(bool $preserveWhitespace = false): HtmlTag
     {
@@ -150,7 +152,7 @@ class HtmlDocument implements \Stringable
      * @param \DomElement $element
      * @param bool $preserveWhitespace
      * @return HtmlTag
-     * @throws \Exception
+     * @throws DeformException
      */
     protected static function recurseDomElements(\DomElement $element, bool $preserveWhitespace = false): HtmlTag
     {
@@ -177,7 +179,7 @@ class HtmlDocument implements \Stringable
     /**
      * @param \DomElement $element
      * @return HtmlTag
-     * @throws \Exception
+     * @throws DeformException
      */
     protected static function buildHtmlTagFromElement(\DomElement $element): HtmlTag
     {
@@ -219,12 +221,15 @@ class HtmlDocument implements \Stringable
      * @param string $cssSelector
      * @param callable $callback
      * @return self
-     * @throws \Exception
+     * @throws DeformException
      */
     public function selectCss(string $cssSelector, callable $callback): self
     {
         $xpathQuery = $this->convertCssSelectorToXpathQuery($cssSelector);
         $domNodeList = $this->getDOMXpath()->query($xpathQuery);
+        if ($domNodeList === false) {
+            throw new DeformHtmlException("Failed to retrieve CSS selector '{$cssSelector}'.");
+        }
         $this->applyCallback($domNodeList, $callback);
         return $this;
     }
@@ -232,12 +237,12 @@ class HtmlDocument implements \Stringable
     /**
      * @param string $cssSelector
      * @return string
-     * @throws \Exception
+     * @throws DeformException
      */
     private function convertCssSelectorToXpathQuery(string $cssSelector): string
     {
         if (!is_callable(self::$cssToXpathConverter)) {
-            throw new \Exception(
+            throw new DeformHtmlException(
                 "If you want to use css selectors then please specify a converter via setCssToXpathConverter"
             );
         }

@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Deform\Component;
 
+use Deform\Exception\DeformComponentException;
+use Deform\Exception\DeformException;
 use Deform\Html\Html as Html;
 use Deform\Html\IHtml;
 
@@ -45,7 +47,7 @@ class Button extends BaseComponent
     /**
      * @param string $html
      * @return static
-     * @throws \Exception
+     * @throws DeformException
      */
     public function html(string $html): static
     {
@@ -57,13 +59,13 @@ class Button extends BaseComponent
     /**
      * @param string $type
      * @return static
-     * @throws \Exception
+     * @throws DeformException
      */
     public function type(string $type): static
     {
         $type = strtolower($type);
         if (!in_array($type, self::VALID_BUTTON_TYPES)) {
-            throw new \Exception(
+            throw new DeformComponentException(
                 "Invalid button type '" . $type . "', " .
                 "valid are : " . implode(", ", self::VALID_BUTTON_TYPES)
             );
@@ -75,7 +77,7 @@ class Button extends BaseComponent
 
     /**
      * @return void
-     * @throws \Exception
+     * @throws DeformException
      */
     public function hydrate(): void
     {

@@ -30,7 +30,7 @@ class CheckboxMulti extends BaseComponent
      * @templateMethod
      * @param array $checkboxValues
      * @return static
-     * @throws \Exception
+     * @throws DeformException
      */
     public function checkboxes(array $checkboxValues): static
     {

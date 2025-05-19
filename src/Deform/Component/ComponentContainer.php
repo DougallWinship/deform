@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Deform\Component;
 
+use Deform\Exception\DeformComponentException;
+use Deform\Exception\DeformException;
 use Deform\Html\Html as Html;
 use Deform\Html\HtmlTag;
 use Deform\Html\IHtml;
@@ -60,7 +62,6 @@ class ComponentContainer
 
     /**
      * @param string $owningClass
-     * @throws \Exception
      */
     public function __construct(string $owningClass)
     {
@@ -73,7 +74,7 @@ class ComponentContainer
     /**
      * @param string $newId
      * @param string $newName
-     * @throws \Exception
+     * @throws DeformException
      */
     public function changeNamespacedAttributes(string $newId, string $newName): void
     {
@@ -86,7 +87,7 @@ class ComponentContainer
     /**
      * @param string $label
      * @param bool $required
-     * @throws \Exception
+     * @throws DeformException
      */
     public function setLabel(string $label, bool $required = false): void
     {
@@ -125,12 +126,12 @@ class ComponentContainer
 
 //    /**
 //     * @param array $datalist
-//     * @throws \Exception
+//     * @throws DeformException
 //     */
 //    public function setDatalist(array $datalist)
 //    {
 //        if (count($this->control->getControls()) > 1) {
-//            throw new \Exception("A datalist only makes sense when there is a single control");
+//            throw new DeformException("A datalist only makes sense when there is a single control");
 //        }
 //        $this->datalist = $datalist;
 //    }
@@ -153,18 +154,22 @@ class ComponentContainer
      * @param string $containerId
      * @param array $attributes
      * @return HtmlTag
-     * @throws \Exception
+     * @throws DeformException
      */
     public function generateHtmlTag(string $containerId, array $attributes = []): IHtml
     {
         $controls = $this->control->getControls();
         if (count($controls) == 0) {
-            throw new \Exception("Components must contain at least one control : " . $this->containerType);
+            throw new DeformComponentException(
+                "Components must contain at least one control : " . $this->containerType
+            );
         }
 
         if ($this->controlOnly) {
             if (count($controls) > 1) {
-                throw new \Exception("Multiple tags for control-only type containers is not currently supported!");
+                throw new DeformComponentException(
+                    "Multiple tags for control-only type containers is not currently supported!"
+                );
             }
             $htmlTag = $controls[0];
             if (count($attributes) > 0) {
@@ -258,7 +263,7 @@ class ComponentContainer
 
     /**
      * @param array $attributes
-     * @throws \Exception
+     * @throws DeformException
      */
     public function setControlAttributes(array $attributes): void
     {
@@ -269,7 +274,7 @@ class ComponentContainer
 
     /**
      * @param array $attributes
-     * @throws \Exception
+     * @throws DeformException
      */
     public function setContainerAttributes(array $attributes): void
     {
@@ -288,7 +293,7 @@ class ComponentContainer
                     break;
 
                 default:
-                    throw new \Exception("Unrecognised container attribute '" . $key . "'");
+                    throw new DeformComponentException("Unrecognised container attribute '" . $key . "'");
             }
         }
     }

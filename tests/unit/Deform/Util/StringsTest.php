@@ -2,6 +2,7 @@
 namespace Deform\Util;
 
 use Deform\Component\Button;
+use Deform\Exception\DeformUtilException;
 
 class StringsTest extends \Codeception\Test\Unit
 {
@@ -29,13 +30,13 @@ class StringsTest extends \Codeception\Test\Unit
 
     public function testGetClassWithoutNamespaceFail1()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformUtilException::class);
         Strings::getClassWithoutNamespace("not a class name");
     }
 
     public function testGetClassWithoutNamespaceFail2()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformUtilException::class);
         Strings::getClassWithoutNamespace(1);// not an object or string
     }
 

@@ -1,6 +1,7 @@
 <?php
 namespace Deform\Component;
 
+use Deform\Exception\DeformComponentException;
 use Deform\Html\Html;
 
 class ComponentControlsTest extends \Codeception\Test\Unit
@@ -21,7 +22,7 @@ class ComponentControlsTest extends \Codeception\Test\Unit
     // tests
     public function testAddControlMissingId()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformComponentException::class);
         $componentControls = new ComponentControls();
         $badControlTag = Html::div();
         $componentControls->addControl($badControlTag);
@@ -66,7 +67,7 @@ class ComponentControlsTest extends \Codeception\Test\Unit
             Html::br(),
             Html::div()->add($controlTag) // so it *does* contain itself but it's nested
         ];
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformComponentException::class);
         $componentControls->addControl($controlTag, $decorations);
         $tagsWithForById = $this->tester->getAttributeValue($componentControls, 'tagsWithForById');
         $expected = [
@@ -192,7 +193,7 @@ class ComponentControlsTest extends \Codeception\Test\Unit
         ];
         $componentControls->addControl($controlTag2, $decorations2);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformComponentException::class);
         $this->expectExceptionMessage("When there are multiple control tags they must specify a value");
         $componentControls->changeNamespacedAttributes('newid','newname');
     }
@@ -308,7 +309,7 @@ class ComponentControlsTest extends \Codeception\Test\Unit
         ];
         $componentControls->addControl($controlTag2, $decorations2);
 
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformComponentException::class);
         $componentControls->setValue([1,2,3]);
     }
 

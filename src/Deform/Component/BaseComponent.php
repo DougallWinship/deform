@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Deform\Component;
 
+use Deform\Exception\DeformException;
+use Deform\Exception\DeformComponentException;
 use Deform\Html\Html;
 use Deform\Html\HtmlTag;
 use Deform\Util\Strings;
@@ -59,7 +61,7 @@ abstract class BaseComponent implements \Stringable
      * @param string|null $namespace
      * @param string $fieldName
      * @param array $attributes
-     * @throws \Exception
+     * @throws DeformException
      * @see ComponentFactory use this instead
      */
     protected function __construct(?string $namespace, string $fieldName, array $attributes = [])
@@ -74,7 +76,7 @@ abstract class BaseComponent implements \Stringable
 
     /**
      * perform initial component setup
-     * @throws \Exception
+     * @throws DeformException
      */
     abstract public function setup();
 
@@ -94,7 +96,7 @@ abstract class BaseComponent implements \Stringable
      * @param string $label
      * @param bool $required
      * @return self
-     * @throws \Exception
+     * @throws DeformException
      */
     public function label(string $label, bool $required = false): static
     {
@@ -129,7 +131,7 @@ abstract class BaseComponent implements \Stringable
      * @param HtmlTag $control
      * @param array|HtmlTag|null $controlTagDecorator
      * @return self
-     * @throws \Exception
+     * @throws DeformException
      */
     public function addControl(HtmlTag $control, mixed $controlTagDecorator = null): static
     {
@@ -141,7 +143,7 @@ abstract class BaseComponent implements \Stringable
      * @param HtmlTag $control
      * @param mixed|null $controlTagDecorator
      * @return $this
-     * @throws \Exception
+     * @throws DeformException
      */
     public function replaceControl(HtmlTag $control, mixed $controlTagDecorator = null): static
     {
@@ -174,7 +176,7 @@ abstract class BaseComponent implements \Stringable
      * sets the components value
      * @param mixed $value
      * @return static
-     * @throws \Exception
+     * @throws DeformException
      */
     public function setValue(mixed $value): static
     {
@@ -189,7 +191,7 @@ abstract class BaseComponent implements \Stringable
      * sets the component's form namespace
      * @param string $namespace
      * @return static
-     * @throws \Exception
+     * @throws DeformException
      */
     public function setNamespace(string $namespace): static
     {
@@ -205,7 +207,7 @@ abstract class BaseComponent implements \Stringable
     /**
      * generate a tag containing the entire component
      * @return HtmlTag
-     * @throws \Exception
+     * @throws DeformException
      */
     public function getHtmlTag(): HtmlTag
     {
@@ -240,7 +242,7 @@ abstract class BaseComponent implements \Stringable
     /**
      * convert this component to a string
      * @return string
-     * @throws \Exception
+     * @throws DeformException
      */
     public function __toString(): string
     {
@@ -261,7 +263,7 @@ abstract class BaseComponent implements \Stringable
 
     /**
      * @return string
-     * @throws \Exception
+     * @throws DeformException
      */
     public function getId(): string
     {
@@ -285,7 +287,7 @@ abstract class BaseComponent implements \Stringable
     /**
      * @param string $basicSelector
      * @return array
-     * @throws \Exception
+     * @throws DeformException
      */
     public function findNodes(string $basicSelector): array
     {
@@ -311,7 +313,7 @@ abstract class BaseComponent implements \Stringable
     public function __call(string $name, array $arguments)
     {
         if (count($arguments) !== 1) {
-            throw new \InvalidArgumentException(
+            throw new DeformComponentException(
                 "Method " . get_class($this) . "::" . $name . " only accepts a single argument"
             );
         }
@@ -321,7 +323,7 @@ abstract class BaseComponent implements \Stringable
 
     /**
      * @return array
-     * @throws \ReflectionException
+     * @throws DeformException
      */
     public function toArray(): array
     {
@@ -337,7 +339,7 @@ abstract class BaseComponent implements \Stringable
 
     /**
      * @param $attributes
-     * @throws \Exception
+     * @throws DeformException
      */
     public function setAttributes($attributes): void
     {
@@ -346,7 +348,7 @@ abstract class BaseComponent implements \Stringable
 
     /**
      * @param $attributes
-     * @throws \Exception
+     * @throws DeformException
      */
     public function setContainerAttributes($attributes): void
     {
@@ -355,7 +357,7 @@ abstract class BaseComponent implements \Stringable
 
     /**
      * @return array
-     * @throws \ReflectionException
+     * @throws DeformException
      */
     private function getRegisteredPropertyValues(): array
     {
@@ -372,14 +374,14 @@ abstract class BaseComponent implements \Stringable
 
     /**
      * @param array $properties
-     * @throws \ReflectionException
+     * @throws DeformException
      */
     public function setRegisteredPropertyValues(array $properties): void
     {
         $reflectionProperties = self::getRegisteredReflectionProperties();
         foreach ($properties as $propertyName => $setPropertyValue) {
             if (!isset($reflectionProperties[$propertyName])) {
-                throw new \Exception("There is no registered property '" . $propertyName . "'");
+                throw new DeformComponentException("There is no registered property '" . $propertyName . "'");
             }
             $reflectionProperties[$propertyName]->setValue($this, $setPropertyValue);
         }
@@ -410,7 +412,7 @@ abstract class BaseComponent implements \Stringable
     /**
      * hydrate the component using its properties (those annotated as @persistAttribute) when it's being rebuilt
      * from an array definition
-     * @throws \Exception
+     * @throws DeformException
      */
     public function hydrate(): void
     {
@@ -434,7 +436,7 @@ abstract class BaseComponent implements \Stringable
      * @param $namespace null|string
      * @param $field string
      * @return string
-     * @throws \Exception
+     * @throws DeformException
      */
     protected static function generateId(?string $namespace, string $field): string
     {
@@ -455,38 +457,46 @@ abstract class BaseComponent implements \Stringable
 
     /**
      * @return array|\ReflectionProperty[]
-     * @throws \ReflectionException
+     * @throws DeformException
      */
     private static function getRegisteredReflectionProperties(): array
     {
-        $thisClass = get_called_class();
-        if (!isset(self::$registeredProperties[$thisClass])) {
-            $reflectionSelf = new \ReflectionClass($thisClass);
-            $properties = [];
-            $comments = $reflectionSelf->getDocComment();
-            if ($comments) {
-                $commentLines = explode(PHP_EOL, $comments);
-                array_walk($commentLines, function ($comment) use (&$properties, $reflectionSelf) {
-                    $commentParts = explode(' ', Strings::trimInternal($comment));
-                    if (count($commentParts) >= 2 && $commentParts[1] == '@persistAttribute') {
-                        $propertyName = $commentParts[2];
-                        if ($reflectionSelf->hasProperty($propertyName)) {
-                            $property = $reflectionSelf->getProperty($propertyName);
-                            $property->setAccessible(true);
-                            $properties[$commentParts[2]] = $property;
-                        } else {
-                            throw new \Exception(
-                                "Failed to find property $" . $propertyName .
-                                " for class " . get_called_class() .
-                                " for annotation : " . $comment
-                            );
+        try {
+            $thisClass = get_called_class();
+            if (!isset(self::$registeredProperties[$thisClass])) {
+                $reflectionSelf = new \ReflectionClass($thisClass);
+                $properties = [];
+                $comments = $reflectionSelf->getDocComment();
+                if ($comments) {
+                    $commentLines = explode(PHP_EOL, $comments);
+                    array_walk($commentLines, function ($comment) use (&$properties, $reflectionSelf) {
+                        $commentParts = explode(' ', Strings::trimInternal($comment));
+                        if (count($commentParts) >= 2 && $commentParts[1] == '@persistAttribute') {
+                            $propertyName = $commentParts[2];
+                            if ($reflectionSelf->hasProperty($propertyName)) {
+                                $property = $reflectionSelf->getProperty($propertyName);
+                                $property->setAccessible(true);
+                                $properties[$commentParts[2]] = $property;
+                            } else {
+                                throw new DeformComponentException(
+                                    "Failed to find property $" . $propertyName .
+                                    " for class " . get_called_class() .
+                                    " for annotation : " . $comment
+                                );
+                            }
                         }
-                    }
-                });
+                    });
+                }
+                self::$registeredProperties[$thisClass] = $properties;
             }
-            self::$registeredProperties[$thisClass] = $properties;
+            return self::$registeredProperties[$thisClass];
+        } catch (\Exception $e) {
+            throw new DeformComponentException(
+                "Failed to obtain reflection properties for class " . get_called_class(),
+                0,
+                $e
+            );
         }
-        return self::$registeredProperties[$thisClass];
     }
 
     /**
@@ -502,12 +512,16 @@ abstract class BaseComponent implements \Stringable
     /**
      * obtain methods names which have the @templateMethod annotation
      * @return \ReflectionMethod[]
-     * @throws \ReflectionException
+     * @throws DeformException
      */
     public function getTemplateMethods(): array
     {
         $thisClass = get_called_class();
-        $reflectionSelf = new \ReflectionClass($thisClass);
+        try {
+            $reflectionSelf = new \ReflectionClass($thisClass);
+        } catch (\Exception $e) {
+            throw new DeformComponentException("Failed to get template methods.", 0, $e);
+        }
         $methods = $reflectionSelf->getMethods();
         $templateMethods = [];
         foreach ($methods as $method) {
@@ -517,7 +531,7 @@ abstract class BaseComponent implements \Stringable
                     $comments = explode(PHP_EOL, $method->getDocComment());
                     array_walk($comments, function ($comment) use ($method, &$templateMethods) {
                         $trimmed = Strings::trimInternal($comment);
-                        if (strpos($trimmed, '* @templateMethod') === 0) {
+                        if (str_starts_with($trimmed, '* @templateMethod')) {
                             $templateMethods[] = $method;
                         }
                     });
@@ -530,7 +544,7 @@ abstract class BaseComponent implements \Stringable
     /**
      * provides the tag decorated with 'part' attributes to permit shadow dom styling
      * @return string
-     * @throws \Exception
+     * @throws DeformException
      */
     public function getShadowTemplate(): string
     {
@@ -542,7 +556,7 @@ abstract class BaseComponent implements \Stringable
     /**
      * @param HtmlTag $tag
      * @return void
-     * @throws \Exception
+     * @throws DeformException
      */
     public function addPartAttributesRecursive(HtmlTag $tag): void
     {

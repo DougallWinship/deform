@@ -6,6 +6,8 @@ namespace Deform\Form;
 
 use Deform\Component\BaseComponent;
 use Deform\Component\ComponentFactory;
+use Deform\Exception\DeformException;
+use Deform\Exception\DeformFormException;
 use Deform\Html\Html;
 use Deform\Html\HtmlTag;
 use Deform\Html\IHtml;
@@ -84,7 +86,7 @@ class FormModel
      * @param string $formMethod
      * @param string $formAction
      * @param string $autoComplete
-     * @throws \Exception
+     * @throws DeformException
      */
     public function __construct(
         string $namespace,
@@ -93,7 +95,7 @@ class FormModel
         string $autoComplete = 'off'
     ) {
         if ($formMethod !== self::METHOD_POST && $formMethod !== self::METHOD_GET) {
-            throw new \Exception("The form method must be either 'get' or 'post'");
+            throw new DeformFormException("The form method must be either 'get' or 'post'");
         }
         $this->namespace = $namespace;
         $this->formMethod = $formMethod;
@@ -105,7 +107,7 @@ class FormModel
      * @param $name
      * @param $arguments
      * @return BaseComponent|object
-     * @throws \Exception
+     * @throws DeformException
      */
     public function __call($name, $arguments)
     {
@@ -116,20 +118,20 @@ class FormModel
         ) {
             $componentName = substr($name, 3);
             if (!ComponentFactory::isRegisteredComponent($componentName)) {
-                throw new \Exception(
+                throw new DeformFormException(
                     "There is no component named '" . $componentName . "' registered in ComponentFactory"
                 );
             }
             $field = $arguments[0];
             $options = $arguments[1] ?? [];
             if (!is_string($field)) {
-                throw new \Exception("Unexpected type " . gettype($arguments[0]) . " for 'field' argument");
+                throw new DeformFormException("Unexpected type " . gettype($arguments[0]) . " for 'field' argument");
             }
             if (!is_array($options)) {
-                throw new \Exception("Unexpected type " . gettype($arguments[1]) . " for 'options' argument");
+                throw new DeformFormException("Unexpected type " . gettype($arguments[1]) . " for 'options' argument");
             }
             if (isset($this->fieldComponents[$field])) {
-                throw new \Exception("Field '" . $field . "' has already been defined");
+                throw new DeformFormException("Field '" . $field . "' has already been defined");
             }
             $component = ComponentFactory::build(
                 $componentName,
@@ -141,14 +143,14 @@ class FormModel
             $this->fieldComponents[$field] = $component;
             return $component;
         }
-        throw new \BadMethodCallException("Call to undefined method " . __CLASS__ . "::" . $name . "()");
+        throw new DeformFormException("Call to undefined method " . __CLASS__ . "::" . $name . "()");
     }
 
     /**
      * @param string $url
      * @param string $text
      * @return void
-     * @throws \Exception
+     * @throws DeformException
      */
     public function addCancelLink(string $url, string $text = "Cancel"): void
     {
@@ -158,7 +160,7 @@ class FormModel
 
     /**
      * @param \Stringable|string $html
-     * @throws \Exception
+     * @throws DeformException
      */
     public function addHtml(\Stringable|string $html): void
     {
@@ -166,7 +168,7 @@ class FormModel
             $html = (string)$html;
         }
         if (!is_string($html)) {
-            throw new \Exception("Add HTML either as a string or as an HtmlTag");
+            throw new DeformFormException("Add HTML either as a string or as an HtmlTag");
         }
         $this->sections[self::HTML_KEY . ($this->htmlCounter++)] = $html;
     }
@@ -174,7 +176,7 @@ class FormModel
     /**
      * @param bool $disableCsrf
      * @return HtmlTag
-     * @throws \Exception
+     * @throws DeformException
      */
     public function getFormHtml(bool $disableCsrf = false): HtmlTag
     {
@@ -202,7 +204,9 @@ class FormModel
             } elseif (is_string($section) || $section instanceof IHtml) {
                 $formHtml->add($section);
             } else {
-                throw new \Exception("Unexpected section type " . gettype($section) . " for section '" . $key . "'");
+                throw new DeformFormException(
+                    "Unexpected section type " . gettype($section) . " for section '" . $key . "'"
+                );
             }
         }
         if (!$disableCsrf) {
@@ -216,7 +220,7 @@ class FormModel
 
     /**
      * @return HtmlTag
-     * @throws \Exception
+     * @throws DeformException
      */
     public function run(): HtmlTag
     {
@@ -232,7 +236,7 @@ class FormModel
                 } elseif (is_array($validationResult)) {
                     $this->setErrors($validationResult);
                 } else {
-                    throw new \Exception("Unexpected validation result must be true or an array");
+                    throw new DeformFormException("Unexpected validation result must be true or an array");
                 }
             }
         }
@@ -241,7 +245,7 @@ class FormModel
 
     /**
      * @return bool
-     * @throws \Exception
+     * @throws DeformException
      */
     public function isSubmitted(): bool
     {
@@ -251,13 +255,13 @@ class FormModel
             case self::METHOD_POST:
                 return $_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST[$this->namespace]);
             default:
-                throw new \Exception("Unrecognised form method '" . $this->formMethod . "'");
+                throw new DeformFormException("Unrecognised form method '" . $this->formMethod . "'");
         }
     }
 
     /**
      * @return array
-     * @throws \Exception
+     * @throws DeformException
      */
     public function getFormData(): array
     {
@@ -267,7 +271,7 @@ class FormModel
             case self::METHOD_POST:
                 return $_POST[$this->namespace];
             default:
-                throw new \Exception("Unrecognised form method '" . $this->formMethod . "'");
+                throw new DeformFormException("Unrecognised form method '" . $this->formMethod . "'");
         }
     }
 
@@ -276,7 +280,7 @@ class FormModel
      * @param array $formData
      * @param bool $exceptionIfMissing throw an exception if there was not a corresponding component, otherwise ignored
      * @return array data without any form specific details (e.g. expected data fields & csrf token)
-     * @throws \Exception
+     * @throws DeformException
      */
     protected function populateFormData(array $formData, bool $exceptionIfMissing = true): array
     {
@@ -294,7 +298,7 @@ class FormModel
         foreach ($formData as $field => $value) {
             if (!isset($this->sections[$field])) {
                 if ($exceptionIfMissing) {
-                    throw new \Exception("No component found for '" . $field . "'");
+                    throw new DeformFormException("No component found for '" . $field . "'");
                 }
             } else {
                 $fieldComponent = $this->fieldComponents[$field];
@@ -323,13 +327,13 @@ class FormModel
 
     /**
      * @param array $errors
-     * @throws \Exception
+     * @throws DeformException
      */
     protected function setErrors(array $errors): void
     {
         foreach ($errors as $field => $error) {
             if (!isset($this->sections[$field])) {
-                throw new \Exception("No component found for '" . $field . "'");
+                throw new DeformFormException("No component found for '" . $field . "'");
             }
             $fieldComponent = $this->fieldComponents[$field];
             $fieldComponent->setError($error);
@@ -347,7 +351,7 @@ class FormModel
 
     /**
      * @return array
-     * @throws \ReflectionException
+     * @throws DeformException
      */
     public function toArray(): array
     {
@@ -364,9 +368,13 @@ class FormModel
                 continue;
             }
             if (str_starts_with($name, self::HTML_KEY)) {
-                $sectionsArray[] = [
-                    'html' => (string)$section
-                ];
+                try {
+                    $sectionsArray[] = [
+                        'html' => (string)$section
+                    ];
+                } catch (\Exception $e) {
+                    throw new DeformFormException("Failed to cast section to string", 0, $e);
+                }
             } elseif ($section instanceof BaseComponent) {
                 $sectionsArray[] = $section->toArray();
             }
@@ -378,7 +386,7 @@ class FormModel
     /**
      * @param array $definition
      * @return FormModel
-     * @throws \Exception
+     * @throws DeformException
      */
     public static function buildForm(array $definition): FormModel
     {
@@ -391,7 +399,7 @@ class FormModel
                 'sections',
             ], true);
         } catch (\Exception $exc) {
-            throw new \InvalidArgumentException(
+            throw new DeformFormException(
                 "Definition must contain the keys 'tag','namespace','action','method','sections'"
             );
         }
@@ -399,7 +407,7 @@ class FormModel
             $definitionParts['wrapStack'] = $definition['wrapStack'];
         }
         if ($definitionParts['tag'] !== 'form') {
-            throw new \InvalidArgumentException("Form definition only supports the tag 'form'");
+            throw new DeformFormException("Form definition only supports the tag 'form'");
         }
         $class = get_called_class();
         $formModel = new $class(
@@ -439,7 +447,7 @@ class FormModel
 
     /**
      * @param string $csrfStrategy
-     * @throws \Exception
+     * @throws DeformException
      */
     public function setCSRFStrategy(string $csrfStrategy): void
     {
@@ -450,12 +458,12 @@ class FormModel
                 $this->csrfStrategy = $csrfStrategy;
                 break;
             default:
-                throw new \Exception("Unrecognised CSRF strategy '" . $csrfStrategy . "'");
+                throw new DeformFormException("Unrecognised CSRF strategy '" . $csrfStrategy . "'");
         }
     }
 
     /**
-     * @throws \Exception
+     * @throws DeformException
      */
     private function implementCSRFStrategy(): ?\Deform\Component\Input
     {
@@ -488,19 +496,19 @@ class FormModel
                 return null;
 
             default:
-                throw new \Exception("Unrecognised CSRF strategy '" . $this->csrfStrategy . "'");
+                throw new DeformFormException("Unrecognised CSRF strategy '" . $this->csrfStrategy . "'");
         }
     }
 
     /**
      * @return void
-     * @throws \Exception
+     * @throws DeformException
      */
     public function ensureSessionStarted(): void
     {
         $sessionStatus = session_status();
         if ($sessionStatus === PHP_SESSION_DISABLED) {
-            throw new \Exception(
+            throw new DeformFormException(
                 "PHP sessions are disabled!"
             );
         } elseif ($sessionStatus === PHP_SESSION_NONE) {
@@ -519,7 +527,7 @@ class FormModel
     /**
      * @param array $formData
      * @return bool
-     * @throws \Exception
+     * @throws DeformException
      */
     private function validateCSRFToken(array &$formData): bool
     {
@@ -552,7 +560,7 @@ class FormModel
                 return true;
 
             default:
-                throw new \Exception("Unrecognised CSRF strategy '" . $this->csrfStrategy . "'");
+                throw new DeformFormException("Unrecognised CSRF strategy '" . $this->csrfStrategy . "'");
         }
     }
 

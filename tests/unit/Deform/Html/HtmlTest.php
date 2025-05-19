@@ -1,6 +1,8 @@
 <?php
 namespace Deform\Html;
 
+use Deform\Exception\DeformHtmlException;
+
 class HtmlTest extends \Codeception\Test\Unit
 {
     /**
@@ -20,7 +22,7 @@ class HtmlTest extends \Codeception\Test\Unit
 
     public function testCallStaticBadTag()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformHtmlException::class);
         Html::foo();
     }
 
@@ -32,7 +34,7 @@ class HtmlTest extends \Codeception\Test\Unit
 
     public function testCallStaticGoodTagBadAttributes()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformHtmlException::class);
         Html::div('not an array');
     }
 

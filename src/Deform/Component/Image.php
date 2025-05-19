@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Deform\Component;
 
+use Deform\Exception\DeformException;
 use Deform\Html\Html;
 use Deform\Html\HtmlTag;
 use Deform\Util\Strings;
@@ -55,7 +56,7 @@ class Image extends File
     /**
      * @param mixed $value
      * @return static
-     * @throws \Exception
+     * @throws DeformException
      */
     public function setValue(mixed $value): static
     {
@@ -70,7 +71,7 @@ class Image extends File
 
     /**
      * @param string $src
-     * @throws \Exception
+     * @throws DeformException
      */
     private function addSupportTags(string $src = ''): void
     {
@@ -111,7 +112,7 @@ class Image extends File
      *
      * @param string $js
      * @return static
-     * @throws \Exception
+     * @throws DeformException
      */
     public function setJavascriptSelectFunction(string $js): static
     {

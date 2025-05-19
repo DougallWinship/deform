@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Deform\Component;
 
+use Deform\Exception\DeformException;
 use Deform\Html\Html as Html;
 use Deform\Html\HtmlTag;
 
@@ -40,7 +41,7 @@ abstract class Input extends BaseComponent
     /**
      * @param string $type
      * @return static
-     * @throws \Exception
+     * @throws DeformException
      */
     public function type(string $type): static
     {

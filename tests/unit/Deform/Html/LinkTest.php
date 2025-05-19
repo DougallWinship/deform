@@ -1,6 +1,8 @@
 <?php
 namespace Deform\Html;
 
+use Deform\Exception\DeformHtmlException;
+
 class LinkTest extends \Codeception\Test\Unit
 {
     /**
@@ -50,7 +52,7 @@ class LinkTest extends \Codeception\Test\Unit
 
     public function testBadSetUrl()
     {
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformHtmlException::class);
         $link = new Link();
         $link->setUrl('///////aaaaagh//////');
     }
@@ -127,7 +129,7 @@ class LinkTest extends \Codeception\Test\Unit
             ->setQuery("foo=bar")
             ->setFragment("readme")
             ->text("deform");
-        $this->expectException(\Exception::class);
+        $this->expectException(DeformHtmlException::class);
         $html = (string)$link;
     }
 
