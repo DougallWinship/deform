@@ -2,7 +2,7 @@
 
 # Styling
 
-There is a default [stylesheet](../tests/_data/public/deform.css) used by the acceptance test code. This should help you 
+There is a default [stylesheet](../assets/deform.css) used by the acceptance test code. This should help you 
 get started with customisation.
 
 It provides styling for both the HTML and CustomElement components (along with some basic form/html rules).
@@ -10,7 +10,8 @@ It provides styling for both the HTML and CustomElement components (along with s
 The custom elements are automatically decorated with 'part' attributes to allow styling via 
 [::part](https://developer.mozilla.org/en-US/docs/Web/CSS/::part) selectors, the rule is as follows:
 - if the shadow dom tag has any classes they are used for the part definition(s)
-- otherwise the tag name itself is used, if there is a type attribute that is also used
+- otherwise if the tag has a 'type' attribute that is used along with the tag name
+- otherwise just the tag name itself is used, 
 
 For example the Slider custom element's shadow DOM is as follows: 
 ```html

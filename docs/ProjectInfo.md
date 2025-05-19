@@ -15,10 +15,15 @@ The code is meant to conform to the PSR-12 standard as far as is sensible.
 
 This is the tool that is used to check : https://github.com/PHPCSStandards/PHP_CodeSniffer/
 
-Once installed and available globally (presumably via PATH settings), something like this can be used from the root dir.
+There is a shell script, [phpcs.sh](../phpcs.sh) which can be used to run the tool:
 ```
-phpcs --standard=PSR12 ./src/Deform/
+sh phpcs.sh
 ```
+alternatively just run it directly
+```
+./vendor/bin/phpcs --standard=PSR12 ./src/Deform/
+```
+
 ### PHPDocumentor
 If you have [PHPDocumentor](https://docs.phpdoc.org/) installed then you can generate API documentation like this
 (assuming it's on your PATH)

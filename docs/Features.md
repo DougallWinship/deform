@@ -5,12 +5,13 @@
 * full form model definition
 * form submission handling with CSRF protection
 * strong IDE auto-completion support & chaining wherever appropriate
-* just-in-time DOM modification : via simplistic PHP selectors, full XPath selector, or optionally CSS selectors (*)
+* just-in-time DOM modification : via  (very) simplistic PHP selectors, full XPath selector, or optionally CSS selectors (*)
 * form array (and hence json) encoding/decoding
 
-> (*) - this requires a CSS to XPath conversion library such as https://css2xpath.github.io/
+> (*) - this requires a CSS to XPath conversion library such as https://github.com/bkdotcom/CssXpath
 
-> **_NOTE:_** validation is outside the scope of the project, but other libraries can easily be integrated.
+> **_NOTE:_** validation implementations are outside the scope of the project, but other libraries such as
+> https://github.com/rakit/validation can easily be integrated.
 
 ### Layers
 There are 3 principal layers:

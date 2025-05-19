@@ -566,13 +566,11 @@ abstract class BaseComponent implements \Stringable
                 return self::PART_PREFIX . '-' . $class;
             }, $classes);
             $tag->set('part', implode(" ", $prependedClasses));
+        } elseif ($tag->has('type')) {
+            $tag->set('part', self::PART_PREFIX . "-" . $tag->getTagType() . ' ' .
+                self::PART_PREFIX . "-" . $tag->getTagType() . "-" . $tag->get('type'));
         } else {
-            if ($tag->has('type')) {
-                $tag->set('part', self::PART_PREFIX . "-" . $tag->getTagType() . ' ' .
-                    self::PART_PREFIX . "-" . $tag->getTagType() . "-" . $tag->get('type'));
-            } else {
-                $tag->set('part', self::PART_PREFIX . "-" . $tag->getTagType());
-            }
+            $tag->set('part', self::PART_PREFIX . "-" . $tag->getTagType());
         }
         if ($tag->hasChildren()) {
             $children = $tag->getChildren();
