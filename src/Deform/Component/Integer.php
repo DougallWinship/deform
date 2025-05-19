@@ -6,9 +6,20 @@ namespace Deform\Component;
 
 use Deform\Html\Html as Html;
 
+/**
+ * @persistAttribute min
+ * @persistAttribute max
+ * @persistAttribute step
+ */
 class Integer extends Input
 {
     use Shadow\Integer;
+
+    public ?int $min = null;
+
+    public ?int $max = null;
+
+    public ?int $step = null;
 
     /**
      * @return void
@@ -35,11 +46,11 @@ JS;
             'name' => $this->getName(),
             'id' => $this->getId(),
             'inputmode' => 'decimal',
-            'pattern' => "^-?\\d+$",
             'step' => '1',
             'placeholder' => "0",
             'oninput' => \Deform\Util\Strings::trimInternal($js),
         ]);
+        $this->updatePattern();
         $this->addControl($this->input);
     }
 
@@ -56,44 +67,45 @@ JS;
         if (!is_numeric($minValue)) {
             throw new \Exception("'min' must be a numeric value");
         }
-        $minValue = intval($minValue);
-        $maxValue = $this->input->get('data-max');
+        $minValue = (int)$minValue;
+        $maxValue = $this->input->get('max');
         if ($maxValue !== null) {
             $maxValue = intval($maxValue);
             if ($minValue >= $maxValue) {
                 throw new \Exception("'min' must be less than 'max'");
             }
         }
-        $this->updatePattern($minValue, $maxValue);
-        $this->input->set('data-min', (string)$minValue);
+        $this->min = $minValue;
+        $this->input->set('min', (string)$this->min);
+        $this->updatePattern();
         return $this;
     }
 
     /**
-     * @param $maxValue
+     * @param mixed $maxValue
      * @return $this
      * @throws \Exception
      */
-    public function max($maxValue): self
+    public function max(mixed $maxValue): self
     {
         if ($maxValue === null) {
-            $this->input->unset('data-max');
+            $this->input->unset('max');
             return $this;
         }
         if (!is_numeric($maxValue)) {
             throw new \Exception("'max' must be a numeric value");
         }
-        $maxValue = intval($maxValue);
-
-        $minValue = $this->input->get('data-min');
+        $maxValue = (int)$maxValue;
+        $minValue = $this->input->get('min');
         if ($minValue !== null) {
             $minValue = intval($minValue);
             if ($maxValue <= $minValue) {
                 throw new \Exception("'max' must be greater than 'min'");
             }
         }
-        $this->updatePattern($minValue, $maxValue);
-        $this->input->set('data-max', (string)$maxValue);
+        $this->max = $maxValue;
+        $this->input->set('max', (string)$this->max);
+        $this->updatePattern();
         return $this;
     }
 
@@ -111,29 +123,42 @@ JS;
         if (!is_numeric($stepValue)) {
             throw new \Exception("'step' must be a +ve numeric value");
         }
-        $stepValue = intval($stepValue);
+        $stepValue = (int)$stepValue;
+        $this->step = $stepValue;
         $this->input->set('step', (string)$stepValue);
         return $this;
     }
 
     /**
-     * @param int|null $min
-     * @param int|null $max
      * @return void
      * @throws \Exception
      */
-    private function updatePattern(?int $min, ?int $max): void
+    private function updatePattern(): void
     {
-        // Determine sign constraints
-        if ($max === 0) {
-            $signPattern = '-';   // Only negative
-        } elseif ($min === 0) {
-            $signPattern = '';    // Only positive
+        if ($this->max === null && $this->min === null) {
+            $negativePattern = '-?';
+        } elseif ($this->min === null && $this->max<=0) {
+            $negativePattern = '-';
+        } elseif ($this->max === null && $this->min>=0) {
+            $negativePattern = '';
         } else {
-            $signPattern = '-?';  // Allow both
+            $negativePattern = '-?';
         }
-
-        $pattern = '^' . $signPattern . '\\d+$';
+        $escapedMinus = preg_quote($negativePattern, '/');
+        $pattern = '^' . $escapedMinus . '\\d+$';
         $this->input->set('pattern', $pattern);
+    }
+
+    public function hydrate(): void
+    {
+        if ($this->min !== null) {
+            $this->min($this->min);
+        }
+        if ($this->max !== null) {
+            $this->max($this->max);
+        }
+        if ($this->step !== null) {
+            $this->step($this->step);
+        }
     }
 }

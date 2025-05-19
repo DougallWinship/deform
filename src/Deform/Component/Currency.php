@@ -9,8 +9,12 @@ use Deform\Html\HtmlTag;
 
 /**
  * @persistAttribute currencyLabelValue
+ * @persistAttribute min
+ * @persistAttribute max
+ * @persistAttribute dp
+ * @persistAttribute strategy
  */
-class Currency extends Input
+class Currency extends Decimal
 {
     use Shadow\Currency;
 
@@ -21,25 +25,17 @@ class Currency extends Input
     public HtmlTag $currencyInput;
 
     /**
-     * @throws \Exception
+     * @inheritdoc
      */
     public function setup(): void
     {
+        $this->dp = 2; // default
+        parent::setup();
         $this->currencyLabel = Html::label(['class' => 'currency-symbol']);
-        $this->currencyInput = Html::input([
-            'type' => 'text',
-            'name' => $this->getName(),
-            'id' => $this->getId(),
-            'min' => '0',
-            'inputmode' => 'decimal',
-            'pattern' => "^\d+(\.\d{1,2})?$",
-            'placeholder' => "0.00",
-            'onchange' => "!isNaN(this.value) && (this.value = parseFloat(this.value).toFixed(2))"
-        ]);
-        $this->addControl($this->currencyInput, [
+        $this->replaceControl($this->input, [
             $this->currencyLabel,
             ' ',
-            $this->currencyInput
+            $this->input
         ]);
     }
 
@@ -61,6 +57,7 @@ class Currency extends Input
      */
     public function hydrate(): void
     {
+        parent::hydrate();
         if ($this->currencyLabelValue != null) {
             $this->currency($this->currencyLabelValue);
         }

@@ -73,6 +73,10 @@ class Button extends BaseComponent
         return $this;
     }
 
+    /**
+     * @return void
+     * @throws \Exception
+     */
     public function hydrate(): void
     {
         if ($this->buttonType) {

@@ -138,6 +138,19 @@ abstract class BaseComponent implements \Stringable
     }
 
     /**
+     * @param HtmlTag $control
+     * @param mixed|null $controlTagDecorator
+     * @return $this
+     * @throws \Exception
+     */
+    public function replaceControl(HtmlTag $control, mixed $controlTagDecorator = null): static
+    {
+        $this->componentContainer->control->clearControls();
+        $this->componentContainer->control->addControl($control, $controlTagDecorator);
+        return $this;
+    }
+
+    /**
      * add an expected field (used for controls which do not submit data if they are unset such as checkboxes)
      * @param string $fieldName
      */
@@ -349,7 +362,8 @@ abstract class BaseComponent implements \Stringable
         $propertyValues = [];
         $reflectionProperties = self::getRegisteredReflectionProperties();
         foreach ($reflectionProperties as $propertyName => $reflectionProperty) {
-            if ($value =  $reflectionProperty->getValue($this)) {
+            $value = $reflectionProperty->getValue($this);
+            if ($value !== null) {
                 $propertyValues[$propertyName] = $value;
             }
         }

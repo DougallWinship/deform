@@ -14,17 +14,19 @@ echo \Deform\Component\ComponentFactory::getCustomElementDefinitionsJavascript(f
 ?>
 </script>
 <form id='form' name="potatoes" data-namespace="potatoes" method="post" action="" enctype="multipart/form-data">
-    <deform-button name='button1' value='buttonvalue' label="Button Label">Button</deform-button>
-    <deform-checkbox name='checkbox1' option="checkboxvalue" label="Checkbox Label" text="Check me?" value="true" required></deform-checkbox>
-    <deform-checkbox-multi name='checkbox-multi1' options='[["one","One"],["two","Two"],["three","Three"]]' value='["one","two"]' label='CheckboxMulti Label'></deform-checkbox-multi>
-    <deform-color-selector name='color-selector1' label='Colour Selector Label' value="#ccddff"></deform-color-selector>
-    <deform-currency name='currency1' currency="&pound;" label='Currency Label' value="12.50"></deform-currency>
-    <deform-date name='date1' label='Date Label' value="2012-12-12"></deform-date>
-    <deform-date-time name='datetime1' label='DateTime Label' value="2012-12-12T10:10"></deform-date-time>
-    <deform-display name='display1' label='Display Label' value='show this'></deform-display>
+    <deform-button name='button1' value='buttonvalue' label="Component Button">Button</deform-button>
+    <deform-checkbox name='checkbox1' option="checkboxvalue" label="Component Checkbox" text="Check me?" value="true" required></deform-checkbox>
+    <deform-checkbox-multi name='checkbox-multi1' options='[["one","One"],["two","Two"],["three","Three"]]' value='["one","two"]' label='Component CheckboxMulti'></deform-checkbox-multi>
+    <deform-color-selector name='color-selector1' label='Component Colour Selector' value="#ccddff"></deform-color-selector>
+    <deform-currency name='currency1' currency="&pound;" label='Component Currency' value="12.50"></deform-currency>
+    <deform-date name='date1' label='Component Date' value="2012-12-12"></deform-date>
+    <deform-date-time name='datetime1' label='Component DateTime' value="2012-12-12T10:10"></deform-date-time>
+    <deform-decimal name='decimal1' label='Component Decimal' dp="2"></deform-decimal>
+    <deform-display name='display1' label='Component Display' value='show this'></deform-display>
     <deform-email name='email1' label='Component Email' value='potatoes'></deform-email>
     <deform-file name='file1' label='Component File'></deform-file>
     <deform-image name='image1' label='Component Image'></deform-image>
+    <deform-integer name='integer1' label='Component Integer'></deform-integer>
     <deform-multiple-file name='multiplefile1' label='Component Multiple File'></deform-multiple-file>
     <deform-multiple-email name='multipleemail1' label='Component Multiple Email' value="dougall.winship@gmail.com">Button</deform-multiple-email>
     <deform-hidden name='hidden1' value='hiddenvalue'></deform-hidden> &laquo;Hidden Input<br>

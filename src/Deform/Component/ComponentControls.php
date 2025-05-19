@@ -75,6 +75,17 @@ class ComponentControls
     }
 
     /**
+     * @return void
+     * @throws \Exception
+     */
+    public function clearControls(): void
+    {
+        $this->controlTags = [];
+        $this->allTags = [];
+    }
+
+
+    /**
      * add some arbitrary html to the control container
      * @param HtmlTag $htmlTag
      * @return void

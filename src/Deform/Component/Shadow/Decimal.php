@@ -13,19 +13,19 @@ trait Decimal
             "min",
             ".control-container input",
             Attribute::TYPE_INTEGER,
-            "element.min = parseInt(this.getAttribute('min'));",
-            "element.min = newValue;",
+            "element.dataset.min = this.getAttribute('min');",
+            "element.dataset.min = newValue;",
             Attribute::BEHAVIOUR_VISIBLE_IF_EMPTY,
-            "0"
+            ""
         );
         $attributes["max"] = new Attribute(
             "max",
             ".control-container input",
             Attribute::TYPE_INTEGER,
-            "element.setAttribute('max',this.getAttribute('max'));",
-            "element.setAttribute('max',newValue);",
+            "element.dataset.max = this.getAttribute('max');",
+            "element.dataset.max = newValue;",
             Attribute::BEHAVIOUR_VISIBLE_IF_EMPTY,
-            "100"
+            ""
         );
         $attributes["dp"] = new Attribute(
             "dp",

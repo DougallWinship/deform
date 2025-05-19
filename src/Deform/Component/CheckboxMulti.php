@@ -23,6 +23,7 @@ class CheckboxMulti extends BaseComponent
      */
     public function setup()
     {
+        // only setup later due to the requirement for checkbox definitions
     }
 
     /**

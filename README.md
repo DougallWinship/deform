@@ -153,7 +153,6 @@ ___
 
 ### Roadmap:
 * change acceptance tests to use a real browser (via selenium) & test custom components (etc.)
-* improve the styling instructions/examples
 * add instructions/examples on making your own components
 * improve the usage instructions/examples (particularly for the form layer)
 

@@ -16,7 +16,7 @@ trait Integer
             "element.min = parseInt(this.getAttribute('min'));",
             "element.min = newValue;",
             Attribute::BEHAVIOUR_VISIBLE_IF_EMPTY,
-            "0"
+            ""
         );
         $attributes["max"] = new Attribute(
             "max",
@@ -25,7 +25,7 @@ trait Integer
             "element.setAttribute('max',this.getAttribute('max'));",
             "element.setAttribute('max',newValue);",
             Attribute::BEHAVIOUR_VISIBLE_IF_EMPTY,
-            "100"
+            ""
         );
         $attributes["step"] = new Attribute(
             "step",

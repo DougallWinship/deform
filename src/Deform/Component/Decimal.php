@@ -6,6 +6,12 @@ namespace Deform\Component;
 
 use Deform\Html\Html as Html;
 
+/**
+ * @persistAttribute min
+ * @persistAttribute max
+ * @persistAttribute dp
+ * @persistAttribute strategy
+ */
 class Decimal extends Input
 {
     use Shadow\Decimal;
@@ -14,6 +20,22 @@ class Decimal extends Input
     public const string ROUND_CEIL = "ceil";
     public const string ROUND_FLOOR = "floor";
     public const string ROUND_BANKERS = "bankers";
+
+    public const array ALL_ROUND_STRATEGIES = [
+        self::ROUND_STANDARD,
+        self::ROUND_CEIL,
+        self::ROUND_FLOOR,
+        self::ROUND_BANKERS,
+    ];
+
+    public int $dp = 0;
+
+    public ?float $min = null;
+
+    public ?float $max = null;
+    public ?string $strategy = self::ROUND_STANDARD;
+
+    private ?string $pattern = null;
 
     public function setup(): void
     {
@@ -34,63 +56,100 @@ JS;
             'name' => $this->getName(),
             'id' => $this->getId(),
             'inputmode' => 'decimal',
-            'pattern' => "^\-?d+(\.\d{1,2})?$",
-            'placeholder' => "0.00",
+            'placeholder' => "0",
             'data-round' => self::ROUND_STANDARD,
-            'data-dp' => 2,
+            'data-dp' => $this->dp,
             'onchange' => \Deform\Util\Strings::trimInternal($js),
         ]);
+        $this->updatePattern();
         $this->addControl($this->input);
     }
 
-    public function min($minValue = 0): self
+    public function min(mixed $minValue): self
     {
         if (!is_numeric($minValue)) {
             throw new \Exception("'min' must be a numeric value");
         }
-        $maxValue = $this->input->get('data-max');
-        if ($maxValue !== null && floatVal($minValue) >= floatval($maxValue)) {
+        if ($this->max !== null && $minValue >= $this->max) {
             throw new \Exception("'min' must be less than 'max'");
         }
-        $this->input->set('data-min', (string)$minValue);
+        $this->min = (float)$minValue;
+        $this->input->set('data-min', (string)$this->min);
+        $this->updatePattern();
         return $this;
     }
 
-    public function max($maxValue = 0): self
+    public function max(mixed $maxValue): self
     {
         if (!is_numeric($maxValue)) {
             throw new \Exception("'max' must be a numeric value");
         }
-        $minValue = $this->input->get('data-min');
-        if ($minValue !== null && floatval($maxValue) <= floatval($minValue)) {
+        if ($this->min !== null && $maxValue <= $this->min) {
             throw new \Exception("'max' must be greater than 'min'");
         }
-        $this->input->set('data-max', (string)$maxValue);
+        $this->max = (float)$maxValue;
+        $this->input->set('data-max', (string)$this->max);
+        $this->updatePattern();
         return $this;
     }
 
     public function roundStrategy(string $roundingStrategy): self
     {
+        if (!in_array($roundingStrategy, self::ALL_ROUND_STRATEGIES)) {
+            throw new \Exception("Unrecognised round strategy '$roundingStrategy'");
+        }
+        $this->strategy = $roundingStrategy;
         $this->input->set('data-round', $roundingStrategy);
         return $this;
     }
 
-    public function dp(int $decimalPlaces = 2): self
+    public function dp(int $decimalPlaces): self
     {
+        if ($decimalPlaces < 0) {
+            throw new \Exception("'$decimalPlaces' must be greater than 0");
+        }
+        $this->dp = $decimalPlaces;
         $this->input->set('data-dp', $decimalPlaces);
+        $this->updatePattern();
+        return $this;
+    }
 
-        $min = $this->input->get('data-min');
-        $max = $this->input->get('data-max');
-        if ($min == 0) {
-            $negativePattern = "";
-        } elseif ($max == 0) {
+    private function updatePattern(): self
+    {
+        if ($this->min === null && $this->max === null) {
+            $negativePattern = "-?";
+        } elseif ($this->min === null && $this->max<=0) {
             $negativePattern = "-";
+        } elseif ($this->max === null && $this->min>=0) {
+            $negativePattern = "";
         } else {
             $negativePattern = "-?";
         }
-        $escapedDecimal = preg_quote('.', '/'); // safer if you later allow comma/locale rules
-        $pattern = '^' . $negativePattern . '\\d+(' . $escapedDecimal . '\\d{1,' . $decimalPlaces . '})?$';
+        $escapedMinus = preg_quote($negativePattern, '/');
+
+        if ($this->dp <= 0) {
+            $pattern = '^' . $escapedMinus . '\\d+$';
+        }
+        else {
+            $pattern = '^' . $escapedMinus . '\\d+\\.\\d{' . $this->dp . '}$';
+        }
         $this->input->set('pattern', $pattern);
         return $this;
+    }
+
+    public function hydrate(): void
+    {
+        if ($this->min !== null) {
+            $this->min($this->min);
+        }
+        if ($this->max !== null) {
+            $this->max($this->max);
+        }
+        if ($this->dp) {
+            $this->dp($this->dp);
+        }
+        if ($this->strategy !== self::ROUND_STANDARD) {
+            $this->roundStrategy($this->strategy);
+        }
     }
 }

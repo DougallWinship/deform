@@ -31,7 +31,7 @@ class CurrencyTest extends \Codeception\Test\Unit
         $this->assertInstanceOf(\Deform\Component\ComponentControls::class, $control);
 
         $expectedId = 'currency-'.$namespace.'-'.$name;
-        $this->tester->assertIsHtmlTag($currency->currencyInput,'input',[
+        $this->tester->assertIsHtmlTag($currency->input,'input',[
             'id' => $expectedId,
             'name' => $namespace.'['.$name.']',
             'type' => 'text',

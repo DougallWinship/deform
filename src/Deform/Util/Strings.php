@@ -8,7 +8,7 @@ namespace Deform\Util;
 class Strings
 {
     /**
-     * get a class name for an object or class name *without* it's namespace
+     * Get a class name for an object or class name *without* it's namespace.
      * @param string|object $object
      * @return string
      * @throws \Exception
@@ -57,10 +57,8 @@ class Strings
     }
 
     /**
-     * trim whitespace from start and end of a string and collapse any multiple internal whitespace to single spaces
-     *
+     * Trim whitespace from start and end of a string and collapse any multiple internal whitespace to single spaces.
      * @param string $text
-     *
      * @return string
      */
     public static function trimInternal(string $text): string
@@ -69,7 +67,7 @@ class Strings
     }
 
     /**
-     * extract the method name, if available, from a PHPDocs style annotation comment line (not particularly strict!)
+     * Extract the method name, if available, from a PHPDocs style annotation comment line (not particularly strict!).
      * @param string $comment
      * @return string[]|null
      * @throws \Exception
@@ -106,6 +104,11 @@ class Strings
         return null;
     }
 
+    /**
+     * Extract method information from a PHPDoc line.
+     * @param string $comment
+     * @return array|null
+     */
     public static function extractMethodSignature(string $comment): ?array
     {
         $trimmed = self::trimInternal($comment);
@@ -141,6 +144,7 @@ class Strings
     }
 
     /**
+     * Prepend a string to each line of another string.
      * @param string $str
      * @param string $prependStr
      * @return string
@@ -153,16 +157,5 @@ class Strings
             $rebuild[] = $prependStr . $part;
         }
         return implode(PHP_EOL, $rebuild);
-    }
-
-    public static function ensureIndent(string $str, int $indent): string
-    {
-        $lines = explode(PHP_EOL, $str);
-        $padding = str_repeat(' ', $indent);
-        $rebuildLines = [];
-        foreach ($lines as $line) {
-            $rebuildLines[] = $padding . trim($line);
-        }
-        return implode(PHP_EOL, $rebuildLines);
     }
 }
