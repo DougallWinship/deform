@@ -137,9 +137,9 @@ JS;
     {
         if ($this->max === null && $this->min === null) {
             $negativePattern = '-?';
-        } elseif ($this->min === null && $this->max<=0) {
+        } elseif ($this->min === null && $this->max <= 0) {
             $negativePattern = '-';
-        } elseif ($this->max === null && $this->min>=0) {
+        } elseif ($this->max === null && $this->min >= 0) {
             $negativePattern = '';
         } else {
             $negativePattern = '-?';

@@ -118,9 +118,9 @@ JS;
     {
         if ($this->min === null && $this->max === null) {
             $negativePattern = "-?";
-        } elseif ($this->min === null && $this->max<=0) {
+        } elseif ($this->min === null && $this->max <= 0) {
             $negativePattern = "-";
-        } elseif ($this->max === null && $this->min>=0) {
+        } elseif ($this->max === null && $this->min >= 0) {
             $negativePattern = "";
         } else {
             $negativePattern = "-?";
@@ -129,8 +129,7 @@ JS;
 
         if ($this->dp <= 0) {
             $pattern = '^' . $escapedMinus . '\\d+$';
-        }
-        else {
+        } else {
             $pattern = '^' . $escapedMinus . '\\d+\\.\\d{' . $this->dp . '}$';
         }
         $this->input->set('pattern', $pattern);
