@@ -122,7 +122,7 @@ function(event) {
 }
 JS;
 
-        $expectedJs = 'if (typeof function(event) { }!=="function") { alert("\'function(event) { }\' is not a valid javascript function"); } else { function(event) { }(event).then(function(url) { if (url) { document.getElementById("preview-image-ns-dp").src=url; document.getElementById("hidden-image-ns-dp").value=url } }, function(error) { console.log(error); }) }';
+        $expectedJs = 'if (typeof function(event) { }!=="function") { alert("\'function(event) { }\' is not a valid javascript function"); } else { function(event) { }(event).then(function(url) { if (url) { document.getElementById("preview-image-ns-dp").src=url; document.getElementById("hidden-image-ns-dp").value=url } }, function(error) { console.error("Failed to use preview", error); }) }';
 
         $image->setJavascriptSelectFunction($js);
         $getJs = $this->tester->getAttributeValue($image, 'javascriptSelectFunction');
