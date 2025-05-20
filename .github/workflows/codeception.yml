@@ -41,7 +41,7 @@ jobs:
         run: composer install --no-progress --prefer-dist
 
       - name: Run Codeception tests with coverage
-        run: ./vendor/bin/codecept run --coverage --coverage-html
+        run: ./vendor/bin/codecept run --coverage-html
 
       - name: Upload coverage report
         uses: actions/upload-artifact@v4
