@@ -19,11 +19,11 @@
         "ext-libxml": "*"
     },
     "require-dev": {
-        "codeception/codeception": "^4.1",
-        "codeception/module-phpbrowser": "^1.0",
-        "codeception/phpbuiltinserver": "^1.2",
-        "codeception/module-asserts": "^2.0",
-        "codeception/module-db": "^2.0",
-        "squizlabs/php_codesniffer": "^3.13"
+        "squizlabs/php_codesniffer": "^3.13",
+        "codeception/codeception": "^5.3",
+        "codeception/module-asserts": "^3.0",
+        "codeception/module-db": "^3.1",
+        "codeception/module-phpbrowser": "^3.0",
+        "phpunit/phpunit": "^9.6"
     }
 }

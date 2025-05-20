@@ -309,6 +309,11 @@ class FormModel
     }
 
     /**
+     * validate the form data, returns either true or an array of errors like this:
+     * [
+     *     'fieldname' => [ array of errors ]
+     *     ... other fields ...
+     * ]
      * @param array $formData
      * @return true|array
      */
