@@ -7,7 +7,7 @@
 [![PSR-12](https://img.shields.io/github/actions/workflow/status/DougallWinship/deform/phpcs.yml?branch=master&label=PSR-12&style=flat-square)](https://github.com/DougallWinship/deform/actions/workflows/phpcs.yml)
 [![Codeception](https://img.shields.io/github/actions/workflow/status/DougallWinship/deform/codeception.yml?branch=master&label=Codeception&style=flat-square)](https://github.com/DougallWinship/deform/actions/workflows/codeception.yml)
 
-Deform helps you build consistent HTML forms with PHP.
+Deform helps you build and process consistent HTML forms with PHP.
 
 Components are rendered as standard HTML/CSS by default, but can also be exported as JavaScript 
 [custom elements](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements).
