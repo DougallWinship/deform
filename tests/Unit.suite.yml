@@ -17,4 +17,8 @@ modules:
             cleanup: true
             populator: 'mysql --defaults-extra-file=tests/.user.cnf $dbname < $dump'
 
-    step_decorators: ~
+step_decorators: ~
+
+coverage:
+    enabled: true
+    remote: false
