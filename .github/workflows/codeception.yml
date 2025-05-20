@@ -35,9 +35,6 @@ jobs:
           php-version: '8.3'
           coverage: xdebug
 
-      - name: Show PHP info
-        run: php -i
-
       - name: Show libxml version
         run: |
           php -r "echo 'libxml version: ' . LIBXML_DOTTED_VERSION . PHP_EOL;"

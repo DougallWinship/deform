@@ -75,6 +75,18 @@ class HtmlDocument implements \Stringable
     private function processXmlErrors(bool $allowAllTags): void
     {
         $allErrors = libxml_get_errors();
+
+        // 🔍 TEMP: Dump raw libxml errors
+        error_log("libxml version: " . LIBXML_DOTTED_VERSION);
+        foreach ($allErrors as $error) {
+            error_log(sprintf(
+                "LIBXML [%s] line %d: %s",
+                $error->level,
+                $error->line,
+                trim($error->message)
+            ));
+        }
+
         $allowedTags = self::$allowedTags;
         $this->errors = array_filter($allErrors, function ($error) use ($allowAllTags, $allowedTags) {
             $errorMessage = trim($error->message);
