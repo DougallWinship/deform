@@ -39,7 +39,8 @@ jobs:
         run: php -i
 
       - name: Show libxml version
-
+        run: |
+          php -r "echo 'libxml version: ' . LIBXML_DOTTED_VERSION . PHP_EOL;"
 
       - name: Install dependencies
         run: composer install --no-progress --prefer-dist
