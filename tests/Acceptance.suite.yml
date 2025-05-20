@@ -12,3 +12,5 @@ modules:
         - \Helper\Acceptance
         - Asserts
 step_decorators: ~
+coverage:
+    enabled: false
