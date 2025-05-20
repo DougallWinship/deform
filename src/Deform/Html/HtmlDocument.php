@@ -14,6 +14,10 @@ use Deform\Exception\DeformHtmlException;
  *   https://github.com/phpbench/dom
  *   https://github.com/PhpGt/Dom/wiki
  *   https://github.com/scotteh/php-dom-wrapper
+ *
+ * WARNING : Due to changes in libxml2 2.9.14+ (see https://github.com/php/doc-en/issues/2219), malformed HTML may no
+ * longer produce parse errors.
+ * Do not use this class to validate input correctness — it is only a parser.
  */
 class HtmlDocument implements \Stringable
 {
@@ -49,6 +53,7 @@ class HtmlDocument implements \Stringable
     }
 
     /**
+     * Attempts to load an arbitrary snippet of HTML.
      * @param string|\Stringable $html
      * @param bool $allowAllTags
      * @return HtmlDocument

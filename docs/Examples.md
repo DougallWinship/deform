@@ -68,6 +68,8 @@ $htmlTag = \Deform\Html\HtmlDocument::load($htmlString)->getHtmlRootTag();
 ```
 
 > **_NOTE:_** There is no checking of the generated HTML for correctness. It's up to you to get it right!
+> Also libxml behaviour can [change significantly](https://github.com/php/doc-en/issues/2219) & with little warning!
+> ```\Deform\Html\HtmlDocument::load()``` should be considered a parser and *not* used for validation.
 
 ### Deform\Component
 Components are built using Deform\Html. Where appropriate they are provided with a wrapper, and optionally a label, hint
