@@ -76,15 +76,14 @@ class HtmlDocument implements \Stringable
     {
         $allErrors = libxml_get_errors();
 
-        // 🔍 TEMP: Dump raw libxml errors
-        error_log("libxml version: " . LIBXML_DOTTED_VERSION);
-        foreach ($allErrors as $error) {
-            error_log(sprintf(
-                "LIBXML [%s] line %d: %s",
+        fwrite(STDERR, PHP_EOL."message".PHP_EOL);
+        foreach (libxml_get_errors() as $error) {
+            fwrite(STDERR, PHP_EOL.sprintf(
+                "LIBXML [%d] line %d: %s",
                 $error->level,
                 $error->line,
                 trim($error->message)
-            ));
+            ).PHP_EOL);
         }
 
         $allowedTags = self::$allowedTags;
@@ -293,7 +292,7 @@ class HtmlDocument implements \Stringable
     /**
      * @return string
      */
-    public function __toString()
+    public function __toString(): string
     {
         $html = $this->domDocument->saveHTML();
         return is_string($html) ? rtrim($html, PHP_EOL) : "";
