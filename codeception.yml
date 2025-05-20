@@ -2,8 +2,7 @@ paths:
     tests: tests
     output: tests/_output
     data: tests/_data
-    support: tests/_support
-    envs: tests/_envs
+    support: tests/Support
 actor_suffix: Tester
 extensions:
     enabled:
