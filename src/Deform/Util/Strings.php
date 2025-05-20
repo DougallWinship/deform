@@ -107,45 +107,6 @@ class Strings
     }
 
     /**
-     * Extract method information from a PHPDoc line.
-     * @param string $comment
-     * @return array|null
-     */
-    public static function extractMethodSignature(string $comment): ?array
-    {
-        $trimmed = self::trimInternal($comment);
-        if (!str_starts_with($trimmed, '* ')) {
-            return null;
-        }
-        $trimmed = substr($trimmed, 2);
-        $parts = explode(" ", $trimmed);
-        if (count($parts) >= 3 && $parts[0] === '@method' && $parts[1] !== 'static') {
-            $result = preg_match('/(\S+)\s+(\S+)\s+(.*?)\((.*?)\)(\s*)(.*)/', $trimmed, $matches);
-            if (!$result) {
-                return null;
-            }
-            $signature = [];
-            list(
-                $discardAll,
-                $discardMethod,
-                $signature['className'],
-                $signature['methodName'],
-                $signature['params'],
-                $discardWhitespace,
-                $signature['comment']
-                ) = $matches;
-            if ($signature['comment']) {
-                $signature['comment_parts'] = explode(' ', $signature['comment']);
-            }
-            if ($signature['params']) {
-                $signature['params'] = explode(',', $signature['params']);
-            }
-            return $signature;
-        }
-        return null;
-    }
-
-    /**
      * Prepend a string to each line of another string.
      * @param string $str
      * @param string $prependStr

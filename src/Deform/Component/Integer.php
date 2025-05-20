@@ -63,9 +63,6 @@ JS;
      */
     public function min($minValue): self
     {
-        if ($minValue === null) {
-            $this->input->unset('data-min');
-        }
         if (!is_numeric($minValue)) {
             throw new DeformComponentException("'min' must be a numeric value");
         }
@@ -90,10 +87,6 @@ JS;
      */
     public function max(mixed $maxValue): self
     {
-        if ($maxValue === null) {
-            $this->input->unset('max');
-            return $this;
-        }
         if (!is_numeric($maxValue)) {
             throw new DeformComponentException("'max' must be a numeric value");
         }
@@ -118,14 +111,13 @@ JS;
      */
     public function step($stepValue = null): self
     {
-        if ($stepValue === null) {
-            $this->input->unset('data-step');
-            return $this;
-        }
         if (!is_numeric($stepValue)) {
             throw new DeformComponentException("'step' must be a +ve numeric value");
         }
         $stepValue = (int)$stepValue;
+        if ($stepValue<1) {
+            throw new DeformComponentException("'step' must be greater than 0");
+        }
         $this->step = $stepValue;
         $this->input->set('step', (string)$stepValue);
         return $this;

@@ -1,7 +1,8 @@
 <?php
-namespace Deform\Html;
+namespace App\Tests\Unit\Deform\Html;
 
 use Deform\Exception\DeformHtmlException;
+use Deform\Html\Link;
 
 class LinkTest extends \Codeception\Test\Unit
 {

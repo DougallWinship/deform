@@ -1,7 +1,8 @@
 <?php
-namespace Deform\Util;
+namespace App\Tests\Unit\Deform\Util;
 
 use Deform\Exception\DeformUtilException;
+use Deform\Util\Arrays;
 
 class ArraysTest extends \Codeception\Test\Unit
 {

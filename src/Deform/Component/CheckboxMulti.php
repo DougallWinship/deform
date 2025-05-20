@@ -6,6 +6,7 @@ namespace Deform\Component;
 
 use Deform\Html\Html as Html;
 use Deform\Util\Arrays;
+use Deform\Exception\DeformException;
 
 /**
  * @persistAttribute checkboxValues

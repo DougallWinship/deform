@@ -1,8 +1,8 @@
 <?php
-namespace Deform\Util;
+namespace App\Tests\Unit\Deform\Util;
 
-use Deform\Component\Button;
 use Deform\Exception\DeformUtilException;
+use Deform\Util\Strings;
 
 class StringsTest extends \Codeception\Test\Unit
 {

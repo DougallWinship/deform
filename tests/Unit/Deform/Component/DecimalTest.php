@@ -4,6 +4,7 @@ namespace App\Tests\Unit\Deform\Component;
 use Deform\Component\ComponentFactory;
 use Deform\Component\Decimal;
 use Deform\Exception\DeformComponentException;
+use Deform\Util\Strings;
 
 class DecimalTest extends \Codeception\Test\Unit
 {
@@ -56,6 +57,13 @@ class DecimalTest extends \Codeception\Test\Unit
         ]);
     }
 
+    public function testNonNumericMin()
+    {
+        $decimal = ComponentFactory::Decimal(null, 'de');
+        $this->expectException(DeformComponentException::class);
+        $decimal->min("apples");
+    }
+
     public function testMinMoreThanMax()
     {
         $decimal = ComponentFactory::Decimal(null, 'de');
@@ -76,6 +84,13 @@ class DecimalTest extends \Codeception\Test\Unit
         $this->tester->assertIsHtmlTag($decimal->input, 'input', [
             'data-max' => $max,
         ]);
+    }
+
+    public function testNonNumericMax()
+    {
+        $decimal = ComponentFactory::Decimal(null, 'de');
+        $this->expectException(DeformComponentException::class);
+        $decimal->max("oranges");
     }
 
     public function testMaxLessThanMin()
@@ -125,5 +140,25 @@ class DecimalTest extends \Codeception\Test\Unit
         $decimal = ComponentFactory::Decimal(null, 'de');
         $this->expectException(DeformComponentException::class);
         $decimal->roundStrategy("not a valid strategy");
+    }
+
+    public function testHydrate()
+    {
+        $decimal = ComponentFactory::Decimal(null, 'de');
+        $min = -10;
+        $max = 10;
+        $dp = 3;
+        $strategy = Decimal::ROUND_FLOOR;
+        $this->tester->setAttributeValue($decimal, 'min', $min);
+        $this->tester->setAttributeValue($decimal, 'max', $max);
+        $this->tester->setAttributeValue($decimal, 'dp', $dp);
+        $this->tester->setAttributeValue($decimal, 'strategy', $strategy);
+        $decimal->hydrate();
+        $this->tester->assertIsHtmlTag($decimal->input, 'input', [
+            'data-min' => $min,
+            'data-max' => $max,
+            'data-dp' => $dp,
+            'data-round' => $strategy,
+        ]);
     }
 }

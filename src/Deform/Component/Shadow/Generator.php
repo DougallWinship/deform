@@ -9,6 +9,7 @@ use Deform\Component\ComponentFactory;
 use Deform\Exception\DeformComponentException;
 use Deform\Exception\DeformException;
 use Deform\Util\Strings;
+use Deform\Version;
 
 /**
  * generate javascript for custom HTML elements representing the components
@@ -27,7 +28,7 @@ class Generator
 
     public static function alterDeformObject()
     {
-        list($short, $full) = BaseComponent::getGitVersions();
+        list($short, $full) = Version::getGitVersions();
         return <<<JS
 if (window.Deform !== undefined) {
     window.Deform.version = '{$short}';

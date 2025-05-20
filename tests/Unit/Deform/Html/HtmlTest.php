@@ -1,7 +1,9 @@
 <?php
-namespace Deform\Html;
+namespace App\Tests\Unit\Deform\Html;
 
 use Deform\Exception\DeformHtmlException;
+use Deform\Html\Html;
+use Deform\Html\HtmlTag;
 
 class HtmlTest extends \Codeception\Test\Unit
 {

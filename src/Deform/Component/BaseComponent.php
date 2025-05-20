@@ -512,16 +512,10 @@ abstract class BaseComponent implements \Stringable
     /**
      * obtain methods names which have the @templateMethod annotation
      * @return \ReflectionMethod[]
-     * @throws DeformException
      */
     public function getTemplateMethods(): array
     {
-        $thisClass = get_called_class();
-        try {
-            $reflectionSelf = new \ReflectionClass($thisClass);
-        } catch (\Exception $e) {
-            throw new DeformComponentException("Failed to get template methods.", 0, $e);
-        }
+        $reflectionSelf = new \ReflectionClass(get_called_class());
         $methods = $reflectionSelf->getMethods();
         $templateMethods = [];
         foreach ($methods as $method) {
@@ -580,21 +574,5 @@ abstract class BaseComponent implements \Stringable
                 }
             }
         }
-    }
-
-    /**
-     * @return array [ 0 => {short version}, 1 => {full version} ]
-     */
-    public static function getGitVersions(): array
-    {
-        static $versions = null;
-        if ($versions !== null) {
-            return $versions;
-        }
-        $full = trim(shell_exec('git describe --tags --always 2>/dev/null')) ?: '?';
-        // Extract the "short" version by removing commit count and hash
-        $short = preg_replace('/^v?([0-9]+\.[0-9]+\.[0-9]+).*$/', '$1', $full);
-        $versions = [$short,$full];
-        return $versions;
     }
 }

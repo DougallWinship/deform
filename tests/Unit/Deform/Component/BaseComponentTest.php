@@ -2,7 +2,9 @@
 namespace App\Tests\Unit\Deform\Component;
 
 use Deform\Component\ComponentFactory;
+use Deform\Component\Text;
 use Deform\Exception\DeformComponentException;
+use ReflectionMethod;
 
 /**
  * it appears to be tricky to mock an abstract class with a protected constructor (if you read this and know of a way
@@ -263,5 +265,101 @@ class BaseComponentTest extends \Codeception\Test\Unit
         $this->assertEquals($field, $textComponentArray['name']);
 
         // todo - this could be much better!!
+    }
+
+    public function testSetNullValue()
+    {
+        $field = 'txt';
+        $text = ComponentFactory::Text('ns',$field);
+        $text->setValue(null);
+        $this->tester->assertIsHtmlTag($text->input, 'input',[
+            'value' => ''
+        ]);
+    }
+
+    public function testWrapStack()
+    {
+        $field = 'txt';
+        $text = ComponentFactory::Text('ns',$field);
+        $text->setWrapStack([
+            ['span', ['class' => 'bottom']],
+            ['div', ['class' => 'top']],
+        ]);
+        $tag = $text->getHtmlTag();
+        $this->tester->assertIsHtmlTag($tag, "div",['class'=>'top']);
+        list ($span) = $tag->getChildren();
+        $this->tester->assertIsHtmlTag($span, "span",['class'=>'bottom']);
+        list ($textComponent) = $span->getChildren();
+        $this->tester->assertIsHtmlTag($textComponent, 'div', [
+            'id' => 'ns-txt-container',
+            'class' => 'component-container container-type-text'
+        ]);
+    }
+
+    public function testSetAttributes()
+    {
+        $field = 'txt';
+        $text = ComponentFactory::Text('ns',$field);
+        $attributes = [
+            'foo' => 'Foo',
+            'bar' => 'Bar',
+        ];
+        $text->setAttributes($attributes);
+        $this->tester->assertIsHtmlTag($text->input, 'input',[
+            'id' => 'text-ns-txt',
+            'name' => 'ns[txt]',
+            'type' => 'text',
+            'foo' => 'Foo',
+            'bar' => 'Bar'
+        ]);
+    }
+
+    public function testSetContainerAttributes()
+    {
+        $field = 'txt';
+        $text = ComponentFactory::Text('ns',$field);
+        $attributes = [
+            'label' => 'Foo',
+            'hint' => 'Bar',
+            'tooltip' => 'Baz'
+        ];
+        $text->setContainerAttributes($attributes);
+        $container = $text->getHtmlTag();
+        $this->tester->assertIsHtmlTag($container, 'div', [
+            'id' => 'ns-txt-container',
+            'class' => 'component-container container-type-text',
+            'title' => 'Baz'
+        ]);
+        list($labelContainer, $controlContainer, $hintContainer) = $container->getChildren();
+        list($labelTag) = $labelContainer->getChildren();
+        $this->tester->assertIsHtmlTag($labelTag, 'label', [
+            'for' => 'text-ns-txt',
+        ]);
+        list($labelString) = $labelTag->getChildren();
+        $this->assertIsString($labelString);
+        $this->assertEquals('Foo', $labelString);
+        list($input) = $controlContainer->getChildren();
+        $this->tester->assertIsHtmlTag($input, 'input', [
+            'id' => 'text-ns-txt',
+            'name' => 'ns[txt]',
+            'type' => 'text',
+        ]);
+        $this->tester->assertIsHtmlTag($hintContainer, 'div', ['class'=>'hint-container']);
+        list($hintString) = $hintContainer->getChildren();
+        $this->assertIsString($hintString);
+        $this->assertEquals('Bar', $hintString);
+    }
+
+    public function testGetTemplateMethods()
+    {
+        $namespace = 'ns';
+        $field = 'checkbox-multi';
+        $checkboxMulti = ComponentFactory::CheckboxMulti($namespace, $field);
+        $methods = $checkboxMulti->getTemplateMethods();
+        $this->assertCount(1, $methods);
+        $this->assertInstanceOf(ReflectionMethod::class, $methods[0]);
+
+        $button = ComponentFactory::Button($namespace, $field);
+        $this->assertCount(0, $button->getTemplateMethods());
     }
 }
