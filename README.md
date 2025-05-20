@@ -1,10 +1,11 @@
 
 # Deform
 
-[![Codeception](https://img.shields.io/github/actions/workflow/status/DougallWinship/deform/codeception.yml?branch=master&label=Codeception&style=flat-square)](https://github.com/DougallWinship/deform/actions/workflows/codeception.yml)
-[![PSR-12](https://img.shields.io/github/actions/workflow/status/DougallWinship/deform/phpcs.yml?branch=master&label=PSR-12&style=flat-square)](https://github.com/DougallWinship/deform/actions/workflows/phpcs.yml)
 ![PHP](https://img.shields.io/badge/PHP-%5E8.3-8892BF?logo=php&style=flat-square)
+![ES6+](https://img.shields.io/badge/JavaScript-ES6%2B-yellow.svg?style=flat-square)
 [![License: Unlicense](https://img.shields.io/badge/license-Unlicense-blue.svg?style=flat-square)](https://github.com/DougallWinship/deform/blob/master/LICENSE)
+[![PSR-12](https://img.shields.io/github/actions/workflow/status/DougallWinship/deform/phpcs.yml?branch=master&label=PSR-12&style=flat-square)](https://github.com/DougallWinship/deform/actions/workflows/phpcs.yml)
+[![Codeception](https://img.shields.io/github/actions/workflow/status/DougallWinship/deform/codeception.yml?branch=master&label=Codeception&style=flat-square)](https://github.com/DougallWinship/deform/actions/workflows/codeception.yml)
 
 Deform helps you build consistent HTML forms with PHP.
 
