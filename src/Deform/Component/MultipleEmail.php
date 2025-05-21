@@ -27,7 +27,9 @@ class MultipleEmail extends Input
         if (is_string($emails)) {
             $emails = explode(',', $emails);
         }
-        array_walk($emails, function (&$value) { $value = trim($value); });
+        array_walk($emails, function (&$value) {
+            $value = trim($value);
+        });
         $emails = implode(",", $emails);
         $this->input->value($emails);
         return $this;

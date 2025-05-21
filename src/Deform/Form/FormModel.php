@@ -472,36 +472,42 @@ class FormModel
      */
     private function implementCSRFStrategy(): ?\Deform\Component\Input
     {
-        switch ($this->csrfStrategy) {
-            case self::CSRF_STRATEGY_SESSION:
-                $this->ensureSessionStarted();
-                $token = bin2hex(random_bytes(35));
-                $_SESSION[$this->getCSRFFormTokenName()] = $token;
-                return ComponentFactory::Hidden($this->namespace, self::CSRF_TOKEN_FIELD)->value($token);
+        try {
+            switch ($this->csrfStrategy) {
+                case self::CSRF_STRATEGY_SESSION:
+                    $this->ensureSessionStarted();
+                    $token = bin2hex(random_bytes(35));
+                    $_SESSION[$this->getCSRFFormTokenName()] = $token;
+                    return ComponentFactory::Hidden($this->namespace, self::CSRF_TOKEN_FIELD)->value($token);
 
-            case self::CSRF_STRATEGY_COOKIE:
-                $token = bin2hex(random_bytes(35));
-                setcookie(
-                    $this->getCSRFFormTokenName(),
-                    $token,
-                    [
-                        'expires' => 0,// end of session
-                        'path' => (strlen($this->formAction) > 0)
-                            ? $this->formAction
-                            : $_SERVER['REQUEST_URI'],
-                        'domain' => $_SERVER['SERVER_NAME'],
-                        'secure' => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off'),
-                        'httponly' => true,
-                        'samesite' => 'Strict'
-                    ]
-                );
-                return ComponentFactory::Hidden($this->namespace, self::CSRF_TOKEN_FIELD)->value($token);
+                case self::CSRF_STRATEGY_COOKIE:
+                    $token = bin2hex(random_bytes(35));
+                    setcookie(
+                        $this->getCSRFFormTokenName(),
+                        $token,
+                        [
+                            'expires' => 0,// end of session
+                            'path' => (strlen($this->formAction) > 0)
+                                ? $this->formAction
+                                : $_SERVER['REQUEST_URI'],
+                            'domain' => $_SERVER['SERVER_NAME'],
+                            'secure' => (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off'),
+                            'httponly' => true,
+                            'samesite' => 'Strict'
+                        ]
+                    );
+                    return ComponentFactory::Hidden($this->namespace, self::CSRF_TOKEN_FIELD)->value($token);
 
-            case self::CSRF_STRATEGY_OFF:
-                return null;
+                case self::CSRF_STRATEGY_OFF:
+                    return null;
 
-            default:
-                throw new DeformFormException("Unrecognised CSRF strategy '" . $this->csrfStrategy . "'");
+                default:
+                    throw new DeformFormException("Unrecognised CSRF strategy '" . $this->csrfStrategy . "'");
+            }
+        } catch (\Exception $exc) {
+            throw new DeformFormException(
+                "implementCSRFStrategy failed '" . $this->csrfStrategy . "' : " . $exc->getMessage()
+            );
         }
     }
 

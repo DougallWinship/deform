@@ -3,7 +3,7 @@ namespace App\Tests\Acceptance;
 
 use \AcceptanceTester;
 
-class HtmlBuildCest
+class HtmlCest
 {
     public function _before(AcceptanceTester $I)
     {
@@ -14,6 +14,7 @@ class HtmlBuildCest
     // tests
     public function seeHtml(AcceptanceTester $I)
     {
-        $I->seeElement(['css'=>'div']);
+        $I->seeElement(['css'=>'div.outerdiv']);
+        $I->seeElement(['css'=>'hr.innerhr']);
     }
 }

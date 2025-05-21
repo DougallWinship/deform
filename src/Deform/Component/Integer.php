@@ -115,7 +115,7 @@ JS;
             throw new DeformComponentException("'step' must be a +ve numeric value");
         }
         $stepValue = (int)$stepValue;
-        if ($stepValue<1) {
+        if ($stepValue < 1) {
             throw new DeformComponentException("'step' must be greater than 0");
         }
         $this->step = $stepValue;

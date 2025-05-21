@@ -1,6 +1,6 @@
 <?php
 if (isset($_POST) && count($_POST)) { ?>
-    <pre><?= serialize($_POST); ?></pre>
+    <pre class="serialised"><?= serialize($_POST); ?></pre>
     <pre><?= print_r($_POST,true); ?></pre>
 <?php } ?>
 <?php

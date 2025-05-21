@@ -10,7 +10,7 @@ class Acceptance extends \Codeception\Module
 
     public function _beforeSuite($settings = [])
     {
-        $cmd = 'php -S localhost:8000 tests/_data/public/router.php > /dev/null 2>&1 & echo $!';
+        $cmd = 'php -S localhost:8000 tests/_data/public/router.php > tests/_output/server.log 2>&1 & echo $!';
         echo "Starting PHP built-in server...\n";
         $output = [];
         exec($cmd, $output);

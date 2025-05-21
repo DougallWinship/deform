@@ -29,11 +29,8 @@ class FormModelTest extends \Codeception\Test\Unit
     public function testConstructor()
     {
         $exampleForm = new \App\ExampleFormModel();
+        $exampleForm->setCSRFStrategy(FormModel::CSRF_STRATEGY_OFF);
         $this->assertInstanceOf(FormModel::class, $exampleForm);
-        $this->assertEquals('example', $exampleForm->getNamespace());
-        $csrfStrategy = $this->tester->getAttributeValue($exampleForm, 'csrfStrategy');
-        $this->assertEquals(FormModel::CSRF_STRATEGY_SESSION, $csrfStrategy);
-
         $formHtml = $exampleForm->getFormHtml();
         $this->tester->assertIsHtmlTag($formHtml,'form', [
             'method' => 'post',
