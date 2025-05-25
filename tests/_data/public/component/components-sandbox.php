@@ -173,6 +173,7 @@
 
         const label = document.createElement("label");
         label.textContent = componentType;
+        label.style.pointerEvents = 'none';
         elem.appendChild(label);
 
         let definition = Deform.getComponent('DeformComponent'+componentType);
@@ -401,7 +402,7 @@
                     if (mutation.type==='attributes' && mutation.attributeName===key) {
                         if (selectedComponent && !selectedComponent.isGuarded(mutation.attributeName)) {
                             selectedComponent.guard(mutation.attributeName);
-                            const value = key === 'name'
+                            const value = (key === 'name')
                                 ? selectedComponent.getComponentBaseName()
                                 : selectedComponent.getAttribute(key);
                             if (value !== attributeElement.value) {

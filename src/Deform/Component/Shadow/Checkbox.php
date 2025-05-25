@@ -28,11 +28,18 @@ setChecked(element, addEventListener=false)
     }
     else {
         element.checked = false;
-        this.internals_.setFormValue(null);
+        this.internals_.setFormValue('');
     }
     if (addEventListener) {
-        element.addEventListener('input', ()=> {
-            this.setChecked(element, false);
+        element.addEventListener('input', (evt)=> {
+            if (evt.originalTarget.checked) {
+                this.internals_.setFormValue(this.getAttribute('option') || "on");
+                this.setAttribute('value', this.getAttribute('option') || "on");
+            }
+            else {
+                this.internals_.setFormValue('');
+                this.setAttribute('value', '');
+            }
         });
     }
 }
@@ -45,8 +52,8 @@ JS;
             'value',
             ".control-container input",
             Attribute::TYPE_BOOLEAN,
-            "this.setChecked(element,false);",
-            "this.setChecked(element,true);",
+            "console.log('initjs'); this.setChecked(element,true);",
+            "console.log('updatejs'); this.setChecked(element,false);",
             Attribute::BEHAVIOUR_VISIBLE_IF_EMPTY,
         );
 

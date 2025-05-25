@@ -5,6 +5,12 @@ use \AcceptanceTester;
 
 class FormCest
 {
+    public function canRebuildForm(AcceptanceTester $I)
+    {
+        // it's a bit lame for now, but just seeing a 200 indicates the rebuild worked
+        $I->amOnPage('/form/build');
+        $I->seeResponseCodeIs(200);
+    }
 
     public function runCsrfSessionFormSubmission(AcceptanceTester $I)
     {
