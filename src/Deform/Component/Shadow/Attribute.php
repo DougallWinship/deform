@@ -50,8 +50,10 @@ class Attribute
                 $this->updateJs .= ';';
             }
         }
-        if ($options!==null && $default!==null && !in_array($default, $options)) {
-            throw new DeformComponentException("The specified default '" . $default . "' is not in the array ".print_r($options, true));
+        if ($options !== null && $default !== null && !in_array($default, $options)) {
+            throw new DeformComponentException(
+                "The specified default '" . $default . "' is not in the array " . print_r($options, true)
+            );
         }
     }
 

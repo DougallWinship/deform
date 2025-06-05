@@ -26,11 +26,14 @@ use Deform\Version;
  *       ```[ '{repeatable-value}' => '{repeatable-value-label}' ]```, this is used to regenerate an arrow of items in
  *       the shadow dom by treating this item as a template for cloning, for example for SelectMulti the following is
  *       generated in the shadow dom, then subsequently hidden but used for cloning multiple values
+ * phpcs:disable
+ * ```php
  *          <div class='checkboxmulti-checkbox-wrapper' part='deform-checkboxmulti-checkbox-wrapper'>
  *              <input type='checkbox' id='checkboxmulti-namespace-name-{repeatable-value}' name='namespace[name][]' value='{repeatable-value}' part='deform-input deform-input-checkbox'>
  *              <label for='checkboxmulti-namespace-name-{repeatable-value}' class='multi-label' part='deform-multi-label'>{repeatable-value-label}</label>
  *          </div>
- *
+ * ```
+ * phpcs:enable
  */
 class Generator
 {
@@ -42,8 +45,7 @@ class Generator
      * @var Attribute[] $attributes
      */
     private array $attributes;
-
-
+    
     public static function alterDeformObject()
     {
         list($short, $full) = Version::getGitVersions();
