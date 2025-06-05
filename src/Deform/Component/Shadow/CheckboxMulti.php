@@ -15,13 +15,16 @@ trait CheckboxMulti
     public function getShadowMethods(): string
     {
         return <<<JS
-setOptions(element, clearFirst=false) 
+setOptions(element, initialise) 
 {
     let options = Deform.parseJson(this.getAttribute('options'), "Failed to parse CheckboxMulti 'options'");
     if (options===null) {
         return null;
     }
-    if (clearFirst) {
+    if (initialise) {
+        element.style.display = 'none';
+    }
+    else {
         Array.from(element.parentNode.children).forEach((child, index) => {
             if (index>0) {
                 child.remove();
@@ -33,7 +36,7 @@ setOptions(element, clearFirst=false)
         const value = keyValue[1];
         const id = "input-checkbox-"+key;
         const checkBoxWrapper = element.cloneNode(true);
-        checkBoxWrapper.style.display = "flex";
+        checkBoxWrapper.style.setProperty('display', 'flex');
         const checkBoxInput = checkBoxWrapper.querySelector('input');
         checkBoxInput.id = id;
         checkBoxInput.value = key;
@@ -117,8 +120,9 @@ JS;
             'options',
             '.control-container .checkboxmulti-checkbox-wrapper',
             Attribute::TYPE_KEYVALUE_ARRAY,
-            "this.setOptions(element,true); element.style.display='none';",
-            "this.setOptions(element,true);"
+            "this.setOptions(element,true);",
+            "this.setOptions(element,false);",
+            Attribute::BEHAVIOUR_CUSTOM
         );
         $attributes['value'] = new Attribute(
             'value',

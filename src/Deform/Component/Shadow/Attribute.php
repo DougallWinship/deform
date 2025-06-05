@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Deform\Component\Shadow;
 
+use Deform\Exception\DeformComponentException;
+
 class Attribute
 {
     public const bool ADD_MISSING_SEMICOLONS = false;
@@ -33,7 +35,8 @@ class Attribute
         public string $initialiseJs = '',
         public string $updateJs = '',
         public string $behaviour = self::BEHAVIOUR_HIDE_IF_EMPTY,
-        public ?string $default = null
+        public ?string $default = null,
+        public ?array $options = null,
     ) {
         if ($updateJs) {
             $this->dynamic = true;
@@ -47,6 +50,9 @@ class Attribute
                 $this->updateJs .= ';';
             }
         }
+        if ($options!==null && $default!==null && !in_array($default, $options)) {
+            throw new DeformComponentException("The specified default '" . $default . "' is not in the array ".print_r($options, true));
+        }
     }
 
     public function metadata(): array
@@ -56,6 +62,7 @@ class Attribute
             'selector' => $this->selector,
             'type' => $this->type,
             'default' => $this->default,
+            'options' => $this->options,
         ];
     }
 }

@@ -9,7 +9,7 @@ trait RadioButtonSet
     public function getShadowMethods(): string
     {
         return <<<JS
-setOptions(element, value, removeExisting=false)
+setOptions(element, value, initialise=false)
 {
     let values;
     try {
@@ -19,7 +19,11 @@ setOptions(element, value, removeExisting=false)
         console.error("invalid RadioButtonSet options json : "+value);
         return;
     }
-    if (removeExisting) {
+
+    if (initialise) {
+        element.style.display='none';
+    }
+    else {
         element.parentElement.querySelectorAll('.radiobuttonset-radio-container').forEach((radiobutton, index) => {
             if (index>0) {
                 radiobutton.remove();
@@ -30,11 +34,16 @@ setOptions(element, value, removeExisting=false)
         const key = keyValue[0];
         const value = keyValue[1];
         const radiobuttonWrapper = element.cloneNode(true);
+        radiobuttonWrapper.style.display='flex';
         let radiobuttonInput = radiobuttonWrapper.querySelector('input');
         radiobuttonInput.id = 'radiobutton-'+key;
         radiobuttonInput.value = key;
         radiobuttonInput.name = radiobuttonInput.name+"[]";
         radiobuttonInput.style.display = 'inline-block';
+        radiobuttonInput.addEventListener('change', () => {
+            this.internals_.setFormValue(value); 
+            this.setAttribute('value', value);
+        });
         let radiobuttonLabel = radiobuttonWrapper.querySelector('label');
         radiobuttonLabel.innerHTML = value;
         radiobuttonLabel.setAttribute('for','radiobutton-'+key);
@@ -42,7 +51,7 @@ setOptions(element, value, removeExisting=false)
         element.parentNode.append(radiobuttonWrapper);
     });
 }
-setValue(checked, addEventListener=false) 
+setValue(checked) 
 {
     const checkboxElements = this.template.querySelectorAll(".component-container input");
     /* let expectedValues = []; */
@@ -57,15 +66,6 @@ setValue(checked, addEventListener=false)
             else {
                 node.checked = false;
             }
-            if (addEventListener) {
-                node.addEventListener('change', () => {
-                    this.setAttribute('value', node.value);
-                    this.internals_.setFormValue(node.value);
-                });
-            }
-        }
-        else {
-            node.parentNode.style.display = 'none';
         }
     });
     this.internals_.setFormValue(checkedValue);    
@@ -78,15 +78,15 @@ JS;
             'options',
             '.control-container .radiobuttonset-radio-container',
             Attribute::TYPE_KEYVALUE_ARRAY,
-            "this.setOptions(element, this.getAttribute('options'));",
-            "this.setOptions(element, newValue, true);",
-            Attribute::BEHAVIOUR_VISIBLE_IF_EMPTY
+            "this.setOptions(element, this.getAttribute('options'), true);",
+            "this.setOptions(element, newValue, false);",
+            Attribute::BEHAVIOUR_CUSTOM
         );
         $attributes['value'] = new Attribute(
             'value',
             '.control-container .radiobuttonset-radio-container',
             Attribute::TYPE_STRING,
-            "this.setValue(this.getAttribute('value'), true);",
+            "this.setValue(this.getAttribute('value'));",
             "this.setValue(newValue);"
         );
     }

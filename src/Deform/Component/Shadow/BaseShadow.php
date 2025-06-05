@@ -17,28 +17,12 @@ trait BaseShadow
             "element.firstChild.textContent = this.getAttribute('label');",
             "element.firstChild.textContent = newValue;"
         );
-        $initJs = <<<JS
-if (!this.hasAttribute('required') || !Deform.isTruthy(this.getAttribute('required'))) {
-    element.part.add('deform-hidden');
-}
-else {
-    element.part.remove('deform-hidden');
-}
-JS;
-        $updateJs = <<<JS
-if (newValue===null || !Deform.isTruthy(newValue)) {
-    element.part.add('deform-hidden');
-}
-else {
-    element.part.remove('deform-hidden');
-}
-JS;
         $attributes["required"] = new Attribute(
             "required",
             ".label-container label .required",
             Attribute::TYPE_BOOLEAN,
-            $initJs,
-            $updateJs,
+            "element.style.display = Deform.isTruthy(this.getAttribute('required')) ? 'inline-block' : 'none';",
+            "element.style.display = Deform.isTruthy(newValue) ? 'inline-block' : 'none';",
             Attribute::BEHAVIOUR_CUSTOM
         );
         $attributes["hint"] = new Attribute(
@@ -88,22 +72,6 @@ JS;
         );
         $this->mergeShadowAttributes($attributes);
         return array_filter($attributes);
-//
-//        // it's necessary to ensure the order specified in mergeShadowAttributes is preserved
-//        // hence pre-remove any which are to be overwritten
-//        $removeKeys = array_intersect(array_keys($attributes), array_keys($mergeAttributes));
-//        foreach ($removeKeys as $key) {
-//            unset($attributes[$key]);
-//        }
-//
-//        foreach ($mergeAttributes as $name => $attribute) {
-//            if ($attribute) {
-//                $attributes[$name] = $attribute;
-//            } else {
-//                unset($attributes[$name]);
-//            }
-//        }
-//        return $attributes;
     }
 
     public function mergeShadowAttributes(array &$attributes): void

@@ -13,7 +13,7 @@ trait Submit
             "input",
             Attribute::TYPE_STRING,
             "element.value = this.getAttribute('value'); this.internals_.setFormValue(element.value);",
-            "element.value=newValue; this.internals_.setFormValue(element.value);",
+            "element.value = newValue; this.internals_.setFormValue(element.value);",
             default: "Submit"
         );
         $attributes['hint'] = null;

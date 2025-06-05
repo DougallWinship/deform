@@ -18,7 +18,7 @@ isChecked(element)
 {
     if (!this.hasAttribute('value')) return false;
     const checked = this.getAttribute('value');
-    return checked && Deform.isTruthy(checked.toLowerCase());
+    return checked!=='';
 }
 setChecked(element, addEventListener=false) 
 {
@@ -52,8 +52,8 @@ JS;
             'value',
             ".control-container input",
             Attribute::TYPE_BOOLEAN,
-            "console.log('initjs'); this.setChecked(element,true);",
-            "console.log('updatejs'); this.setChecked(element,false);",
+            "this.setChecked(element,true);",
+            "this.setChecked(element,false);",
             Attribute::BEHAVIOUR_VISIBLE_IF_EMPTY,
         );
 

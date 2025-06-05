@@ -105,6 +105,7 @@ echo Component::RadioButtonSet('form1', 'myradiobuttonset')
 </div>
 ```
 Which looks like this:
+```html
 <div id="form1-myradiobuttonset-container" class="component-container container-type-radio-button-set" style="background-color:#333;display:inline-block;padding:8px;border-radius:8px">
     <div class="label-container">
         <label>My Radio Button Set</label>
@@ -125,48 +126,23 @@ Which looks like this:
         <input type="hidden" name="form1[expected_data][]" value="myradiobuttonset">
     </div>
 </div>
+```
 
 > **_NOTE:_** Since components are defined as [HtmlTag](../src/Deform/Html/HtmlTag.php) instances you can perform any 
 > manipulations on them as outlined in the previous section, they are only rendered as actual HTML when finally cast to
 > a string.
 
 #### Custom element definitions
-The components can also generate a set of [Custom Elements](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements)
-via javascript which can then in turn be used directly in a page or via any javascript framework that support custom
-elements (such as Vue/React).
+The components can also generate a set of [Custom Elements](https://developer.mozilla.org/en-US/docs/Web/API/Web_components/Using_custom_elements) javascript definition
+which can then be used natively or via any javascript framework that supports custom components.
 ```php
 <script>
 <?php echo \Deform\Component\ComponentFactory::getCustomElementDefinitionsJavascript() ?>
 </script>
 ```
-Which can then be used like this:
-```html
-<form id='form' name="myform" data-namespace="namespace" method="post" action="" enctype="multipart/form-data">
-  <deform-button name='button1' value='buttonvalue' label="Button Label">Button</deform-button>
-  <deform-checkbox name='checkbox1' option="checkboxvalue" label="Checkbox Label" text="Check me?" value="true" required></deform-checkbox>
-  <deform-checkbox-multi name='checkbox-multi1' options='[["one","One"],["two","Two"],["three","Three"]]' value='["one","two"]' label='CheckboxMulti Label'></deform-checkbox-multi>
-  <deform-color-selector name='color-selector1' label='Colour Selector Label' value="#ccddff"></deform-color-selector>
-  <deform-currency name='currency1' currency="&pound;" label='Currency Label' value="12.50"></deform-currency>
-  <deform-date name='date1' label='Date Label' value="2012-12-12"></deform-date>
-  <deform-date-time name='datetime1' label='DateTime Label' value="2012-12-12T10:10"></deform-date-time>
-  <deform-display name='display1' label='Display Label' value='show this'></deform-display>
-  <deform-email name='email1' label='Component Email' value='potatoes'></deform-email>
-  <deform-file name='file1' label='Component File'></deform-file>
-  <deform-image name='image1' label='Component Image'></deform-image>
-  <deform-multiple-file name='multiplefile1' label='Component Multiple File'></deform-multiple-file>
-  <deform-multiple-email name='multipleemail1' label='Component Multiple Email' value="dougall.winship@gmail.com">Button</deform-multiple-email>
-  <deform-hidden name='hidden1' value='hiddenvalue'></deform-hidden> &laquo;Hidden Input<br>
-  <deform-input-button name='inputbutton1' label='Component Input Button' value='value1'></deform-input-button>
-  <deform-password name='password1' label='Component Password' value='password1'></deform-password>
-  <deform-radio-button-set name='radiobuttonset1' label='Component Radio Button Set' options='[["one","One"],["two","Two"],["three","Three"]]' value='two'></deform-radio-button-set>
-  <deform-select name='select1' label="Component Select" options='[["one","One"],["two","Two"],["three","Three"]]' value='two'></deform-select>
-  <deform-select-multi name='selectmulti1' label="Component Multi-Select" options='[["one","One"],["two","Two"],["three","Three"]]' value='["one","three"]'></deform-select-multi>
-  <deform-slider name='slider1' label='Slider Label' min="50" max="150" showOutput="true" value="100"></deform-slider>
-  <deform-text name='text1' label='Text Label' value='text value'></deform-text>
-  <deform-text-area name='textarea1' label='Component Text Area'>this is some text area value</deform-text-area>
-  <deform-submit name='submit1' value="potatoes" onclick="this.parentNode.submit()"></deform-submit>
-</form>
-```
+Please look at the tests [component page](../tests/_data/public/component/components.php) for examples.
+> **_NOTE:_**
+> concrete examples will be provided once this feature is more stable.
 
 ### Deform\Form
 There is a [FormModel](../src/Deform/Form/FormModel.php) that can be used to build form definitions.
@@ -183,5 +159,7 @@ There is an example [here](../tests/_data/App/ExampleFormModel.php) which is use
 
 #### Out of scope
 * DB model systems can easily be used but are not directly supported.
-* Validation is the responsibility of the user, however there is a convenient setErrors(...) method to which any
-  validation errors can be sent, this matches fields to their Component and displays any issues.
+* Validation is the responsibility of the user, however there are
+ - a validateFormData(...) method in the FormModel class which can be overloaded.
+ - a setErrors(...) method form manually specifying any form errors, which matches fields to their Component and
+   displays any issues.

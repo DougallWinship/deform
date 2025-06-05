@@ -113,11 +113,6 @@ a {
     color: var(--deform-required-color);
 }
 
-.deform-hidden,
-*::part(deform-hidden) {
-    display: none !important;
-}
-
 /* === Components === */
 
 .container-type-button button,

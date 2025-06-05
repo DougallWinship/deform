@@ -138,8 +138,7 @@ JS;
         } else {
             $negativePattern = '-?';
         }
-        $escapedMinus = preg_quote($negativePattern, '/');
-        $pattern = '^' . $escapedMinus . '\\d+$';
+        $pattern = '^' . $negativePattern . '\d+$';
         $this->input->set('pattern', $pattern);
     }
 

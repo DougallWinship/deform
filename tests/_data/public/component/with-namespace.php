@@ -54,7 +54,7 @@ if (isset($_POST) && count($_POST)) { ?>
 
     <?= Component::SelectMulti( 'form1','myselectmulti2')->optgroupOptions(['group 1'=>['one'=>'One','two'=>'Two','three'=>'Three'],'group 2'=>['four'=>'Four','five'=>'Five']])->label('Select Multi with optgroups')->setValue(['two','five']) ?>
 
-    <?= Component::Slider('form1','myslider')->label('Slider') ?>
+    <?= Component::Slider('form1','myslider')->label('Slider')->showOutput() ?>
 
     <?= Component::Submit( 'form1','mysubmitbutton')->value('Submit Button') ?>
 

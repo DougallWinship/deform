@@ -9,7 +9,7 @@ trait SelectMulti
     public function getShadowMethods(): string
     {
         return <<<JS
-setOptions(selectElement, value, removeExisting=false) 
+setOptions(selectElement, value, initialise) 
 {
     let values;
     try {
@@ -21,7 +21,23 @@ setOptions(selectElement, value, removeExisting=false)
     }
     const options = selectElement.querySelectorAll('option');
     const templateOption = options[0];
-    if (removeExisting) {
+
+    if (initialise) {
+        selectElement.addEventListener('change', ()=> {
+            const options = selectElement.querySelectorAll('option');
+            let values = [];
+            options.forEach((element) => {
+                if (element.selected) {
+                    values.push(element.value);
+                }
+            });
+            const valuesJson = JSON.stringify(values);
+            this.internals_.setFormValue(valuesJson);
+            this.setAttribute('value', valuesJson);
+        });
+        templateOption.style.display = 'none';
+    }
+    else {
         options.forEach(function (element, index) {
             if (index>0) {
                 element.remove();
@@ -32,21 +48,9 @@ setOptions(selectElement, value, removeExisting=false)
         const option = templateOption.cloneNode(true);
         option.value = keyValue[0];
         option.innerText = keyValue[1];
-        option.part.remove('deform-hidden');
+        option.style.display = 'block';
         selectElement.appendChild(option);
     });
-    templateOption.part.add('deform-hidden');
-}
-setFormValue(options, name=null) 
-{
-    let values = [];
-    options.forEach((element) => {
-        if (element.selected) {
-            values.push(element.value);
-        }
-    });
-    const valuesJson = JSON.stringify(values);
-    this.internals_.setFormValue(valuesJson);
 }
 setValues(selectElement, valuesJson) 
 {
@@ -60,10 +64,14 @@ setValues(selectElement, valuesJson)
             option.selected = values.includes(option.value);
         }
     });
-    this.setFormValue(options);
-    selectElement.addEventListener('change', () => {
-        this.setFormValue(options);
-    })
+    let setValues = [];
+    options.forEach((element) => {
+        if (element.selected) {
+            setValues.push(element.value);
+        }
+    });
+    const setValuesJson = JSON.stringify(setValues);
+    this.internals_.setFormValue(setValuesJson);
 }
 JS;
     }
@@ -75,7 +83,7 @@ JS;
             '.component-container select',
             Attribute::TYPE_KEYVALUE_ARRAY,
             "this.setOptions(element, this.getAttribute('options'), true);",
-            "this.setOptions(element, newValue, true);"
+            "this.setOptions(element, newValue, false);"
         );
         $attributes['value'] = new Attribute(
             'value',

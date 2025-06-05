@@ -9,13 +9,20 @@ trait Select
     public function getShadowMethods(): string
     {
         return <<<JS
-setOptions(selectElement, optionsJson, removeExisting = false) 
+setOptions(selectElement, optionsJson, initialise = false) 
 {
     const options = Deform.parseJson(optionsJson, "Failed to parse Select 'options'");
     if (options===null) {
         return null;
     }
-    if (removeExisting) {
+    if (initialise) {
+        selectElement.firstChild.style.display = 'none';
+        selectElement.addEventListener('change',()=> {
+            this.internals_.setFormValue(selectElement.value);
+            this.setAttribute('value', selectElement.value);
+        })
+    }
+    else {
         Array.from(selectElement.children).forEach((child, index) => {
             if (index>0) {
                 child.remove();
@@ -30,22 +37,16 @@ setOptions(selectElement, optionsJson, removeExisting = false)
         const option = templateOption.cloneNode(true);
         option.value = key;
         option.innerText = value;
-        option.part.remove('deform-hidden');
+        option.style.display = 'block';
         selectElement.appendChild(option);
+        
     });
-    templateOption.part.add('deform-hidden');
     selectElement.value = selected;
 }
-setValue(selectElement, value, addEventListener=false) 
+setValue(selectElement, value) 
 {
     selectElement.value = value;
     this.internals_.setFormValue(selectElement.value);
-    if (addEventListener) {
-        selectElement.addEventListener('change', () => {
-            this.setAttribute('value', selectElement.value);
-            this.internals_.setFormValue(selectElement.value);
-        })
-    }
 }
 JS;
     }
@@ -56,8 +57,8 @@ JS;
             'options',
             '.component-container select',
             Attribute::TYPE_KEYVALUE_ARRAY,
-            "this.setOptions(element, this.getAttribute('options'));",
-            "this.setOptions(element, newValue, true);"
+            "this.setOptions(element, this.getAttribute('options'),true);",
+            "this.setOptions(element, newValue, false);"
         );
 
         $attributes['name'] = new Attribute(
@@ -72,8 +73,8 @@ JS;
             'value',
             '.component-container select',
             Attribute::TYPE_STRING,
-            "this.setValue(element, this.getAttribute('value'), true);",
-            "this.setValue(element, newValue);"
+            "this.setValue(element, this.getAttribute('value'));",
+            "this.setValue(element, newValue);",
         );
     }
 }

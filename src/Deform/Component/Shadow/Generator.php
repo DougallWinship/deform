@@ -13,6 +13,24 @@ use Deform\Version;
 
 /**
  * generate javascript for custom HTML elements representing the components
+ *
+ * Notes:
+ * - the PHP component is used to generate the template for the custom component
+ * - the template is automatically decorated with 'part' attributes (based on id, class & tag) for light dom styling
+ * - when a PHP component has defined a template method using the @templateMethod annotation, it is processed like this
+ *   via the prepareTemplateMethods below (lines 63-86):
+ *     - if a single param is passed to the templateMethod then it is invoked with the value {item} which can then be
+ *       used to replace the item value in the shadow dom (currently Currency is the only example where is it used to
+ *       replace the currency symbol)
+ *     - if an array is passed to the templateMethod then if is again invoked but with only a single array value
+ *       ```[ '{repeatable-value}' => '{repeatable-value-label}' ]```, this is used to regenerate an arrow of items in
+ *       the shadow dom by treating this item as a template for cloning, for example for SelectMulti the following is
+ *       generated in the shadow dom, then subsequently hidden but used for cloning multiple values
+ *          <div class='checkboxmulti-checkbox-wrapper' part='deform-checkboxmulti-checkbox-wrapper'>
+ *              <input type='checkbox' id='checkboxmulti-namespace-name-{repeatable-value}' name='namespace[name][]' value='{repeatable-value}' part='deform-input deform-input-checkbox'>
+ *              <label for='checkboxmulti-namespace-name-{repeatable-value}' class='multi-label' part='deform-multi-label'>{repeatable-value-label}</label>
+ *          </div>
+ *
  */
 class Generator
 {
@@ -324,10 +342,10 @@ JS;
         if (this.hasAttribute('{$attribute->name}'))
         {
             {$attribute->initialiseJs}
-            element.part.remove('deform-hidden');
+            element.style.display="block";
         }
         else {
-            element.part.add('deform-hidden');
+                element.style.setProperty("display","none","important");
         }
     }
     else {
@@ -343,7 +361,7 @@ JS;
         if (this.hasAttribute('{$attribute->name}'))
         {
             {$attribute->initialiseJs}
-            element.part.remove('deform-hidden');
+            element.style.display="block";
         }
         else {
             console.log("Failed to find attribute {$attribute->name}!!");
@@ -425,10 +443,10 @@ if (name==='{$attribute->name}' && this.shadowRoot) {
     if (element) {
         if ('{$attribute->name}'!=='value' && '{$attribute->name}'!=='name') {
             if (newValue) {
-                element.part.remove('deform-hidden');
+                element.style.display="block"; 
             }
             else {
-                element.part.add('deform-hidden');
+                element.style.setProperty("display","none","important");
             }
         }
         {$attribute->updateJs}

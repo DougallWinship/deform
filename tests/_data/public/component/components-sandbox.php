@@ -52,7 +52,7 @@
 
     let selectedComponent = null;
     let selectedComponentObject = null;
-    let selectedComponentNameObservers = null;
+    let selectedComponentObservers = null;
 
     let dragData = null;
 
@@ -177,7 +177,6 @@
         elem.appendChild(label);
 
         let definition = Deform.getComponent('DeformComponent'+componentType);
-        //console.log(definition);
         const component = document.createElement(definition.name);
         component.setAttribute('name', definition.name);
         const attributes = definition.metadata;
@@ -245,9 +244,13 @@
                     selectedComponent.parentElement.classList.remove('selected');
                 }
                 if (!event.target.classList.contains('removed')) {
-                    selectedComponent = event.target.classList.contains('builder-form-component-wrapper')
+                    const checkSelectedComponent = event.target.classList.contains('builder-form-component-wrapper')
                         ? event.target.lastChild
                         : event.target
+                    if (selectedComponent === checkSelectedComponent) {
+                        return;
+                    }
+                    selectedComponent = checkSelectedComponent;
                     selectedComponent.parentElement.classList.add('selected');
                     selectedComponentObject = definition;
                     updateFormComponentInfo()
@@ -268,7 +271,7 @@
             selectedComponent.classList.remove('selected');
             selectedComponent = null;
             selectedComponentObject = null;
-            selectedComponentNameObservers.forEach((observer) => {
+            selectedComponentObservers.forEach((observer) => {
                 observer.disconnect();
             });
         }
@@ -281,8 +284,8 @@
         if (selectedComponent===null){
             return;
         }
-        if (selectedComponentNameObservers!==null) {
-            selectedComponentNameObservers.forEach((observer)=>{
+        if (selectedComponentObservers!==null) {
+            selectedComponentObservers.forEach((observer)=>{
                 observer.disconnect();
             });
         }
@@ -298,7 +301,7 @@
         const nameLabel = document.createElement("label");
         nameLabel.innerHTML = "name";
         const nameInput = document.createElement("input");
-        nameInput.disabled = true;
+        nameInput.disableFd = true;
         nameInput.value = selectedComponent.getAttribute('name');
         nameDiv.appendChild(nameLabel);
         nameDiv.appendChild(nameInput);
@@ -314,15 +317,17 @@
             attributes: true,
             attributeFilter: ['name']
         });
-        if (selectedComponentNameObservers===null) {
-            selectedComponentNameObservers = [];
+        if (selectedComponentObservers===null) {
+            selectedComponentObservers = [];
         }
-        selectedComponentNameObservers.push(nameObserver);
+        selectedComponentObservers.push(nameObserver);
 
         const attributes = selectedComponentObject.metadata;
         Object.keys(attributes).forEach((key) => {
-            if (attributes[key].type === 'file') {
-                // not currently handled
+            const attribute = attributes[key];
+            if (attribute.type === 'file') {
+                // not yet handled
+                console.warn("Attributes of type 'file' are not yet handled");
                 return;
             }
             const attrDiv = document.createElement("div");
@@ -330,35 +335,56 @@
             label.innerText = key === 'name' ? 'basename' : key;
             attrDiv.appendChild(label);
             componentInfoForm.appendChild(attrDiv);
-            const attributeElement = attributes[key].type === 'textarea'
-                ? document.createElement('textarea')
-                : document.createElement("input")
-            attributeElement.setAttribute("name", key);
-            attrDiv.appendChild(attributeElement)
+            let attributeElement;
+            if (attribute.options !== null ) {
+                attributeElement = document.createElement("select");
+                attribute.options.forEach((option) => {
+                    const optionElement = document.createElement('option');
+                    optionElement.value = option;
+                    optionElement.textContent = option;
+                    attributeElement.appendChild(optionElement);
+                });
+                attributeElement.value = attribute.default;
+            }
+            else if (attribute.type==='boolean') {
+                attributeElement = document.createElement("input");
+                attributeElement.type = "checkbox";
+                attributeElement.value = "true";
+                attributeElement.name = attribute.name;
+            }
+            else {
+                attributeElement = attribute.type === 'textarea'
+                    ? document.createElement('textarea')
+                    : document.createElement("input")
+                attributeElement.setAttribute("name", key);
+            }
+            attrDiv.appendChild(attributeElement);
 
             if (key==='slot') {
                 if (selectedComponent.shadowRoot) {
                     const slot = selectedComponent.shadowRoot.querySelector("slot");
                     const assignedNodes = slot.assignedNodes({flatten: true});
-                    assignedNodes.map(node => {
+                    attributeElement.value = assignedNodes.map(node => {
                         if (node.nodeType === Node.ELEMENT_NODE) {
                             return node.outerHTML;
-                        }
-                        else if (node.nodeType === Node.TEXT_NODE) {
+                        } else if (node.nodeType === Node.TEXT_NODE) {
                             return node.textContent;
-                        }
-                        else {
+                        } else {
                             return '';
                         }
                     }).join('');
-                    attributeElement.value = slotHtml;
                 }
             }
             else if (key==='name') {
                 attributeElement.value = selectedComponent.getComponentBaseName();
             }
             else if (selectedComponent.hasAttribute(key)) {
-                attributeElement.value = selectedComponent.getAttribute(key);
+                if (attribute.type==='boolean') {
+                    attributeElement.checked = selectedComponent.getAttribute(key)!=='';
+                }
+                else {
+                    attributeElement.value = selectedComponent.getAttribute(key);
+                }
             }
             // else {
             //     console.warn("can't find attribute '"+key+"'", selectedComponent);
@@ -384,13 +410,15 @@
                         } else if (attributes[key].type === 'float') {
                             selectedComponent.setAttribute(key, evt.target.value);
                         } else if (attributes[key].type === 'boolean') {
-                            selectedComponent.setAttribute(key, evt.target.value);
+                            selectedComponent.setAttribute(key, evt.target.checked ? evt.target.value : '');
                         } else if (attributes[key].type === 'textarea') {
                             selectedComponent.setAttribute(key, evt.target.value);
                         } else {
                             console.error("Unrecognised attribute type '" + attributes[key].type + "'");
                         }
-                        selectedComponent.unguard(key);
+                        requestAnimationFrame(() => {
+                            selectedComponent.unguard(key);
+                        });
                     }
                 }
                 catch(err) {
@@ -402,17 +430,27 @@
                     if (mutation.type==='attributes' && mutation.attributeName===key) {
                         if (selectedComponent && !selectedComponent.isGuarded(mutation.attributeName)) {
                             selectedComponent.guard(mutation.attributeName);
-                            const value = (key === 'name')
-                                ? selectedComponent.getComponentBaseName()
-                                : selectedComponent.getAttribute(key);
-                            if (value !== attributeElement.value) {
-                                attributeElement.value = value;
+                            if (attribute.type === 'boolean') {
+                                attributeElement.checked = selectedComponent.getAttribute(key) !== '';
+                            } else {
+                                const value = (key === 'name')
+                                    ? selectedComponent.getComponentBaseName()
+                                    : selectedComponent.getAttribute(key);
+                                if (value !== attributeElement.value) {
+                                    attributeElement.value = value;
+                                }
                             }
-                            selectedComponent.unguard(mutation.attributeName);
+                            requestAnimationFrame(() => {
+                                selectedComponent.unguard(mutation.attributeName);
+                            })
                         }
                     }
                 })
             });
+            if (selectedComponentObservers===null) {
+                selectedComponentObservers = [];
+            }
+            selectedComponentObservers.push(inputObserver);
             inputObserver.observe(selectedComponent,{
                 attributes: true,
                 attributeFilter: [key]
@@ -420,6 +458,7 @@
         });
         componentInfo.appendChild(componentInfoForm);
     }
+
 
     document.getElementById('form-namespace-input').addEventListener('change', (evt) => {
         formArea.setAttribute('data-namespace', evt.target.value)
@@ -437,6 +476,8 @@
         border: 1px solid #ccc;
         padding: 10px;
         user-select: none;
+        height:100vh;
+        overflow-y:auto;
     }
     h3 {
         margin-top: 0;
@@ -456,6 +497,8 @@
         min-height: 300px;
         position: relative;
         user-select: none;
+        height:100vh;
+        overflow-y:auto;
     }
     #form-builder #form-area h3 {
         margin-top: 0;
@@ -506,14 +549,15 @@
     #dynamic-component-info form>div>* {
         display:table-cell;
         vertical-align:top;
-        width:100%;
-        resize:vertical;
     }
     #dynamic-component-info form>div>*:first-child {
         text-align:right;
         padding-right:4px;
-        width:fit-content;
     }
+    #dynamic-component-info form>div>*:last-child {
+        text-align: left;
+    }
+
     #form-data pre {
         background: #f8f8f8;
         border: 1px solid #ccc;
