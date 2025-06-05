@@ -45,7 +45,7 @@ class Generator
      * @var Attribute[] $attributes
      */
     private array $attributes;
-    
+
     public static function alterDeformObject()
     {
         list($short, $full) = Version::getGitVersions();
