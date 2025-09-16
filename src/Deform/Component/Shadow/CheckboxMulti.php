@@ -19,18 +19,20 @@ setOptions(element, initialise)
 {
     let options = Deform.parseJson(this.getAttribute('options'), "Failed to parse CheckboxMulti 'options'");
     if (options===null) {
-        return null;
+        options = [];
     }
     if (initialise) {
+        /* ensure repeatable template is hidden */
         element.style.display = 'none';
     }
-    else {
-        Array.from(element.parentNode.children).forEach((child, index) => {
-            if (index>0) {
-                child.remove();
-            }
-        });
-    }
+
+    /* always add and remove options! */
+    Array.from(element.parentNode.children).forEach((child, index) => {
+        if (index>0) {
+            child.remove();
+        }
+    });
+
     options.forEach((keyValue) => {
         const key = keyValue[0];
         const value = keyValue[1];
@@ -54,37 +56,37 @@ setOptions(element, initialise)
                     }
                 }
             });
-            this.setAttribute('value', JSON.stringify(exposeValue));
-            this.internals_.setFormValue(JSON.stringify(exposeValue));
+            let value = JSON.stringify(exposeValue);
+            this.setAttribute('value', value);
+            this.internals_.setFormValue(value);
+            this.emitEvent("change", value);
         });
     });
     if (!this.hasAttribute('value')) {
         this.internals_.setFormValue('[]');
+        this.emitEvent("change", '[]');
     }
 }
-setFormData(optionElements) 
+setFormData(checkboxElements) 
 {
     let values = [];
-    optionElements.forEach((element)=> {
+    checkboxElements.forEach((element)=> {
         if (element.checked) {
             values.push(element.value);
         }
     });
-    this.internals_.setFormValue(JSON.stringify(values));
+    const value = JSON.stringify(values);
+    this.internals_.setFormValue(value);
+    this.emitEvent('change', value);
 }
-initValue(value) 
+initValue(jsonValue) 
 {
-    if (value===null) return;
-    const values = Deform.parseJson(value, "Failed to parse CheckboxMulti 'value'");
+    const values = Deform.parseJson(jsonValue, "Failed to parse CheckboxMulti 'value'");
     const checkboxElements = this.template.querySelectorAll('input');
-    let expectedValues = [];
-    let checkedValues = [];
     checkboxElements.forEach((node, index) => {
         if (index>0) {
             const value = node.getAttribute('value');
-            expectedValues.push(node.value);
             if (value && values.includes(node.getAttribute('value'))) {
-                checkedValues.push(node.value);
                 node.checked = true;
             }
             else {
@@ -101,6 +103,9 @@ updateValue(value)
 {
     if (value===null) return;
     const values = Deform.parseJson(value, "Failed to parse CheckboxMulti 'value'");
+    if (values===null) {
+        return;
+    }
     const checkboxElements = this.template.querySelectorAll('input');
     checkboxElements.forEach((checkbox) => {
         if (values.includes(checkbox.getAttribute('value'))) {
@@ -109,7 +114,8 @@ updateValue(value)
         else {
             checkbox.checked = false;
         }
-    })
+    });
+    this.internals_.setFormValue(JSON.stringify(values));
 }
 JS;
     }

@@ -18,22 +18,14 @@ For example the Slider custom element's shadow DOM is as follows:
 <div id="deform-slider">
   <div class="component-container container-type-slider" part="deform-component-container deform-container-type-slider">
     <div class="label-container" part="deform-label-container">
-      <label style="margin-bottom:0" for="slider-namespace-name" part="deform-label">Slider Label <span class="required" part="deform-required deform-hidden">*</span>
+      <label style="margin-bottom:0" for="slider-namespace-name" part="deform-label">Slider Label <span class="required" part="deform-required" style="display:none">*</span>
       </label>
     </div>
     <div class="control-container" part="deform-control-container">
       <input id="slider-namespace-name" name="namespace[slider1]" type="range" part="deform-input deform-input-range" min="50" max="150">
     </div>
-    <div class="hint-container" part="deform-hint-container deform-hidden">{hint}</div>
-    <div class="error-container" part="deform-error-container deform-hidden">{error}</div>
+    <div class="hint-container" part="deform-hint-container" style="display:none">{hint}</div>
+    <div class="error-container" part="deform-error-container" style="display:none">{error}</div>
   </div>
 </div>
-```
-
-Note that ```deform-hidden``` is a special case as it's used to show/hide shadow dom tags, if you want to write your own
-css entirely you should, at a bare minimum, provide this:
-```css
-*::part(deform-hidden) {
-    display: none !important;
-}
 ```

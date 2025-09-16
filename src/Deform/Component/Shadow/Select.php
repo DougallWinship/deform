@@ -47,6 +47,7 @@ setValue(selectElement, value)
 {
     selectElement.value = value;
     this.internals_.setFormValue(selectElement.value);
+    this.emitEvent("change", selectElement.value);
 }
 JS;
     }

@@ -72,6 +72,7 @@ setValues(selectElement, valuesJson)
     });
     const setValuesJson = JSON.stringify(setValues);
     this.internals_.setFormValue(setValuesJson);
+    this.emitEvent("change", setValuesJson);
 }
 JS;
     }
@@ -90,7 +91,8 @@ JS;
             '.component-container select',
             Attribute::TYPE_ARRAY,
             "this.setValues(element, this.getAttribute('value'));",
-            "this.setValues(element, newValue);"
+            "this.setValues(element, newValue);",
+            default:"[\"\"]"
         );
         $attributes["name"] = new Attribute(
             "name",

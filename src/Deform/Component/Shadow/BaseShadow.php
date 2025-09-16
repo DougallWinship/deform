@@ -48,18 +48,20 @@ trait BaseShadow
         );
         $initJS = <<<JS
 element.value = this.getAttribute('value'); 
-this.internals_.setFormValue(element.value); 
-element.addEventListener('change', ()=> { 
+this.internals_.setFormValue(element.value);
+this.addArrowListener(element, "change", ()=> { 
     if (this.getAttribute('value')!==element.value) { 
         this.setAttribute('value',element.value); 
     } 
     this.internals_.setFormValue(element.value);
+    this.emitEvent("change", element.value);
 });
 JS;
         $updateJS = <<<JS
 if (element.value!==newValue) { 
     element.value = newValue;
     this.internals_.setFormValue(element.value);
+    this.emitEvent("change", element.value);
 }
 JS;
         $attributes["value"] = new Attribute(

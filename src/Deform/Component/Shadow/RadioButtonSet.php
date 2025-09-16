@@ -38,7 +38,7 @@ setOptions(element, value, initialise=false)
         let radiobuttonInput = radiobuttonWrapper.querySelector('input');
         radiobuttonInput.id = 'radiobutton-'+key;
         radiobuttonInput.value = key;
-        radiobuttonInput.name = radiobuttonInput.name+"[]";
+        /* radiobuttonInput.name = radiobuttonInput.name+"[]"; */
         radiobuttonInput.style.display = 'inline-block';
         radiobuttonInput.addEventListener('change', () => {
             this.internals_.setFormValue(value); 
@@ -54,21 +54,21 @@ setOptions(element, value, initialise=false)
 setValue(checked) 
 {
     const checkboxElements = this.template.querySelectorAll(".component-container input");
-    /* let expectedValues = []; */
     let checkedValue = null;
     checkboxElements.forEach((node, index) => {
         if (index>0) {
             const value = node.getAttribute('value');
             if (checked===value) {
                 checkedValue=value;
-                node.checked = true;
+                node.setAttribute('checked', true);
             }
             else {
-                node.checked = false;
+                node.setAttribute('checked',false);
             }
         }
     });
-    this.internals_.setFormValue(checkedValue);    
+    this.internals_.setFormValue(checkedValue);
+    this.emitEvent("change", checkedValue);
 }
 JS;
     }
@@ -87,7 +87,8 @@ JS;
             '.control-container .radiobuttonset-radio-container',
             Attribute::TYPE_STRING,
             "this.setValue(this.getAttribute('value'));",
-            "this.setValue(newValue);"
+            "this.setValue(newValue);",
+            default: ""
         );
     }
 }

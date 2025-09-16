@@ -1,0 +1,107 @@
+#form-builder {
+    display:flex;
+    flex-direction:row;
+    width:100%
+}
+#form-builder #available-components {
+    flex: 1;
+    margin-right: 20px;
+    border: 1px solid #ccc;
+    padding: 10px;
+    user-select: none;
+    height:100vh;
+    overflow-y:auto;
+}
+h3 {
+    margin-top: 0;
+}
+#form-builder .component {
+    padding: 5px;
+    margin: 5px 0;
+    background: #eee;
+    border: 1px solid #aaa;
+    cursor: pointer;
+}
+/* Middle column: form area */
+#form-builder #form-area {
+    flex: 2;
+    border: 1px solid #ccc;
+    padding: 10px;
+    min-height: 300px;
+    position: relative;
+    user-select: none;
+    height:100vh;
+    overflow-y:auto;
+}
+#form-builder #form-area h3 {
+    margin-top: 0;
+}
+/* Components dropped into the form area */
+#form-builder .builder-form-component-wrapper {
+    padding: 5px;
+    margin: 5px 0;
+    background: #d0ffd0;
+    border: 1px solid #aaa;
+    cursor: move;
+}
+#form-builder .builder-form-component-wrapper.selected {
+    background: #d0d0ff;
+}
+/* Visual feedback for dragging */
+#form-builder .dragging {
+    opacity: 0.5;
+}
+/* Visual feedback for drop target */
+#form-builder .dragover {
+    background: #f0f0f0;
+}
+/* Placeholder style */
+#form-builder .drop-placeholder {
+    pointer-events:none;
+    height: 40px;
+    background: #fffae6;
+    border: 2px dashed #ccc;
+    margin: 5px 0;
+}
+
+#form-builder #form-info
+{
+    flex:1;
+    margin-left:20px;
+    border:1px solid #ccc;
+    padding:10px;
+    min-height:300px;
+}
+
+/** dynamic component info */
+#dynamic-component-info form {
+    display:table
+}
+#dynamic-component-info div {
+    display:table-row;
+}
+#dynamic-component-info div>* {
+    display:table-cell;
+    vertical-align:top;
+}
+#dynamic-component-info div>*:first-child {
+    text-align:right;
+    padding-right:4px;
+}
+#dynamic-component-info div>*:last-child {
+    text-align: left;
+}
+#form-data pre {
+    background: #f8f8f8;
+    border: 1px solid #ccc;
+    padding: 1em;
+    font-family: monospace;
+    font-size: 0.9em;
+    white-space: pre-wrap
+}
+#dynamic-component-info .component-info-form-wrapper textarea {
+    width:100%;
+    min-height:100px;
+    margin-top:4px;
+}
+

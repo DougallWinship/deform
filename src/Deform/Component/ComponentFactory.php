@@ -10,6 +10,7 @@ use Deform\Exception\DeformException;
 use Deform\Html\Html;
 use Deform\Html\HtmlTag;
 use Deform\Util\Strings;
+use ReflectionException;
 
 /**
  * @method static Button Button(string $namespace, string $field, array $attributes=[])
@@ -80,7 +81,7 @@ class ComponentFactory
      * @param string $fieldName
      * @param array $arguments
      * @return object
-     * @throws DeformException
+     * @throws DeformException|ReflectionException
      */
     public static function build(
         string $component,
@@ -124,7 +125,7 @@ class ComponentFactory
     /**
      * @param string $component
      * @return HtmlTag
-     * @throws DeformException
+     * @throws DeformException|ReflectionException
      */
     public static function buildTemplate(string $component): HtmlTag
     {
@@ -136,7 +137,6 @@ class ComponentFactory
     /**
      * @param string $componentName
      * @return bool
-     * @throws DeformException
      */
     public static function isRegisteredComponent(string $componentName): bool
     {
@@ -146,7 +146,6 @@ class ComponentFactory
 
     /**
      * @return string[]
-     * @throws DeformException
      */
     public static function getRegisteredComponents(): array
     {
@@ -157,10 +156,10 @@ class ComponentFactory
     /**
      * generate javascript definitions for the components
      * @param bool $compress
-     * @return false|string
+     * @return string
      * @throws DeformException
      */
-    public static function getCustomElementDefinitionsJavascript(bool $compress = false): false|string
+    public static function getCustomElementDefinitionsJavascript(bool $compress = false): string
     {
         $setupJs = Generator::alterDeformObject();
         $componentNames = self::getRegisteredComponents();
@@ -176,7 +175,6 @@ class ComponentFactory
 
     /**
      * analyses the phpdoc element from this class
-     * @throws DeformException
      */
     private static function identifyComponents(): void
     {

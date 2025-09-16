@@ -59,7 +59,7 @@ JS;
 
     /**
      * @param string $componentName
-     * @throws DeformException
+     * @throws DeformException|\ReflectionException
      */
     public function __construct(string $componentName)
     {
@@ -121,78 +121,13 @@ JS;
         $additionalMethods = Strings::prependPerLine($this->getAdditionalMethods($componentName), "    ");
         $dynamicCallbacks = Strings::prependPerLine($this->getAttributeChangedCallbackRules(), "    ");
         $classJs = <<<JS
-class $componentClass extends HTMLElement {
-    static formAssociated = true;
-    template = null;
-    container = null;
-    form = null;
-    isConnected = false;
-    namespace = null;
-    namespaceChecked = false;
-    baseName = null;
-    hasInvalidName = false;
-    metadata = null;
-    syncGuards = {};
+class $componentClass extends DeformBase {
 $additionalAttributes
 $constructor
 $shadowMethods
 $additionalMethods
 $connectedCallback
 $dynamicCallbacks
-    setComponentName(componentFullName) {
-        if (!Deform.isValidName(componentFullName)) {
-            this.hasInvalidName = true;
-            this.baseName = null;
-            return false;
-        }
-        else {
-            this.namespace = Deform.extractNamespace(componentFullName);
-            this.baseName = Deform.extractBaseName(componentFullName);
-            this.hasInvalidName = false;
-            return true;
-        }
-    }
-    setComponentBaseName(componentBaseName) {
-        if (!Deform.isValidBaseName(componentBaseName)) {
-            this.hasInvalidName = true;
-            this.baseName = null;
-            return false;
-        }
-        else {
-            this.baseName = componentBaseName;
-            this.hasInvalidName = false;
-            return true;
-        }
-    }
-    setComponentNamespace(componentNamespace) {
-        if (!Deform.isValidNamespace(componentNamespace)) {
-            this.hasInvalidName = true;
-            this.namespace = componentNamespace;
-            return false;
-        }
-        else {
-            this.namespace = componentNamespace;
-            return true;
-        }
-    }
-    getComponentNamespace() {
-        return this.namespace;
-    }
-    getComponentBaseName() {
-        return this.baseName;
-    } 
-    triggerNameUpdated() {
-        this.setAttribute('name', this.namespace+"["+this.baseName+"]");
-    }
-    isGuarded(field) {
-        return this.syncGuards[field];
-    }
-    guard(field) {
-        this.syncGuards[field]=true;
-    }
-    unguard(field) {
-        this.syncGuards[field]=false;
-    }
 }
 JS;
         return $classJs;
@@ -216,13 +151,9 @@ JS;
         return <<<JS
 constructor() {
     super();
-    this.internals_ = this.attachInternals();
-    this.template = document.createElement('div');
     this.template.id='$componentName';
     this.template.innerHTML = `$shadowTemplate`;
     this.container = $containerDefinition;
-    this.isConnected = false;
-    this.namespaceChecked = false;
     this.metadata = this.constructor.metadata;
     const shadowRoot = this.attachShadow({mode:'open', delegatesFocus: true});
     shadowRoot.appendChild(this.template);
@@ -233,67 +164,13 @@ JS;
     private function generateConnectedCallback($componentName): string
     {
         $connectedCallbackSetup = <<<JS
-if (!this.hasAttribute('name')) {
-    let errorMessage = "'$componentName' is missing the required attribute 'name'";
-    console.error(errorMessage);
-    this.container.innerHTML = "<div style='color:red'>"+errorMessage+"</div>";
-    return;
-}
-if (!this.componentName) {
-    this.setComponentName(this.getAttribute('name'));
-    const componentNameObserver = new MutationObserver((mutations) => {
-        mutations.forEach((mutation) => {
-            if (mutation.type==='attributes' && mutation.attributeName==='name') {
-                this.setComponentName(mutation.target.getAttribute('name'));
-            }
-        })
-    });
-    componentNameObserver.observe(this, {
-        attributes: true,
-        attributeFilter: ['name']
-    });
-}
 
-if (this.namespaceChecked === false) {
-    this.form = this.closest('form');
-    if (this.form) {
-        this.namespace = this.form.dataset.namespace;
-        if (this.namespace) {
-            this.setAttribute('name', this.namespace+"["+this.getAttribute('name')+"]");
-            const formObserver = new MutationObserver((mutations) => {
-                mutations.forEach((mutation) => {
-                    if (mutation.type==='attributes' && mutation.attributeName==="data-namespace") {
-                        const newValue = mutation.target.getAttribute('data-namespace');
-                        this.setComponentNamespace(newValue);
-                        this.triggerNameUpdated();
-                    }
-                });
-            });
-            formObserver.observe(this.form, {
-                attributes: true,
-                attributeFilter: ['data-namespace']
-            });
-        }
-    }
-    else {
-        console.warn("this element has no parent form!");
-    }
-    this.namespaceChecked = true;
-}
-
-const container = this.template.querySelector('.component-container');
-if (container) {
-    container.removeAttribute('id');
-}
-Object.keys(this.metadata).forEach((metadataKey) => {
-    this.syncGuards[metadataKey] = false;
-});
 JS;
         $connectedCallbackSetup = Strings::prependPerLine($connectedCallbackSetup, "    ");
         $connectedCallbackRulesJs = Strings::prependPerLine($this->getConnectedCallbackRules(), "    ");
         return <<<JS
 connectedCallback() {
-$connectedCallbackSetup
+    this.connectedCallbackSetup();
 $connectedCallbackRulesJs
     const metadata = this.constructor.metadata;
     Object.keys(metadata).forEach((key) => {
@@ -347,7 +224,7 @@ JS;
             element.style.display="block";
         }
         else {
-                element.style.setProperty("display","none","important");
+            element.style.setProperty("display","none","important");
         }
     }
     else {
@@ -405,27 +282,6 @@ static get name() {
 }
 static get namespace() {
     return this.namespace;
-}
-setExpectedField(name, previousName=null) {
-    if (!this.form) {
-        return false;
-    }
-    let expectedValues = this.form.querySelector("input[name='expected_data']");
-    if (!expectedValues) {
-        expectedValues = document.createElement('input');
-        expectedValues.type = 'hidden';
-        expectedValues.name = 'expected-values';
-        expectedValues.value = '[]';
-        this.form.appendChild(expectedValues);
-    }
-    const jsonValues = expectedValues.value;
-    let values = JSON.parse(jsonValues);
-    if (previousName) {
-        values = values.filter(item => item !== previousName);
-    }
-    values.push(name);
-    expectedValues.value = JSON.stringify(values);
-    return true;
 }
 JS;
         return $js;

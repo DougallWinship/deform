@@ -9,16 +9,19 @@ trait Hidden
     public function getShadowMethods(): string
     {
         return <<<JS
-initValue(element) 
+setValue(element, initialise) 
 {
     element.value = this.getAttribute('value'); 
     this.internals_.setFormValue(element.value); 
-    element.addEventListener('change', ()=> { 
-        if (this.getAttribute('value')!==element.value) { 
-            this.setAttribute('value',element.value);
-            this.internals_.setFormValue(element.value);
-        }
-    });
+    if (initialise) {
+        element.addEventListener('change', ()=> { 
+            if (this.getAttribute('value')!==element.value) { 
+                this.setAttribute('value',element.value);
+                this.internals_.setFormValue(element.value);
+                this.emitEvent("change", element.value);
+            }
+        });
+    }
 }
 JS;
     }
@@ -40,8 +43,8 @@ JS;
             'value',
             'input',
             Attribute::TYPE_STRING,
-            "this.initValue(element);",
-            "element.value = newValue;this.internals_.setFormValue(element.value);",
+            "this.setValue(element, true);",
+            "this.setValue(element, false);",
         );
     }
 }

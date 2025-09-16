@@ -20,7 +20,7 @@ isChecked(element)
     const checked = this.getAttribute('value');
     return checked!=='';
 }
-setChecked(element, addEventListener=false) 
+setChecked(element, initialise) 
 {
     if (this.isChecked(element)) {
         this.internals_.setFormValue(this.getAttribute('option') || "on");
@@ -30,16 +30,14 @@ setChecked(element, addEventListener=false)
         element.checked = false;
         this.internals_.setFormValue('');
     }
-    if (addEventListener) {
-        element.addEventListener('input', (evt)=> {
-            if (evt.originalTarget.checked) {
-                this.internals_.setFormValue(this.getAttribute('option') || "on");
-                this.setAttribute('value', this.getAttribute('option') || "on");
-            }
-            else {
-                this.internals_.setFormValue('');
-                this.setAttribute('value', '');
-            }
+    if (initialise) {
+        this.addArrowListener(element, 'input', (evt)=> {
+            const value = evt.originalTarget.checked
+                ? this.getAttribute('option') || "on"
+                : "";
+            this.internals_.setFormValue(value);
+            this.setAttribute('value', value);
+            this.emitEvent('change', value);
         });
     }
 }

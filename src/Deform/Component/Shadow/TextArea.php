@@ -28,7 +28,9 @@ initSlot()
         const textarea = this.shadowRoot.querySelector("textarea");
         
         const updateFromSlot = () => {
-            if (this._ignoreSlotChanges) return;
+            if (this._ignoreSlotChanges) {
+                return;
+            }
             
             const newValue = [...this.childNodes]
                 .filter(n => n.nodeType === Node.TEXT_NODE)
@@ -38,12 +40,16 @@ initSlot()
         
             textarea.value = newValue;
             this.internals_.setFormValue(newValue);
+            this.emitEvent("change", textarea.value);
         };
         
         updateFromSlot();
         
         textarea.addEventListener('input', () => {
             this.internals_.setFormValue(textarea.value);
+        });
+        textarea.addEventListener('change', () => {
+            /* synchronise the light-dom slot */
             this._ignoreSlotChanges = true;
             [...this.childNodes].forEach(node => {
                 if (node.nodeType === Node.TEXT_NODE) {
@@ -51,12 +57,11 @@ initSlot()
                 }
             });
             this.appendChild(document.createTextNode(textarea.value));
-            this._ignoreSlotChanges = true;
+            this._ignoreSlotChanges = false;
         });
         
         this._observer = new MutationObserver(updateFromSlot);
         this._observer.observe(this, { childList: true, characterData: true, subtree: true });
-        
     }); 
 }
 JS;
@@ -69,8 +74,7 @@ JS;
             "slot",
             Attribute::SLOT_SELECTOR,
             Attribute::TYPE_TEXTAREA,
-            "this.initSlot();",
-            "",
+            "this.initSlot();"
         );
         $attributes["name"] = new Attribute(
             "name",
