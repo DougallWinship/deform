@@ -23,7 +23,6 @@ setValue(initialise)
     }
 }
 JS;
-
     }
 
     public function mergeShadowAttributes(&$attributes): void

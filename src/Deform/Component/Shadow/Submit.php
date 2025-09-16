@@ -9,8 +9,18 @@ trait Submit
     public function getShadowMethods(): string
     {
         return <<<JS
-setValue(value) {
-    
+initValue(element, value)
+{
+    element.value = value
+    element.addEventListener('click', ()=> {
+        this.emitEvent('change', element.value);
+        this.internals_.setFormValue(element.value);
+    });
+}
+updateValue(element, value)
+{
+    element.value = value
+    this.internals_.setFormValue(element.value);
 }
 JS;
     }
@@ -21,8 +31,8 @@ JS;
             "value",
             "input",
             Attribute::TYPE_STRING,
-            "element.value = this.getAttribute('value'); this.internals_.setFormValue(element.value); this.emitEvent('change', element.value);",
-            "element.value = newValue; this.internals_.setFormValue(element.value);this.emitEvent('change', element.value);",
+            "this.initValue(element, this.getAttribute('value'));",
+            "this.updateValue(element, newValue);",
             default: "Submit"
         );
         $attributes['hint'] = null;

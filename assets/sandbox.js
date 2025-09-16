@@ -291,7 +291,6 @@ DeformSandbox.FormInfoPanel = class {
 
     updateSelectedComponent()
     {
-        console.log('updateSelectedComponent');
         const selectedComponent = this.app.selectedComponent;
         const metadataAttributes = this.app.selectedComponentObject.metadata;
 
@@ -316,7 +315,6 @@ DeformSandbox.FormInfoPanel = class {
 
         const observerAttributeElementsByName = {};
         Object.values(sortedMetadataAttributes).forEach(attribute => {
-            console.log(attribute);
             if (attribute.type==='file') {
                 console.warn("attribute of type 'file' not yet supported!");
                 return;
@@ -351,7 +349,7 @@ DeformSandbox.FormInfoPanel = class {
                 }
                 else {
                     // slot is likely only used for presentation
-                    console.warn("'not observing or watching 'deform:change' for " + selectedComponent.constructor.name);
+                    // console.warn("'not observing or watching 'deform:change' for " + selectedComponent.constructor.name);
                 }
             }
             else {
@@ -378,7 +376,6 @@ DeformSandbox.FormInfoPanel = class {
                                 attributeElement.value = selectedComponent.getComponentBaseName();
                             } else
                             if (attribute.type === 'boolean') {
-                                console.log('boolean mutation', mutation.attributeName);
                                 attributeElement.checked = selectedComponent.getAttribute(mutation.attributeName) !== '';
                             } else {
                                 const value = (attribute.name === 'name')
@@ -407,7 +404,8 @@ DeformSandbox.FormInfoPanel = class {
         eventLogElement.style.width="100%";
         eventLogElement.style.minHeight = "100px";
         const deformChangeListener = ((evt) => {
-            eventLogElement.value += "deform:change value=" + evt.detail.value + "\r\n";
+            console.log(evt);
+            eventLogElement.value += "deform:change "+evt.target.getAttribute('name') + " value=" + evt.detail.value + "\r\n";
             eventLogElement.scrollTop = eventLogElement.scrollHeight;
         });
         this.app.selectedComponentListeners.push({
