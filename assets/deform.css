@@ -196,6 +196,10 @@ input[type=submit]:hover,
     accent-color: var(--deform-accent);
 }
 
+deform-checkbox::part(deform-input-checkbox) {
+    margin:0 4px 6px;
+}
+
 .component-container .clear-button, *::part(deform-clear-button) {
     width: fit-content;
     padding: 0.2rem;

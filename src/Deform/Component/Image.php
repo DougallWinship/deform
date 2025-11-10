@@ -102,7 +102,7 @@ class Image extends File
             'id' => 'preview-' . $this->getId(),
             'src' => $src,
             'alt' => '',
-            'style' => 'max-width:200px;max-height:200px;cursor:pointer',
+            'style' => 'width:100%;height:auto;cursor:pointer',
             'onclick' => $this->javascriptSelectFunction ?:
                 'this.previousSibling.dispatchEvent('
                 . 'new MouseEvent("click",{bubbles: false,cancelable: true,view: window})'

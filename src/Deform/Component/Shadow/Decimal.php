@@ -43,7 +43,13 @@ trait Decimal
             "element.dataset.round = this.getAttribute('round');",
             "element.dataset.round = newValue;",
             Attribute::BEHAVIOUR_VISIBLE_IF_EMPTY,
-            "standard"
+            \Deform\Component\Decimal::ROUND_STANDARD,
+            [
+                \Deform\Component\Decimal::ROUND_STANDARD,
+                \Deform\Component\Decimal::ROUND_CEIL,
+                \Deform\Component\Decimal::ROUND_FLOOR,
+                \Deform\Component\Decimal::ROUND_STANDARD
+            ]
         );
     }
 }

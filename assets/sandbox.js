@@ -262,7 +262,7 @@ DeformSandbox.FormAreaPanel = class {
             if (!event.target.classList.contains('dragging')) {
                 // if (selectedComponent && selectedComponent !== event.target) {
                 //     selectedComponent.parentElement.classList.remove('selected');
-            // }
+                // }
                 const selectedComponent= event.target.classList.contains('builder-form-component-wrapper')
                     ? event.target.lastChild
                     : event.target
@@ -363,7 +363,6 @@ DeformSandbox.FormInfoPanel = class {
             const componentObserver = new MutationObserver((mutations) => {
                 mutations.forEach((mutation) => {
                     if (mutation.type === 'attributes' && observerAttributeKeys.includes(mutation.attributeName)) {
-                        console.log(mutation);
                         if (selectedComponent && mutation.attributeName === 'name') {
                             this.fullNameInput.value = selectedComponent.getAttribute(mutation.attributeName);
                         }
@@ -404,7 +403,6 @@ DeformSandbox.FormInfoPanel = class {
         eventLogElement.style.width="100%";
         eventLogElement.style.minHeight = "100px";
         const deformChangeListener = ((evt) => {
-            console.log(evt);
             eventLogElement.value += "deform:change "+evt.target.getAttribute('name') + " value=" + evt.detail.value + "\r\n";
             eventLogElement.scrollTop = eventLogElement.scrollHeight;
         });

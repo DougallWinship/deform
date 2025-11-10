@@ -11,7 +11,7 @@ trait Submit
         return <<<JS
 initValue(element, value)
 {
-    element.value = value
+    element.value = value;
     element.addEventListener('click', ()=> {
         this.emitEvent('change', element.value);
         this.internals_.setFormValue(element.value);
@@ -19,7 +19,7 @@ initValue(element, value)
 }
 updateValue(element, value)
 {
-    element.value = value
+    element.value = value;
     this.internals_.setFormValue(element.value);
 }
 JS;

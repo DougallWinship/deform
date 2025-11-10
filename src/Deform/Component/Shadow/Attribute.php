@@ -19,6 +19,8 @@ class Attribute
     public const string TYPE_FILE = 'file';
     public const string TYPE_TEXTAREA = 'textarea';
 
+    public const string TYPE_OPTIONS = 'options';
+
     public const string SLOT_SELECTOR = 'slot';
     public const string NAME_SELECTOR = 'name';
 

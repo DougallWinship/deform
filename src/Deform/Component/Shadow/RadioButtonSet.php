@@ -25,7 +25,10 @@ setOptions(element, value, initialise=false)
     }
     else {
         element.parentElement.querySelectorAll('.radiobuttonset-radio-container').forEach((radiobutton, index) => {
-            if (index>0) {
+            if (index===0) {
+                radiobutton.style.display='none';
+            }
+            else  {
                 radiobutton.remove();
             }
         });

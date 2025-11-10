@@ -28,7 +28,10 @@ setOptions(element, initialise)
 
     /* always add and remove options! */
     Array.from(element.parentNode.children).forEach((child, index) => {
-        if (index>0) {
+        if (index === 0) {
+            child.style.display = 'none';
+        }
+        else {
             child.remove();
         }
     });
