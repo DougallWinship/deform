@@ -36,7 +36,7 @@ class Text extends Input
      * @return static
      * @throws DeformException
      */
-    public function datalist(array $datalist, string $datalistId = null): static
+    public function datalist(array $datalist, ?string $datalistId = null): static
     {
         if (!$datalistId) {
             $datalistId = $this->input->get('name') . '-datalist';

@@ -25,6 +25,6 @@
         "codeception/module-asserts": "^3.0",
         "codeception/module-db": "^3.1",
         "codeception/module-phpbrowser": "^3.0",
-        "phpunit/phpunit": "^9.6"
+        "phpunit/phpunit": "^10.5"
     }
 }

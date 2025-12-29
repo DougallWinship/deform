@@ -39,7 +39,7 @@ class ComponentControls
      * @param array|string|HtmlTag|IHtml|null $controlDecoration
      * @throws DeformException
      */
-    public function addControl(HtmlTag $controlTag, HtmlTag|IHtml|array|string $controlDecoration = null): void
+    public function addControl(HtmlTag $controlTag, null|HtmlTag|IHtml|array|string $controlDecoration = null): void
     {
         if (!$controlTag->has('id')) {
             throw new DeformComponentException("The control tag must contain an 'id'");
