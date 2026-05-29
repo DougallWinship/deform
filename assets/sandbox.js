@@ -6,7 +6,6 @@ window.DeformSandbox = {};
 // document.addEventListener('deform:change', e => {
 //     console.log('GLOBAL deform:change caught', e.detail);
 // }, true);
-
 DeformSandbox.SandboxApp = class {
     constructor(components, root, availableComponentsElement, formAreaElement, formInfoElement) {
         this.components = components;
@@ -109,17 +108,22 @@ DeformSandbox.FormAreaPanel = class {
             // Calculate insertion point and position the placeholder
             const afterElement = this.getDragAfterElement(this.formAreaElement, event.clientY);
             if (afterElement == null) {
-                this.formAreaElement.appendChild(this.placeholder);
+                if (
+                    this.placeholder.parentElement !== this.formAreaElement
+                    ||
+                    this.placeholder.nextElementSibling !== null
+                ) {
+                    this.formAreaElement.appendChild(this.placeholder);
+                }
             } else {
-                this.formAreaElement.insertBefore(this.placeholder, afterElement);
+                if (this.placeholder.nextElementSibling !== afterElement) {
+                    this.formAreaElement.insertBefore(this.placeholder, afterElement);
+                }
             }
         });
 
         this.formAreaElement.addEventListener('dragleave',() => {
             this.formAreaElement.classList.remove('dragover');
-            if (this.placeholder.parentNode === this.formAreaElement) {
-                this.formAreaElement.removeChild(this.placeholder);
-            }
         });
 
         this.formAreaElement.addEventListener('drop', event => {
@@ -157,7 +161,7 @@ DeformSandbox.FormAreaPanel = class {
     }
 
     getDragAfterElement(container, y) {
-        const draggableElements = [...container.querySelectorAll('.builder-form-component-wrapper:not(.dragging)')];
+        const draggableElements = [...container.querySelectorAll('.builder-form-component-wrapper:not(.dragging):not(.drop-placeholder)')];
         return draggableElements.reduce((closest, child) => {
             const box = child.getBoundingClientRect();
             const offset = y - (box.top + box.height / 2);
@@ -517,6 +521,3 @@ DeformSandbox.FormInfoPanel = class {
         return attributeElement;
     }
 }
-
-
-
