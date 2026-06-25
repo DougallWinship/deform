@@ -18,19 +18,21 @@ initialise()
 {
     const element = this.container.querySelector(".control-container input");
     if (element) {
-        this.form?.addEventListener("formdata", (evt)=> {
-            const formData = evt.formData;
-            for (let file of element.files) {
-                formData.append(this.getAttribute("name"), file);
-            }
-        });
-        element.addEventListener("change", () => {
+        if (this.form) {
+            this.addArrowListener(this.form,'formdata', (evt) => {
+                const formData = evt.formData;
+                for (let file of element.files) {
+                    formData.append(this.getAttribute("name"), file);
+                }
+            })
+        }
+        this.addArrowListener(element, 'change', ()=> {
             this.emitEvent("change", element.$fileOrFiles);
-        });
+        })
     }
     const clearButton = this.container.querySelector("button.clear-button");
     if (clearButton) {
-        clearButton.addEventListener("click", (evt) => {
+        this.addArrowListener(clearButton, "click", (evt) => {
             this.emitEvent("change", null);
         })
     }
@@ -46,6 +48,7 @@ JS;
             Attribute::SLOT_SELECTOR,
             Attribute::TYPE_FILE,
             "this.initialise()",
+            ""
         );
     }
 }
